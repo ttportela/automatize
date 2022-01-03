@@ -1,0 +1,112 @@
+.navbar .nav-link {
+    color: white !important;
+    margin-left: 1px;
+    color: white !important;
+}
+
+.navbar .nav-link-btn {
+/*     border: 1px solid; */
+    border: 1px solid white;
+    border-radius: 3px;
+}
+
+.navbar .nav-link:hover {
+    color: rgb(13,110,253) !important;
+    background-color: white;
+/*     border: 1px solid white; */
+    border-radius: 3px;
+}
+
+.navbar .navbar-brand img {
+    filter: invert(1);
+    border: 1px solid black;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+blockquote {
+    border-left: 4px lightgrey solid;
+    padding-left: 1rem;
+/*     margin-top: calc(2em/1.9em);
+    margin-bottom: calc(2em/1.9em); */
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 90%;
+}
+
+.traj-color1-rangeslider .rc-slider-track,
+.traj-color1-rangeslider .rc-slider-handle {
+  background-color: cyan;
+}
+.traj-color1-rangeslider .rc-slider-dot-active,
+.traj-color1-rangeslider .rc-slider-handle,
+.traj-color1-rangeslider .rc-slider-handle:hover ,
+.traj-color1-rangeslider .rc-slider-handle-active:active {
+  border-color: cyan;
+}
+
+.traj-color2-rangeslider .rc-slider-track,
+.traj-color2-rangeslider .rc-slider-handle {
+  background-color: red;
+}
+.traj-color2-rangeslider .rc-slider-dot-active,
+.traj-color2-rangeslider .rc-slider-handle,
+.traj-color2-rangeslider .rc-slider-handle:hover ,
+.traj-color2-rangeslider .rc-slider-handle-active:active {
+  border-color: red;
+}
+
+.traj-color3-rangeslider .rc-slider-track,
+.traj-color3-rangeslider .rc-slider-handle {
+  background-color: purple;
+}
+.traj-color3-rangeslider .rc-slider-dot-active,
+.traj-color3-rangeslider .rc-slider-handle,
+.traj-color3-rangeslider .rc-slider-handle:hover ,
+.traj-color3-rangeslider .rc-slider-handle-active:active {
+  border-color: purple;
+}
+
+.traj-color4-rangeslider .rc-slider-track,
+.traj-color4-rangeslider .rc-slider-handle {
+  background-color: green;
+}
+.traj-color4-rangeslider .rc-slider-dot-active,
+.traj-color4-rangeslider .rc-slider-handle,
+.traj-color4-rangeslider .rc-slider-handle:hover ,
+.traj-color4-rangeslider .rc-slider-handle-active:active {
+  border-color: green;
+}
+
+.traj-color5-rangeslider .rc-slider-track,
+.traj-color5-rangeslider .rc-slider-handle {
+  background-color: yellow;
+}
+.traj-color5-rangeslider .rc-slider-dot-active,
+.traj-color5-rangeslider .rc-slider-handle,
+.traj-color5-rangeslider .rc-slider-handle:hover ,
+.traj-color5-rangeslider .rc-slider-handle-active:active {
+  border-color: yellow;
+}
+
+.traj-color6-rangeslider .rc-slider-track,
+.traj-color6-rangeslider .rc-slider-handle {
+  background-color: orange;
+}
+.traj-color6-rangeslider .rc-slider-dot-active,
+.traj-color6-rangeslider .rc-slider-handle,
+.traj-color6-rangeslider .rc-slider-handle:hover ,
+.traj-color6-rangeslider .rc-slider-handle-active:active {
+  border-color: orange;
+}
+
+.traj-color7-rangeslider .rc-slider-track,
+.traj-color7-rangeslider .rc-slider-handle {
+  background-color: pink;
+}
+.traj-color7-rangeslider .rc-slider-dot-active,
+.traj-color7-rangeslider .rc-slider-handle,
+.traj-color7-rangeslider .rc-slider-handle:hover ,
+.traj-color7-rangeslider .rc-slider-handle-active:active {
+  border-color: pink;
+}
