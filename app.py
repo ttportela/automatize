@@ -53,15 +53,15 @@ def display_page(pathname):
     elif pathname == '/analysis':
         return render_page_analysis()
     elif pathname == '/methods':
-        return render_markdown_file('automatize/assets/methods.me')
+        return render_markdown_file('automatize/assets/methods.md')
     elif '/datasets' in pathname:
         return render_page_datasets(pathname)
     elif pathname == '/experiments':
-        return render_markdown_file('automatize/assets/experiments.me')
+        return render_markdown_file('automatize/assets/experiments.md')
     elif pathname == '/publications':
-        return render_markdown_file('automatize/assets/publications.me')
+        return render_markdown_file('automatize/assets/publications.md')
     else:
-        file = 'automatize/assets' + pathname+'.me'
+        file = 'automatize/assets' + pathname+'.md'
 #         print(pathname, file)
         if os.path.exists(file):
             return render_markdown_file(file)
@@ -133,7 +133,7 @@ app.layout = html.Div(id = 'parent', children = [
                         html.A(className='nav-link nav-link-btn',
                             id='gh-link',
                             children=['View on GitHub'],
-                            href="https://github.com/bigdata-ufsc",
+                            href="https://github.com/ttportela/automatize",
                         ),
                     ]),
                 ]),
