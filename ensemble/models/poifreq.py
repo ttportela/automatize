@@ -497,12 +497,12 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
         f.write("Total time: %d milliseconds\r\n" % (time_ext+time_cls))
         f.close()
         
-    else:
+#     else:
         
-#         f=open(os.path.join(result_dir, method+'_results.txt'), "a+")
-        f=open(os.path.join(result_dir, 'results_summary.txt'), "a+")
-        f.write("Processing time: %d milliseconds\r\n" % (time_ext))
-        f.close()
+# #         f=open(os.path.join(result_dir, method+'_results.txt'), "a+")
+#         f=open(os.path.join(result_dir, 'results_summary.txt'), "a+")
+#         f.write("Processing time: %d milliseconds\r\n" % (time_ext))
+#         f.close()
         
     return core_name
    

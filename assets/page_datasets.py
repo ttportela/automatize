@@ -15,25 +15,89 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
 from automatize.app_base import app
+from automatize.assets.config import *
 # ------------------------------------------------------------
-DATA_PATH='../../datasets/data'
+# DATA_PATH='../../datasets'
 
 def render_page_datasets(pathname):
     if pathname == '/datasets':
         return html.Div(style = {'margin':10}, children=[
-            html.H4('Datasets'), 
+            html.H3('Datasets'), 
             html.Div(children=render_datasets()),
         ])
     else:
         return render_dataset(pathname)
 
 def render_dataset(pathname):
-    file = glob.glob(os.path.join(DATA_PATH, '*', '*', os.path.basename(pathname)+'.me'))[0]
+    file = glob.glob(os.path.join(DATA_PATH, '*', '*', os.path.basename(pathname)+'.md'))[0]
     f = open(file, "r")
     return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'})
         
+
 def render_datasets(data_path=DATA_PATH):
-    files = glob.glob(os.path.join(data_path, '*', '*', '*.me'))
+    types = {
+        'multiple_trajectories':     'Multiple Aspect Trajectories', 
+        'raw_trajectories':          'Raw Trajectories', 
+        'semantic_trajectories':     'Semantic Trajectories', 
+        'multivariate_ts':           'Multivariate Time Series', 
+        'univariate_ts':             'Univariate Time Series',
+    }
+    components = []
+    for category, name in types.items():
+        components.append(html.Br())
+        components.append(html.H4(name + ':'))
+        components.append(render_datasets_category(category, data_path))
+        components.append(html.Hr())
+        
+    return html.Div(components)
+    
+def render_datasets_category(category, data_path=DATA_PATH):
+    files = glob.glob(os.path.join(data_path, category, '*', '*.md'))
+    
+    df = pd.DataFrame()
+    
+    for f in files:
+        tmp = os.path.dirname(f).split(os.path.sep)
+        aux = {}
+        name = os.path.basename(f).split('.')[0]
+        
+        aux['Name'] = '<div class="dash-cell-value"><a href="/datasets/'+name+'" class="btn btn-link">'+name+'</a></div>'
+        #html.A(name, href='/datasets/'+name) #'['+name+'](/datasets/'+name+')'
+        
+        aux['Category'] = getBadges(f, name)
+        aux['File'] = f
+#         print(aux)
+        df = df.append(aux, ignore_index=True)
+        
+    return dash_table.DataTable(
+        id='table-datasets',
+#         columns=[{"name": i, "id": i, "presentation": "html"} for i in df.columns[:-1]],
+        columns=[{
+            'id': 'Name',
+            'name': 'Dataset',
+            'type': 'any',
+            "presentation": "markdown",
+        }, {
+            'id': 'Category',
+            'name': 'Category',
+            'type': 'text',
+            "presentation": "markdown",
+#             'format': FormatTemplate.money(0)
+        }],
+        markdown_options={'link_target': '_self', 'html': True},
+        data=df[df.columns[:-1]].to_dict('records'),
+        css=[{'selector': 'td', 'rule': 'text-align: left !important;'},
+             {'selector': 'th', 'rule': 'text-align: left !important; font-weight: bold'}
+        ],
+#             style_cell={
+#                 'width': '{}%'.format(len(df_stats.columns)*2),
+#                 'textOverflow': 'ellipsis',
+#                 'overflow': 'hidden'
+#             }
+    )   
+
+def render_datasets_all(data_path=DATA_PATH):
+    files = glob.glob(os.path.join(data_path, '*', '*', '*.md'))
     
     df = pd.DataFrame()
     

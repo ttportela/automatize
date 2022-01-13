@@ -56,4 +56,4 @@ See `requirements.txt` to Python dependencies. To install all dependencies you c
 ____________________________________________________________________
 ### Extras
 
-To run the classification methods with Python automatization see the exemaples in the jupyter notebook: [Automatize - Sample Code.ipynb](./assets/Automatize_Sample_Code.ipynb)
+To run the classification methods with Python automatization see the exemaples in the jupyter notebook: [Automatize - Sample Code.ipynb](./assets/examples/Automatize_Sample_Code.ipynb)

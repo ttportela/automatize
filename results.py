@@ -36,7 +36,7 @@ def STATS(name=['*']):
         ]
         
      # ACC & Time All
-    if set(name) & set(['*', '#', 'AT', 'at', 'MLP', 'N', 'S', 's']):
+    if set(name) & set(['*', '#', 'AT', 'at', 'MLP', 'N', 'S', 's', 'AccTT']):
         list_stats = list_stats + [
             ['ACC (MLP)',            'ACC',     'MLP'],
         ]
@@ -64,6 +64,10 @@ def STATS(name=['*']):
     if set(name) & set(['*', '#', 'AT', 'SVM', 'S']):
         list_stats = list_stats + [
             ['Time (SVM)',           'accTime', 'SVM'],
+        ]
+    if set(name) & set(['*', '#', 'AccTT']):
+        list_stats = list_stats + [
+            ['Time',      'totalTime',    'Processing time|MLP'],
         ]
     
     if set(name) & set(['*', 'C', 'S']): # Hiper Covered Trajectories 
@@ -559,7 +563,7 @@ def format_stats(df, method, list_stats):
         elif x[1] in ['ACC', 'mean']:
             line.append(format_celf(df, method, i, '{val:.3f}'))
 
-        elif x[1] in ['time', 'accTime']:
+        elif x[1] in ['time', 'accTime', 'totalTime']:
             line.append(format_celh(df, method, i, '%dh%02dm%02ds'))
         
         elif x[1] == 'endDate':
@@ -568,23 +572,22 @@ def format_stats(df, method, list_stats):
     return line
     
 def format_cel(df, method, row, pattern):
-    if int(df.at[row,method]) > 0:
-        value = int(df.at[row,method])
-        value = pattern.format(val=value) #pattern.format(df.at[row,method]) 
-        return value
-    else: 
-        return "-"
+    value = int(df.at[row,method])
+    return format_float(value, pattern) #pattern.format(df.at[row,method]) 
     
 def format_celf(df, method, row, pattern):
-    if float(df.at[row,method]) > 0:
-        value = float(df.at[row,method])
-        value = pattern.format(val=value) #pattern.format(df.at[row,method]) 
-        return value
-    else: 
-        return "-"
+    value = float(df.at[row,method])
+    value = format_float(value, pattern) #pattern.format(df.at[row,method]) 
+    return value
     
 def format_celh(df, method, row, pattern):
     return format_hour(df.at[row,method])
+
+def format_float(value, pattern='{val:.3f}'):
+    if value > 0:
+        return pattern.format(val=value)
+    else: 
+        return "-"
 
 def format_date(ts):
 #     from main import importer
@@ -625,6 +628,10 @@ def getACC_time(path, label, modelfolder='model'):
         if res_file:
             data = read_csv(res_file)
             acc = get_first_number("Classification Time: ", data)
+    elif getTECFile(path, modelfolder):
+        data = pd.read_csv(getTECFile(path, modelfolder), index_col=0)
+        data = data.set_index('classifier')
+        acc = float(data['time']['EnsembleClassifier']) if 'time' in data.columns else 0
     else:
         data = getACC_data(path, 'classification_times.csv', modelfolder)
         if data is not None:
@@ -646,10 +653,8 @@ def getACC_SVM(path, modelfolder='model'):
     return acc
 
 def getACC_MLP(path, method, modelfolder='model'):
-#     from main import importer
-#     importer(['S'], locals())
-    
     acc = 0
+#     print(path, method, modelfolder)
     if "MARC" in method:
         res_file = getMARCFile(path, method, modelfolder)
         if res_file:
@@ -659,7 +664,11 @@ def getACC_MLP(path, method, modelfolder='model'):
         res_file = getPOISFile(path, modelfolder)
         if res_file:
             data = read_csv(res_file)
-            acc = get_first_number("Acc: ", data) #data['test_acc'].iloc[-1]
+            acc = get_first_number("Acc: ", data)
+    elif getTECFile(path, modelfolder):
+        data = pd.read_csv(getTECFile(path, modelfolder), index_col=0)
+        data = data.set_index('classifier')
+        acc = data['accuracy']['EnsembleClassifier']
     else:
         data = getACC_data(path, 'model_approach2_history_Step5.csv', modelfolder)
         if data is not None:
@@ -713,6 +722,13 @@ def getMARCFile(path, method, modelfolder):
         else:
             return False
     return res_file
+
+def getTECFile(path, modelfolder):
+    res_file = glob.glob(os.path.join(path, modelfolder, 'model_approachEnsemble_history.csv'), recursive=True)
+    if len(res_file) > 0 and os.path.isfile(res_file[0]):
+        return res_file[0]
+    else:
+        return False
 
 def getPOISFile(path, modelfolder):
 #     from main import importer
@@ -851,16 +867,19 @@ def get_count_of_file_by_dataframe(str_target, df):
 #     return total
 
 def split_string(string, delimiter):
-    return str(string.split(delimiter)[1])      
+    return str(string.split(delimiter)[1])  
 
-def get_stats(resfile, path, method, list_stats, modelfolder='model'):
+def get_stats(resfile, path, method, list_stats, modelfolder='model', show_warnings=True):
 #     from main import importer
 #     importer(['S'], locals())
     
     stats = []
     
 #     print("Loading " + method + " results from: " + path)
-    data = read_csv(resfile)
+    if os.path.exists(os.path.join(path, os.path.basename(path)+'.txt')):
+        data = read_csv(os.path.join(path, os.path.basename(path)+'.txt'))
+    else:
+        data = read_csv(resfile)
     
     for x in list_stats:
         ssearch = x[2]+": "
@@ -889,24 +908,32 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model'):
             stats.append( get_first_number(ssearch, data) )
         
         elif x[1] == 'time':
-            if os.path.exists(os.path.join(path, 'poifreq_results.txt')):
-                #'POI' in path or 'NPOI' in path or 'WNPOI' in path or 'POIFREQ' in path:
-                stats.append( get_total_number_of_ms(ssearch, read_csv(os.path.join(path, 'poifreq_results.txt'))) )
-            else:
-                stats.append( get_total_number_of_ms(ssearch, data) )
+            stats.append( get_total_number_of_ms(ssearch, data) )
         
         elif x[1] == 'accTime':
 #             print(path, x[2], modelfolder)
             stats.append( getACC_time(path, x[2], modelfolder) )
         
+        elif x[1] == 'totalTime':
+            timeRun = get_total_number_of_ms(x[2].split('|')[0]+": ", data) 
+            timeAcc = getACC_time(path, x[2].split('|')[1], modelfolder) 
+            if show_warnings and timeRun <= 0:
+                print('*** Warning "totalTime": No Run Time for '+resfile+'.')
+            if show_warnings and timeAcc <= 0:
+                print('*** Warning "totalTime": No ACC Time for '+resfile+'.')
+            stats.append(timeRun + timeAcc)
+        
         elif x[1] == 'ACC':
 #             print(path, method, modelfolder)
-            if x[2] == 'MLP':
+            if x[2] in ['MLP', '']:
                 acc = getACC_MLP(path, method, modelfolder)
             elif x[2] == 'RF':
                 acc = getACC_RF(path, modelfolder)
             elif x[2] == 'SVM':
                 acc = getACC_SVM(path, modelfolder)
+                
+            if show_warnings and acc <= 0:
+                print('*** Warning "ACC": not found for '+resfile+'.')
             
             stats.append( acc * 100 )
         
@@ -924,7 +951,7 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model'):
     return stats
 
 # --------------------------------------------------------------------------------->  
-def printLatex(df, ajust=12, clines=[]):
+def printLatex(df, ajust=9, clines=[]):
     n_cols = (len(df.columns)-2)
     n_ds = len(df['Dataset'].unique()) -1
     n_rows = int(int(len(df)) / n_ds)
@@ -997,12 +1024,7 @@ def printLatex_line(df, l, ajust=12):
 #     print("# Total of Trajs. Ignored:   " + str(trajs_ignored))
 #     print("# Total of Trajs.:    " + str(trajs_looked+trajs_ignored))
 # --------------------------------------------------------------------------------->
-def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='model', isformat=True):
-    
-    importer(['S', 'glob', 'STATS', 'get_stats', 'containErrors', 'np'], globals())
-    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','run','random','method','runtime', 'classifier','accuracy','cls_runtime','error','file'])
-    filesList = []
-
+def getResultFiles(res_path):
     def findFiles(x):
         search = os.path.join(res_path, '**', x)
         fl = []
@@ -1010,45 +1032,86 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
             fileName, fileExtension = os.path.splitext(files)
             fl.append(files) #filename with extension
         return fl
-            
+       
+    filesList = []
     filesList = filesList + findFiles('classification_times.csv')
     filesList = filesList + findFiles('*_results.txt')
     filesList = filesList + findFiles('model_approachEnsemble_history.csv')
+    return filesList
+
+def decodeURL(ijk):
+    rpos = ijk.find('run')
+    path = ijk[:ijk.find(os.path.sep, rpos+5)]
+    method = ijk[rpos+5:ijk.rfind(os.path.sep)]
+
+    if ijk.endswith('poifreq_results.txt'):
+        file = ijk
+        method = method[method.find(os.path.sep)+1:]
+    elif ijk.endswith('model_approachEnsemble_history.csv'):
+        file = ijk
+        method = method[:method.find(os.path.sep)] 
+    else:
+        file = glob.glob(os.path.join(path, '**', '*.txt'), recursive=True)[0]
+        method = method[:method.find(os.path.sep)]
+
+    run = path[rpos:rpos+4]
+    run = (run)[3:]
+
+    method, subset = method.split('-')[:2]
+
+    prefix = os.path.basename(path[:rpos-1])
+
+    model = os.path.dirname(ijk)
+    model = model[model.rfind(os.path.sep)+1:]
+    
+    if ijk.endswith('model_approachEnsemble_history.csv'):
+        method += '_'+model.split('_')[-1]
+
+    random = '1' if '-' not in model else model.split('-')[-1]
+
+    return run, random, method, subset, prefix, model, path, file
+
+def organizeResults(filesList, sub_set=None):
+    results = {}
+    for ijk in filesList:
+        run, random, method, subset, prefix, model, path, file = decodeURL(ijk)
+        
+        is_POIF = ijk.endswith('poifreq_results.txt')
+        is_TEC  = ijk.endswith('approachEnsemble_history.csv')
+        
+        var = sub_set if sub_set and is_POIF else subset
+        
+        # is this forced?
+        if is_POIF and sub_set:
+            method += '_'+subset
+            subset = sub_set
+        
+        if sub_set and var != sub_set:
+            continue
+            
+        dataset = prefix +'-'+ var
+        mname   = method +'-'+ subset #(var if sub_set and is_POIF else subset)
+        
+        if dataset not in results.keys():
+            results[dataset] = {}
+        if mname not in results[dataset].keys():
+            results[dataset][mname] = []
+        results[dataset][mname].append([run, random, method, subset, prefix, model, path, file])
+
+    return results
+
+def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='model', isformat=True):
+    
+    importer(['S', 'glob', 'STATS', 'get_stats', 'containErrors', 'np'], globals())
+    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','run','random','method','runtime', 'classifier','accuracy','cls_runtime','error','file'])
+
+    filesList = getResultFiles(res_path)
     
     list_stats = STATS(['#'])
     list_stats_ind = [p[x] for p in list_stats for x in range(len(p))]
-    
-    def decode_url(ijk):
-        rpos = ijk.find('run')
-        path = ijk[:ijk.find(os.path.sep, rpos+5)]
-        method = ijk[rpos+5:ijk.rfind(os.path.sep)]
-
-        if ijk.endswith('poifreq_results.txt'):
-            file = ijk
-            method = method[method.find(os.path.sep)+1:]
-        elif ijk.endswith('model_approachEnsemble_history.csv'):
-            file = ijk
-            method = method[:method.find(os.path.sep)] 
-        else:
-            file = glob.glob(os.path.join(path, '**', '*.txt'), recursive=True)[0]
-            method = method[:method.find(os.path.sep)]
-
-        run = path[rpos:rpos+4]
-        run = (run)[3:]
-        
-        method, subset = method.split('-')[:2]
-        
-        prefix = os.path.basename(path[:rpos-1])
-        
-        model = os.path.dirname(ijk)
-        model = model[model.rfind(os.path.sep)+1:]
-        
-        random = '1' if '-' not in model else model.split('-')[-1]
-
-        return run, random, method, subset, prefix, model, path, file
             
     for ijk in filesList:
-        run, random, method, subset, prefix, model, path, file = decode_url(ijk)
+        run, random, method, subset, prefix, model, path, file = decodeURL(ijk)
         
         stats = get_stats(file, path, method+'-'+subset, list_stats, modelfolder=model)
         def gstati(x):
@@ -1093,14 +1156,23 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
         
     # ---
     # Post treatment:
-    histres['name']   = histres['method'] + '-' + histres['classifier']
+    histres['name']   = histres['method'] + '-' + histres['subset'] + '-' + histres['classifier']
     histres['key'] = histres['dataset'] + '-' + histres['subset'] + '-' + histres['run']
     # Ordering / Renaming:
     histres.reset_index(drop=True, inplace=True)
 
     return histres
 
-def check_run(res_path):
+def runningProblems(ijk):
+    e1 = containErrors(ijk)
+    e2 = containWarnings(ijk)
+    e3 = containTimeout(ijk)
+    s = False
+    if e1 or e2 or e3:
+        s = ('[ERROR]' if e1 else '[  -  ]')+('[WARN.]' if e2 else '[  -  ]')+('[T.OUT]' if e3 else '[  -  ]')
+    return s
+
+def check_run(res_path, show_warnings=False):
     
     importer(['S', 'glob', 'STATS', 'get_stats', 'check_run', 'format_hour', 'np'], globals())
     filesList = []
@@ -1135,12 +1207,75 @@ def check_run(res_path):
     filesList.sort()
     for ijk in filesList:
         run, method, subset, prefix, path = decode_url(ijk)
-        e1 = containErrors(ijk)
-        e2 = containWarnings(ijk)
-        e3 = containTimeout(ijk)
-        if e1 or e2 or e3:
-            s = ('[ERROR]' if e1 else '[  -  ]')+('[WARN.]' if e2 else '[  -  ]')+('[T.OUT]' if e3 else '[  -  ]')
-            print('[*] NOT OK:', method, '\t', prefix, '\t', run, '\t', subset, '\t', s)
+        e = runningProblems(ijk)
+        if e:
+            print('[*] NOT OK:\t', method, '\t', prefix, '\t', run, '\t', subset, '\t', e)
         else:
-            time = format_hour(get_stats(ijk, '', '', STATS(['TIME']))[0])
-            print('        OK:', method, '\t', prefix, '\t', run, '\t', subset, '\t ', time)
+            res = get_stats(ijk, path, method, STATS(['AccTT']), show_warnings=show_warnings)
+            print('        OK:\t', method, '\t', prefix, '\t', run, '\t', subset, 
+                  '\t ACC:', format_float(res[0]), '\t t:', format_hour(res[1]))
+
+
+def compileResults(res_path, sub_set=None, list_stats=STATS(['S']), isformat=True, k=False):
+    importer(['S', 'glob'], globals())
+    
+    results = organizeResults(getResultFiles(res_path), sub_set)
+    
+    cols = []
+    
+    table = pd.DataFrame()
+    for dataset in results.keys():
+        data = pd.DataFrame()
+        for mname in results[dataset].keys():
+            cols.append(mname)
+            # 1: Create and concatenate in a DF:
+            df = pd.DataFrame()
+            run_cols = []
+            rows = []
+            for x in list_stats:
+                rows.append(x[0])
+            df[' '] = rows
+            df['Dataset'] = ""
+            df['Dataset'][0] = dataset.split('-')[0] + ' ('+dataset.split('-')[1]+')'
+
+            # ---
+            partial_result = False
+            for run, random, method, subset, prefix, model, path, file in results[dataset][mname]:
+                run_cols.append(run)
+                df[run] = get_stats(file, path, method, list_stats, model)
+
+                e = runningProblems(file)
+                if e:
+                    partial_result = True
+                    print('*** Warning: '+mname+'-'+run+' contains errors > ' + e)
+            # ---
+            if k and len(run_cols) != k:
+                partial_result = True
+            
+            df[method] = df.loc[:, run_cols].mean(axis=1)
+            if list_stats[-1][1] == 'enddate':
+                df[method].loc[df.index[-1]] = -1
+
+#             display(df)
+            print('Adding:', dataset, '\t', len(run_cols), 'runs', '\t', mname)
+            if isformat:
+                for column in run_cols:
+                    df[column] = format_stats(df, column, list_stats)
+
+                df[method] = format_stats(df, method, list_stats)
+                
+                if partial_result:
+                    df[method] = df[method].add('*')
+    
+            # ---
+            if not len(data.columns) > 0:
+                data = df[['Dataset', ' ']].copy()
+            if method in df.columns:
+                data[method] = df[[method]]
+            else:
+                data[method] = ''
+        # ---
+        table = pd.concat([table, data], axis=0)
+    # ---
+    table = table.reset_index(drop=True)
+    return table

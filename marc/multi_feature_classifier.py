@@ -1,7 +1,7 @@
 import sys, os 
-# script_dir = os.path.dirname( __file__ )
-# main_dir = os.path.abspath(os.path.join( script_dir, '..' , '..'))
-# sys.path.append( main_dir )
+script_dir = os.path.dirname( __file__ )
+main_dir = os.path.abspath(os.path.join( script_dir, '..' , '..'))
+sys.path.append( main_dir )
 
 # importer(['S', 'sys', 'datetime', 'encoding', 'MARC'], globals())
 

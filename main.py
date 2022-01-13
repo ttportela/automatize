@@ -199,7 +199,7 @@ def importer(key=['S'], this=None):
         if set(key) & set(['*', 'metrics', 'accuracy_score']):
             mdic.update( {'accuracy_score': getattr(module, 'accuracy_score')} )
         
-    if set(key) & set(['*', 'report', 'NN', 'MLP', 'RF', 'RFHP', 'DT', 'SVC']):
+    if set(key) & set(['*', 'report', 'NN', 'MLP', 'RF', 'RFHP', 'DT', 'SVC', 'TEC.report']):
         module = importlib.import_module('sklearn.metrics')
         mdic.update( {'classification_report': getattr(module, 'classification_report')} )      
       

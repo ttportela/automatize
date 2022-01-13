@@ -205,7 +205,7 @@ print(f"Classification Time: {time_ext} milliseconds", file=f)
 print('------------------------------------------------------------------------------------------------', file=f)
 f.close()
 
-print(f"Processing time: {time_ext} milliseconds. Done.")
-print('------------------------------------------------------------------------------------------------')
+# print(f"Processing time: {time_ext} milliseconds. Done.")
+# print('------------------------------------------------------------------------------------------------')
 
 

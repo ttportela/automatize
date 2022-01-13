@@ -28,6 +28,7 @@ from dash.dependencies import Output, Input, State
 # from automatize.assets.page_models import *
 from automatize.assets.page_analysis import render_page_analysis
 from automatize.assets.page_datasets import render_page_datasets
+from automatize.assets.page_experiments import render_page_experiments
 
 # Boostrap CSS.
 # external_stylesheets=[dbc.themes.BOOTSTRAP]
@@ -57,7 +58,7 @@ def display_page(pathname):
     elif '/datasets' in pathname:
         return render_page_datasets(pathname)
     elif pathname == '/experiments':
-        return render_markdown_file('automatize/assets/experiments.md')
+        return render_page_experiments(pathname) #render_markdown_file('automatize/assets/experiments.md')
     elif pathname == '/publications':
         return render_markdown_file('automatize/assets/publications.md')
     else:

@@ -17,7 +17,7 @@ external_stylesheets=[dbc.themes.BOOTSTRAP]
 # app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True, 
-                title='Multiple Aspect Trajectories Analytics', suppress_callback_exceptions=True)
+                title='Multiple Aspect Trajectory Analytics Tool', suppress_callback_exceptions=True)
 
 server = app.server
     
