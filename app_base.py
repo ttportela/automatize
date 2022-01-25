@@ -20,5 +20,3 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_ini
                 title='Multiple Aspect Trajectory Analytics Tool', suppress_callback_exceptions=True)
 
 server = app.server
-    
-    

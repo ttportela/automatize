@@ -16,8 +16,34 @@ Created on Jun, 2020
 # import matplotlib.pyplot as plt
 from .main import importer #, display
 importer(['S'], globals())
-# --------------------------------------------------------------------------------
+#-------------------------------------------------------------------------->>
 
+def readDataset(data_path, folder=None, file='train.csv', class_col = 'label'):
+#     from ..main import importer
+    
+    if folder:
+        data_path = os.path.join(data_path, folder)
+    
+    if '.csv' in file or '.zip' in file or '.ts' in file:
+        url = os.path.join(data_path, file)
+    else:
+        url = os.path.join(data_path, file+'.csv')
+    
+#     print(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts'))
+    if '.csv' in url and os.path.exists(url):
+        df = pd.read_csv(url, na_values='?')
+    elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
+        file = file.replace('.csv', '.zip')
+        df = convert_zip2csv(data_path, file, class_col=class_col)
+    elif '.ts' in url or os.path.exists(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')):
+        importer(['ts_io'], globals())
+        url = url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')
+        df = load_from_tsfile_to_dataframe(url)
+    else:
+        df = pd.read_csv(url, na_values='?') # should not be used
+    return df
+
+# --------------------------------------------------------------------------------
 def readData_Folders_File(path, col_names, file_ext='.txt', delimiter=',', file_prefix=''):
 #     from ..main import importer
     importer(['S', 'glob'], globals())
@@ -35,7 +61,7 @@ def readData_Folders_File(path, col_names, file_ext='.txt', delimiter=',', file_
     ct = 1
     df = pd.DataFrame()
     for ijk in filesList:
-        frame = pd.read_csv(ijk, names=col_names, sep=delimiter)
+        frame = pd.read_csv(ijk, names=col_names, sep=delimiter, na_values='?')
         s = ijk[len(folder):-4].split("/")
         
         fname = s[0][:-3]
@@ -68,7 +94,7 @@ def readData_Files(path, col_names, file_ext='.txt', delimiter=',', file_prefix=
     ct = 1
     df = pd.DataFrame()
     for ijk in filesList:
-        frame = pd.read_csv(ijk, names=col_names, sep=delimiter)
+        frame = pd.read_csv(ijk, names=col_names, sep=delimiter, na_values='?')
         
         fname = os.path.basename(ijk)[:-4]
         frame['label'] = str(fname).replace(file_prefix, '')
@@ -150,22 +176,6 @@ def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', 
         print(s)
     
 #-------------------------------------------------------------------------->>
-def readDataset(data_path, folder, file='train.csv', class_col = 'label'):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    if '.csv' in file or '.zip' in file:
-        url = os.path.join(data_path, folder, file)
-    else:
-        url = os.path.join(data_path, folder, file+'.csv')
-    
-    if (not os.path.exists(url)) and '.csv' in file:
-        file = file.replace('.csv', '.zip')
-        df = convert_zip2csv(os.path.join(data_path, folder), file, class_col=class_col)
-    else:
-        df = pd.read_csv(url)
-    return df
-
 def countClasses(data_path, folder, file='train.csv', class_col = 'label'):
     df = readDataset(data_path, folder, file, class_col)
     return countClasses_df(df, class_col)
@@ -214,10 +224,11 @@ def datasetStatistics(data_path, folder, file_prefix='', class_col = 'label'):
     print(list(train.columns))
     print('\nFeatures Selection (by Variance): ')
     stats=pd.DataFrame()
-    stats["mean"]=train.mean()
-    stats["Std.Dev"]=train.std()
-    stats["Var"]=train.var()
-    print(stats.sort_values('Var', ascending=False))
+    df = train.apply(pd.to_numeric, args=['coerce'])
+    stats["Mean"]=df.mean(axis=0, skipna=True)#skipna=True)
+    stats["Std.Dev"]=df.std(axis=0, skipna=True)
+    stats["Variance"]=df.var(axis=0, skipna=True)
+    print(stats.sort_values('Variance', ascending=False))
     print('\nClasses: ')
     print(classes, '\n')
     print('\n--------------------------------------------------------------------')
@@ -504,9 +515,9 @@ def convert_zip2csv(folder, file, cols=None, class_col = 'label'):
 #             data = filename.readlines()
 #             print(filename)
             if cols is not None:
-                df = pd.read_csv(z.open(filename), names=cols)
+                df = pd.read_csv(z.open(filename), names=cols, na_values='?')
             else:
-                df = pd.read_csv(z.open(filename), header=None)
+                df = pd.read_csv(z.open(filename), header=None, na_values='?')
             df['tid']   = filename.split(" ")[1][1:]
             df[class_col] = filename.split(" ")[2][1:-3]
             data = pd.concat([data,df])
@@ -539,22 +550,22 @@ def zip2csv(folder, file, cols, class_col = 'label'):
     print(" --------------------------------------------------------------------------------")
     return data
 
-def convertToCSV(path): 
-#     from ..main import importer
-#     importer(['S'], locals())
+# def convertToCSV(path): 
+# #     from ..main import importer
+# #     importer(['S'], locals())
     
-    dir_path = os.path.dirname(os.path.realpath(path))
-    files = [x for x in os.listdir(dir_path) if x.endswith('.csv')]
+#     dir_path = os.path.dirname(os.path.realpath(path))
+#     files = [x for x in os.listdir(dir_path) if x.endswith('.csv')]
 
-    for file in files:
-        try:
-            df = pd.read_csv(file, sep=';', header=None)
-            print(df)
-            df.drop(0, inplace=True)
-            print(df)
-            df.to_csv(os.path.join(folder, file), index=False, header=None)
-        except:
-            pass
+#     for file in files:
+#         try:
+#             df = pd.read_csv(file, sep=';', header=None)
+#             print(df)
+#             df.drop(0, inplace=True)
+#             print(df)
+#             df.to_csv(os.path.join(folder, file), index=False, header=None)
+#         except:
+#             pass
 
 def zip2arf(folder, file, cols, tid_col='tid', class_col = 'label'):
     data = pd.DataFrame()
@@ -601,10 +612,12 @@ def convert2ts(data_path, folder, file, cols=None, tid_col='tid', class_col = 'l
 
     f.write("#\n")
     f.write("@problemName " + folder + '\n')
-    f.write("@univariate false\n")
+    f.write("@timeStamps false")
+    f.write("@missing "+ str('?' in data)+'\n')
+    f.write("@univariate "+ ('false' if len(cols) > 1 else 'true') +'\n')
     f.write("@dimensions " + str(len(cols)) + '\n')
-#     f.write("@equalLength true" + '\n')
-#     f.write("@seriesLength " + ? + '\n')
+    f.write("@equalLength false" + '\n')
+    f.write("@seriesLength " + str(len(data[data[tid_col] == data[tid_col][0]])) + '\n')
     f.write("@classLabel true " + ' '.join([str(x).replace(' ', '_') for x in list(data[class_col].unique())]) + '\n')
     f.write("@data\n")
     

@@ -106,7 +106,7 @@ def configMethod(method, params):
         mname = 'M2'
         runopts = '-version ' + replacesuffix(method) + ' '
     elif 'poi' in method:
-        mname = 'NPOI-'+('_'.join(params['features']))+'_'+('_'.join([str(n) for n in params['sequences']]))
+        mname = method.upper()+'-'+('_'.join(params['features']))+'_'+('_'.join([str(n) for n in params['sequences']]))
         
     elif 'MMp' in method:   
         mname = 'MMp'
@@ -215,11 +215,14 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         print('for RUN in '+ ' '.join(['"run'+str(x)+'"' for x in list(k)]) )
         print('do')
     print('DIR="'+results+'"')
-    print('if [ -d "$DIR/'+mname+'-'+var+'" ]; then')
+    print('if [ -d "${DIR}/'+mname+'-'+var+'" ]; then')
     print('   echo "${DIR}/'+mname+'-'+var+'... [OK]"')
     print('else')
     
     results = '${DIR}'
+    dsvar = 'specific' if '_ts' not in data else prefix
+    if 'univariate_ts' in data:
+        runopts += '-inprefix "' + prefix + '" '
     
 #     if method == 'TEC' or method == 'TEC2':
     if 'TEC' in method:
@@ -240,11 +243,11 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                     methods = ['movelets_nn', 'marc']
 
                 pois = ('_'.join(params['features']))+'_'+('_'.join([str(n) for n in params['sequences']]))
-                poif_line     = os.path.join('${DIR}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois+'_'+var)
+                poif_line     = os.path.join('${DIR}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois) #+'_'+var)
                 movelets_line = os.path.join('${DIR}', movelets_method+'-'+var) # IF DIFFERENT METHOD, CHANGE modelfolder NAME!!
 
                 metsuff = movelets_method+ (pois_method if method != 'TEC2' else '')
-
+                
                 Ensemble(data, results, prefix, mname+'-'+var, methods=methods, \
                      modelfolder='model_'+metsuff, save_results=True, print_only=print_only, pyname=pyname, \
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset='specific', num_runs=1,\
@@ -252,11 +255,13 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 
     prefix = None
     if method == 'MARC':
+        train_file = dsvar+"_train.csv" if '_ts' not in data else dsvar+"_TRAIN.ts"
+        test_file  = dsvar+"_test.csv"  if '_ts' not in data else dsvar+"_TEST.ts"
         MARC(data, results, prefix, mname+'-'+var, print_only=print_only, prg_path=os.path.join(prog_path, 'automatize','marc'), 
-             pyname=pyname, extra_params=GIG+' '+THREADS, train=var+"_train.csv", test=var+"_test.csv")
+             pyname=pyname, extra_params=GIG+' '+THREADS, train=train_file, test=test_file)
 
     if 'poi' in method: #method == 'npoi' or method == 'poi' or method == 'wnpoi':
-        POIFREQ(data, results, prefix, var, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname)
+        POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, or_methodsuffix='specific')
         
     if 'SM' in method:                    
         Movelets(data, results, prefix, mname+'-'+var, json, \
@@ -280,12 +285,12 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                    print_only=print_only, jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
 
 
-    if 'samples' in params:
+    if 'samples' in params and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
         print('# --------------------------------------------------------------------------------------')
         print('for FOLD in '+ ' '.join(['"run'+str(x)+'"' for x in range(1, params['samples']+1)]) )
         print('do')
         print(pyname+' '+automatize_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+mname+'-'+var+'"') #MERGE
-        if doacc and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
+        if doacc :
             print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+mname+'-'+var+'"') #MLP_RF
         print('done')
         print('# --------------------------------------------------------------------------------------')
@@ -305,28 +310,43 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     print('# --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ')
     
 # --------------------------------------------------------------------------------------
-def sh2bat(root, root_win, path, folder):
+def sh2bat(path, folder, root=None, root_win=None, py_name='python'):
     # Convert sh to bat:
-#     import os
-#     import glob2 as glob
     importer(['glob'], globals())
 
     dict_strs = {
-        '# --------------------------------------------------------------------------------------': '',
-        'DIR=': 'SET DIRET=',
-        'if [ -d "$DIR" ]; then': 'IF EXIST %DIRET% (',
-        '${DIR}': '%DIRET%',
+        '# ': ':: ',
+        '#!/bin/bash': '',
+        'ts=$(date +%s%N)':'SET ts=%time%',
+        'tt=$((($(date +%s%N) - $ts)/1000000))':'SET tt=%time%-%ts%',
+        'Processing time: $tt':'Processing time: %tt%',
+        'DIR="': 'SET DIRET=',
+        'BASE="': 'SET BASE=',
+        'RUN="': 'SET RUN=',
+        '"\nSET': '\nSET',
+        '"\nif': '\nif',
+        'if [ -d ': 'IF EXIST ',
+        ' ]; then': ' (',
         'else': ') ELSE (',
         'fi\n': ')\n',
-        '#!/bin/bash': '',
-        '# ': 'ECHO ',
+#         '# ': 'ECHO ',
         'mkdir -p': 'md',
         '2>&1 | tee -a': '>>',
         'rm -R': 'ECHO FIM-',
-        root: root_win,
         '/': '\\',
-        'python3': 'python'
+        'python3': py_name,
+        'for RUN in ': 'FOR %%RUN IN (',
+        'done' : ')',
+        '\ndo' : ') DO (',
+        '" "run' : ',run',
+        '${DIR}': '%DIRET%',
+        '${BASE}': '%BASE%',
+        '${RUN}': '%RUN%',
+#         '"': '',
     }
+    
+    if root and root_win:
+        dict_strs[root] = root_win
     
     os.makedirs(os.path.join(path, folder+'_win'), exist_ok=True)
     for file in glob.glob(os.path.join(path, folder, '*.sh')):

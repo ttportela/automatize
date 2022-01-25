@@ -172,7 +172,7 @@ def to_file(core_name, x_train, x_test, y_train, y_test):
     
 def geoHasTransform(df, geo_precision=8):
 #     from ..main import importer
-    importer(['geohash'], locals())
+    importer(['geohash'], globals()) #globals
 #     from automatize.ensemble_models.utils import geohash
     return [geohash(df['lat'].values[i], df['lon'].values[i], geo_precision) for i in range(0, len(df))]
     
@@ -453,7 +453,7 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
                 aux_x_test = pd.concat([aux_x_test, pd.DataFrame(x_test)], axis=1)    
                 
         # Write features concat:
-        core_name = os.path.join(result_dir, method+'_'+('_'.join(features))+'_'+('_'.join([str(sequence)]))+'_'+dataset)
+        core_name = os.path.join(result_dir, method+'_'+('_'.join(features))+'_'+('_'.join([str(sequence)])) ) #+'_'+dataset)
         to_file(core_name, aux_x_train, aux_x_test, y_train, y_test)
         
         if agg_x_train is None:
@@ -472,7 +472,7 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
     del x_train
     del x_test   
    
-    core_name = os.path.join(result_dir, method+'_'+('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))+'_'+dataset)
+    core_name = os.path.join(result_dir, method+'_'+('_'.join(features))+'_'+('_'.join([str(n) for n in sequences])) ) #+'_'+dataset)
     to_file(core_name, agg_x_train, agg_x_test, y_train, y_test)
     time_ext = (datetime.now()-time).total_seconds() * 1000
     
@@ -510,13 +510,19 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
 ## --------------------------------------------------------------------------------------------
 def loadTrainTest(features, folder, dataset=''):
 #     from ..main import importer
-#     importer(['S'], locals())
+    importer(['readDataset'], globals())
+#     if dataset == '':
+#         df_train = pd.read_csv(os.path.join(folder, 'train.csv'))
+#         df_test = pd.read_csv(os.path.join(folder, 'test.csv'))
+#     else:
+#         df_train = pd.read_csv(os.path.join(folder, dataset+'_train.csv'))
+#         df_test = pd.read_csv(os.path.join(folder, dataset+'_test.csv'))
     if dataset == '':
-        df_train = pd.read_csv(os.path.join(folder, 'train.csv'))
-        df_test = pd.read_csv(os.path.join(folder, 'test.csv'))
+        df_train = readDataset(folder, file='train.csv')
+        df_test = readDataset(folder, file='test.csv')
     else:
-        df_train = pd.read_csv(os.path.join(folder, dataset+'_train.csv'))
-        df_test = pd.read_csv(os.path.join(folder, dataset+'_test.csv'))
+        df_train = readDataset(folder, file=dataset+'_train.csv')
+        df_test = readDataset(folder, file=dataset+'_test.csv')
     
     if 'lat_lon' in features and ('lat' in df_train.columns and 'lon' in df_test.columns):
         df_train['lat_lon'] = geoHasTransform(df_train)

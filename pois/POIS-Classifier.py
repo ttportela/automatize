@@ -42,11 +42,16 @@ RESULTS_FILE = os.path.join(path_name, sys.argv[4], 'poifreq_results')
 METRICS_FILE = os.path.join(path_name, 'metrics', METHOD+'_'+DATASET+'.csv')
 
 
-print("POI-S Starting: building neural network for", METHOD, DATASET)
-time = datetime.now()
 if not os.path.exists(os.path.join(path_name, 'metrics')):
-        os.makedirs(os.path.join(path_name, 'metrics'))
+    os.makedirs(os.path.join(path_name, 'metrics'))
+    
+if os.path.exists(RESULTS_FILE):
+    print("POI-S ", RESULTS_FILE, "Done.")
+    quit()
+          
+print("POI-S Starting: building neural network for", METHOD, DATASET)
 os.makedirs(os.path.join(path_name, sys.argv[4]))
+time = datetime.now()
 
 metrics = MetricsLogger().load(METRICS_FILE)
 

@@ -67,9 +67,7 @@ def display_page(pathname):
         if os.path.exists(file):
             return render_markdown_file(file)
         else:
-            return html.Div([
-                dbc.Alert('Content in development. You are on page {}'.format(pathname), color="info", style = {'margin':10})
-            ])
+            return underDev(pathname)
     # You could also return a 404 "URL not found" page here
     
 light_logo = True
@@ -174,7 +172,12 @@ app.layout = html.Div(id = 'parent', children = [
 def render_page_home():
     return html.Div(id='content-home', children=[ 
         html.H4('Welcome to ' + page_title),
-        html.Span('©2021 Beta version, by Tarlis Tortelli Portela.'),
+        html.Span('©2021 Beta version, by '),
+        html.A(
+            children=['Tarlis Tortelli Portela'],
+            href="https://tarlis.com.br",
+        ),
+        html.Span('.'),
     ], style={'text-align': 'center', 'margin': '20px'})
 
 def render_markdown_file(file):

@@ -361,12 +361,13 @@ def k_POIFREQ(k, data_folder, res_path, prefix, dataset, sequences, features, me
 #         print(subpath_data, subpath_rslt, None, dataset, sequences, features, py_name, print_only, doclass)
         POIFREQ(subpath_data, subpath_rslt, None, dataset, sequences, features, method, pyname, print_only, doclass)
         
-def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', print_only=False, doclass=True):
+def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', print_only=False, doclass=True, or_methodsuffix=None):
 #     from ..main import importer
 #     importer(['S'], locals())
         
+    ds_var = or_methodsuffix if or_methodsuffix else dataset
     result_name =  ('_'.join(features)) +'_'+ ('_'.join([str(n) for n in sequences]))
-    folder = method.upper()+'-'+result_name +'-'+dataset
+    folder = method.upper()+'-'+result_name +'-'+ ds_var
     
 #     print("# ---------------------------------------------------------------------------------")
     print("# "+method.upper()+": " + res_path + ' - ' +folder)
@@ -403,17 +404,19 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         execute(CMD, print_only)
         
 #         result_name = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))+'_'+dataset
-        result_file = os.path.join(res_folder, method+'_'+result_name+'_'+dataset)
+        result_file = os.path.join(res_folder, method+'_'+result_name)#+'_'+ds_var)
         
         # Classification:
         if doclass:
 #             for i in range(1, num_runs+1):
             for s in sequences:
                 pois = ('_'.join(features))+'_'+str(s)
-                print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'_'+dataset+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+#                 print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'_'+ds_var+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+                print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
                 
             pois = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))
-            print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'_'+dataset+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+            print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+#             print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'_'+ds_var+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
 #             print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'-'+str(i)+'"')
             print()
             

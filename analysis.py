@@ -71,7 +71,7 @@ def ACC4All(res_path, prefix, save_results = True, modelfolder='model', classifi
         fileName, fileExtension = os.path.splitext(files)
         method = os.path.basename(fileName)#[:-4]
         path = os.path.dirname(fileName)#[:-len(method)]
-        todo = not os.path.exists( os.path.join(path, 'model') )
+        todo = not os.path.exists( os.path.join(path, modelfolder) )
         empty = not os.path.exists( os.path.join(path, "train.csv") )
         if todo and not empty:
             ALL_Classifiers(path, '', '', save_results, modelfolder, classifiers, data_path)
