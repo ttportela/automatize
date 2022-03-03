@@ -26,9 +26,10 @@ from dash.dependencies import Output, Input, State
 # from automatize.assets.base import *
 # from automatize.assets.page_trajectories import *
 # from automatize.assets.page_models import *
-from automatize.assets.page_analysis import render_page_analysis
-from automatize.assets.page_datasets import render_page_datasets
-from automatize.assets.page_experiments import render_page_experiments
+from automatize.assets.routes.page_analysis import render_page_analysis
+from automatize.assets.routes.page_datasets import render_page_datasets
+from automatize.assets.routes.page_experiments import render_page_experiments
+from automatize.assets.routes.page_results import render_page_results
 
 # Boostrap CSS.
 # external_stylesheets=[dbc.themes.BOOTSTRAP]
@@ -42,9 +43,8 @@ from automatize.assets.page_experiments import render_page_experiments
 # server = app.server 
 
 from automatize.app_base import app
+from automatize.assets.config import *
 # ------------------------------------------------------------
-
-page_title = 'Tarlis\'s Multiple Aspect Trajectory Analysis'
 
 @app.callback(dash.dependencies.Output('page-content', 'children'),
               [dash.dependencies.Input('url', 'pathname')])
@@ -54,15 +54,17 @@ def display_page(pathname):
     elif pathname == '/analysis':
         return render_page_analysis()
     elif pathname == '/methods':
-        return render_markdown_file('automatize/assets/methods.md')
+        return render_markdown_file(PAGES_ROUTE+'/pages/methods.md', div=True)
     elif '/datasets' in pathname:
         return render_page_datasets(pathname)
     elif pathname == '/experiments':
-        return render_page_experiments(pathname) #render_markdown_file('automatize/assets/experiments.md')
+        return render_page_experiments(pathname)
+    elif pathname == '/results':
+        return render_page_results(pathname) #render_markdown_file('automatize/assets/experiments.md')
     elif pathname == '/publications':
-        return render_markdown_file('automatize/assets/publications.md')
+        return render_markdown_file(PAGES_ROUTE+'/pages/publications.md', div=True)
     else:
-        file = 'automatize/assets' + pathname+'.md'
+        file = PAGES_ROUTE+ pathname+'.md'
 #         print(pathname, file)
         if os.path.exists(file):
             return render_markdown_file(file)
@@ -83,19 +85,20 @@ app.layout = html.Div(id = 'parent', children = [
                         html.Img(src='/assets/favicon.ico', width="30", height="30"),
                         page_title,
                     ],
+                    href="/",
                 ),
                 html.Div(style={'flex': 'auto'}),#, children=[
                 html.Ul(className='navbar-nav', children=[
+#                     html.Li(className='nav-item', children=[
+#                         html.A(className='nav-link',
+#                             children=['Home'],
+#                             href="/",
+#                         ),
+#                     ]),
                     html.Li(className='nav-item', children=[
                         html.A(className='nav-link',
-                            children=['Home'],
-                            href="/",
-                        ),
-                    ]),
-                    html.Li(className='nav-item', children=[
-                        html.A(className='nav-link',
-                            children=['Analysis'],
-                            href="/analysis",
+                            children=['Datasets'],
+                            href="/datasets",
                         ),
                     ]),
                     html.Li(className='nav-item', children=[
@@ -106,14 +109,20 @@ app.layout = html.Div(id = 'parent', children = [
                     ]),
                     html.Li(className='nav-item', children=[
                         html.A(className='nav-link',
-                            children=['Datasets'],
-                            href="/datasets",
+                            children=['Scripting'],
+                            href="/experiments",
                         ),
                     ]),
                     html.Li(className='nav-item', children=[
                         html.A(className='nav-link',
-                            children=['Experiments'],
-                            href="/experiments",
+                            children=['Results'],
+                            href="/results",
+                        ),
+                    ]),
+                    html.Li(className='nav-item', children=[
+                        html.A(className='nav-link',
+                            children=['Analysis'],
+                            href="/analysis",
                         ),
                     ]),
                     html.Li(className='nav-item', children=[
@@ -170,19 +179,18 @@ app.layout = html.Div(id = 'parent', children = [
 )
 
 def render_page_home():
+    y = datetime.datetime.now().date().year
+#     return render_markdown_file(README)
     return html.Div(id='content-home', children=[ 
-        html.H4('Welcome to ' + page_title),
-        html.Span('©2021 Beta version, by '),
+        render_markdown_file(README),
+        html.Hr(),
+        html.Span('© '+str(y)+' Beta version, by '),
         html.A(
             children=['Tarlis Tortelli Portela'],
             href="https://tarlis.com.br",
         ),
         html.Span('.'),
-    ], style={'text-align': 'center', 'margin': '20px'})
-
-def render_markdown_file(file):
-    f = open(file, "r")
-    return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'})
+    ], style={'margin': '20px'})
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -517,12 +517,13 @@ def loadTrainTest(features, folder, dataset=''):
 #     else:
 #         df_train = pd.read_csv(os.path.join(folder, dataset+'_train.csv'))
 #         df_test = pd.read_csv(os.path.join(folder, dataset+'_test.csv'))
+    na_values = -999
     if dataset == '':
-        df_train = readDataset(folder, file='train.csv')
-        df_test = readDataset(folder, file='test.csv')
+        df_train = readDataset(folder, file='train.csv', missing=na_values)
+        df_test = readDataset(folder, file='test.csv', missing=na_values)
     else:
-        df_train = readDataset(folder, file=dataset+'_train.csv')
-        df_test = readDataset(folder, file=dataset+'_test.csv')
+        df_train = readDataset(folder, file=dataset+'_train.csv', missing=na_values)
+        df_test = readDataset(folder, file=dataset+'_test.csv', missing=na_values)
     
     if 'lat_lon' in features and ('lat' in df_train.columns and 'lon' in df_test.columns):
         df_train['lat_lon'] = geoHasTransform(df_train)

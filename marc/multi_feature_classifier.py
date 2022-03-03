@@ -111,8 +111,8 @@ def get_trajectories(train_file, test_file, tid_col='tid',
 #     df_train = pd.read_csv(train_file)
 #     df_test = pd.read_csv(test_file)
     from automatize.preprocessing import readDataset
-    df_train = readDataset(os.path.dirname(train_file), file=os.path.basename(train_file))
-    df_test = readDataset(os.path.dirname(test_file), file=os.path.basename(test_file))
+    df_train = readDataset(os.path.dirname(train_file), file=os.path.basename(train_file), missing='-999')
+    df_test = readDataset(os.path.dirname(test_file), file=os.path.basename(test_file), missing='-999')
     
 #     df_train = df_train.replace('?', np.nan)
 #     df_test  = df_test.replace('?', np.nan)

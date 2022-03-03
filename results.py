@@ -40,11 +40,11 @@ def STATS(name=['*']):
         list_stats = list_stats + [
             ['ACC (MLP)',            'ACC',     'MLP'],
         ]
-    if set(name) & set(['*', '#', 'AT', 'at', 'RF', 'S', 's']): 
+    if set(name) & set(['*', 'AT', 'at', 'RF', 'S', 's']): 
         list_stats = list_stats + [
             ['ACC (RF)',             'ACC',     'RF'],
         ]
-    if set(name) & set(['*', '#', 'AT', 'SVM', 'S']): 
+    if set(name) & set(['*', 'AT', 'SVM', 'S']): 
         list_stats = list_stats + [
             ['ACC (SVM)',            'ACC',     'SVM'],
         ]
@@ -401,157 +401,6 @@ def resultsDiff(df, ref_cols=[2], list_stats=STATS(['S']), isformat=True, istodi
     return df
 
 # ------------------------------------------------------------
-# def kFoldResults(res_path, prefix, method, modelfolder='model', isformat=True, list_stats=[]):
-#     filelist = []
-#     filesList = []
-
-#     # 1: Build up list of files:
-#     print("Looking for result files in " + os.path.join(res_path, prefix, 'run*', method, method+'.txt' ))
-#     for files in glob.glob(os.path.join(res_path, prefix, 'run*', method, method+'.txt' )):
-#         fileName, fileExtension = os.path.splitext(files)
-#         filelist.append(fileName) #filename without extension
-#         filesList.append(files) #filename with extension
-    
-#     # 2: Create and concatenate in a DF:
-# #     ct = 1
-#     df = pd.DataFrame()
-
-#     cols = []
-
-#     df[' '] = ['Candidates', 'Movelets', 'ACC (MLP)', 'ACC (RF)', 'ACC (SVM)' , 'Time (Movelets)', 'Time (MLP)', 'Time (RF)', 'Time (SVM)', 'Trajs. Compared', 'Trajs. Pruned', 'Date']
-#     df['Dataset'] = ""
-#     df['Dataset'][0] = prefix
-            
-#     for ijk in filesList:
-#         path = os.path.dirname(ijk)
-#         run = os.path.basename(os.path.abspath(os.path.join(path, '..')))
-        
-#         cols.append(run)
-#         df[run] = addResults(df, ijk, path, method, modelfolder, False)
-        
-#         if containErrors(ijk):
-#             print('*** Warning: '+method+' contains errors ***')
-        
-    
-#     # ---
-#     if len(list_stats) > 0:
-#         # Add Stats Cols
-# #         ncols = len(df.columns)-2
-#         j = 12
-#         i = 0
-#         for x in list_stats:
-#             df.loc[j+i] = [x[0], ''] + ([0] * len(cols))
-#             i += 1
-            
-#         # Add stats:
-#         for ijk in filesList:
-#             i = 0
-#             run = os.path.basename(os.path.abspath(os.path.join(os.path.dirname(ijk), '..')))
-#             stats = get_stats(ijk, list_stats)
-#             for key, value in stats.items():
-#                 df[run][j+i] = value
-#                 i += 1
-    
-#     # ---
-#     df[method] = df.loc[:, cols].mean(axis=1)
-#     df[method].loc[11] = -1
-    
-#     if isformat:
-#         for column in cols:
-#             df[column] = format_col(df, column)
-
-#         df[method] = format_col(df, method)
-        
-#     cols = ['Dataset',' '] + cols + [method]
-#     return df[cols]
-
-
-# def containErrors(file):
-#     return open(file, 'r').read().find('java.') > -1
-
-# def addResults(df, resfile, path, method, modelfolder='model', isformat=True):
-#     print("Loading " + method + " results from: " + path)
-#     data = read_csv(resfile)
-    
-#     try:
-# #         mk = '%a %b %d %H:%M:%S CET %Y'
-#         dtstr = data.iloc[-1]['content']
-# #         dtstr = data.iloc[-2]['content'] if dtstr == '' else dtstr
-# #         dt = datetime.strptime(dtstr, mk)
-#         import dateutil.parser
-#         dt = dateutil.parser.parse(dtstr).timestamp()
-# #         dt = dt.strftime("%d/%m/%y-%H:%M:%S")
-#     except ValueError:
-#         dt = -1
-    
-#     total_can = get_sum_of_file_by_dataframe("Number of Candidates: ", data)
-#     total_mov = get_sum_of_file_by_dataframe("Total of Movelets: ", data)
-#     trajs_looked = get_sum_of_file_by_dataframe("Trajs. Looked: ", data)
-#     trajs_ignored = get_sum_of_file_by_dataframe("Trajs. Ignored: ", data)
-    
-#     if os.path.exists(os.path.join(path, 'npoi_results.txt')):
-#         #'POI' in path or 'NPOI' in path or 'WNPOI' in path or 'POIFREQ' in path:
-#         time = get_total_number_of_ms("Processing time: ", read_csv(os.path.join(path, 'npoi_results.txt')))
-#     else:
-#         time = get_total_number_of_ms("Processing time: ", data)
-
-#     mlp_acc = getACC_MLP(path, method, modelfolder) * 100
-#     rf_acc  = getACC_RF(path, modelfolder) * 100
-#     svm_acc = getACC_SVM(path, modelfolder) * 100
-
-#     mlp_t = getACC_time(path, 'MLP', modelfolder)
-#     rf_t  = getACC_time(path, 'RF', modelfolder)
-#     svm_t = getACC_time(path, 'SVM', modelfolder)
-
-#     if isformat:
-#         total_can = '{:,}'.format(total_can) if total_can > 0 else "-"
-#         total_mov = '{:,}'.format(total_mov) if total_mov > 0 else "-"
-        
-#         mlp_acc = "{:.3f}".format(mlp_acc) if mlp_acc > 0 else "-"
-#         rf_acc  = "{:.3f}".format(rf_acc)  if rf_acc  > 0 else "-"
-#         svm_acc = "{:.3f}".format(svm_acc) if svm_acc > 0 else "-"
-        
-# #         time  = '%dh%dm%ds' % printHour(time)  if time  > 0 else "-"
-# #         mlp_t = '%dh%dm%ds' % printHour(mlp_t) if mlp_t > 0 else "-"
-# #         rf_t  = '%dh%dm%ds' % printHour(rf_t)  if rf_t  > 0 else "-"
-# #         svm_t = '%dh%dm%ds' % printHour(svm_t) if svm_t > 0 else "-"
-        
-#         time   = format_hour(time)
-#         mlp_t  = format_hour(mlp_t)
-#         rf_t   = format_hour(rf_t)
-#         svm_t  = format_hour(svm_t)
-
-#         trajs_looked  = '{:,}'.format(trajs_looked)  if trajs_looked  > 0 else "-"
-#         trajs_ignored = '{:,}'.format(trajs_ignored) if trajs_ignored > 0 else "-"
-        
-#         dt = format_date(dt)
-        
-#     return (total_can, total_mov, mlp_acc, rf_acc, svm_acc, 
-#                   time, mlp_t, rf_t, svm_t, 
-#                   trajs_looked, trajs_ignored, dt)
-
-# def format_col(df, method):
-#     line = [format_cel(df, method, 0, '{val:,}'),
-#             format_cel(df, method, 1, '{val:,}'), 
-#             format_celf(df, method, 2, '{val:.3f}'),
-#             format_celf(df, method, 3, '{val:.3f}'),
-#             format_celf(df, method, 4, '{val:.3f}'),
-#             format_celh(df, method, 5, '%dh%02dm%02ds'),
-#             format_celh(df, method, 6, '%dh%02dm%02ds'),
-#             format_celh(df, method, 7, '%dh%02dm%02ds'),
-#             format_celh(df, method, 8, '%dh%02dm%02ds'),
-#             format_cel(df, method, 9, '{val:,}'),
-#             format_cel(df, method, 10, '{val:,}'),
-#             format_date(df.at[11,method])]
-    
-#     for i in range(12, df.shape[0]):
-#         try:
-#             line.append(format_cel(df, method, i, '{val:,}'))
-#         except TypeError:
-#             line.append(df.at[i,method])
-    
-#     return line
-
 def format_stats(df, method, list_stats):
     line = []
     
@@ -697,19 +546,6 @@ def printHour(millis):
 #     print ("%dh%dm%ds" % (hours, minutes, seconds))
     return (hours, minutes, seconds)
 # ----------------------------------------------------------------------------------
-# def getMARCFile(path, method, modelfolder):
-# #     from main import importer
-# #     importer(['S'], locals())
-    
-#     res_file = os.path.join(path, method + '.csv')
-#     if not os.path.isfile(res_file):
-#         res_file = os.path.join(path, modelfolder,  modelfolder + '_results.csv')
-#     if not os.path.isfile(res_file):
-#         res_file = glob.glob(os.path.join(path, '**', method+'*' + '_results.csv'), recursive=True)[0]
-#         print(res_file)
-#     if not os.path.isfile(res_file):
-#         return False
-#     return res_file
 def getMARCFile(path, method, modelfolder):
     res_file = os.path.join(path, method + '.csv')
 #     print('getMARCFile', path, method, modelfolder)
@@ -725,6 +561,7 @@ def getMARCFile(path, method, modelfolder):
 
 def getTECFile(path, modelfolder):
     res_file = glob.glob(os.path.join(path, modelfolder, 'model_approachEnsemble_history.csv'), recursive=True)
+#     print(path, modelfolder, res_file)
     if len(res_file) > 0 and os.path.isfile(res_file[0]):
         return res_file[0]
     else:
@@ -746,7 +583,12 @@ def read_csv(file_name):
 #     importer(['S'], locals())
     
 #     file_name = DIR_V1 + "results/"+file_name + '.txt'
-    data = pd.read_csv(file_name, header = None, delimiter='-=-', engine='python', on_bad_lines='skip') #error_bad_lines=False, warn_bad_lines=False
+    # Check Py Version:
+    from inspect import signature
+    if ('on_bad_lines' in signature(pd.read_csv).parameters):
+        data = pd.read_csv(file_name, header = None, delimiter='-=-', engine='python', on_bad_lines='skip')
+    else:
+        data = pd.read_csv(file_name, header = None, delimiter='-=-', engine='python', error_bad_lines=False, warn_bad_lines=False)
     data.columns = ['content']
     return data
 
@@ -857,15 +699,6 @@ def get_count_of_file_by_dataframe(str_target, df):
             total = total + 1
     return total
 
-# def get_min_number_of_file_by_dataframe(str_target, df):
-#     total = 99999
-#     for index,row in df.iterrows():
-#         if str_target in row['content']:
-#             number = row['content'].split(str_target)[1]
-#             number = int(number.split(".")[0])
-#             total = min(total, number)
-#     return total
-
 def split_string(string, delimiter):
     return str(string.split(delimiter)[1])  
 
@@ -917,10 +750,10 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model', show_warni
         elif x[1] == 'totalTime':
             timeRun = get_total_number_of_ms(x[2].split('|')[0]+": ", data) 
             timeAcc = getACC_time(path, x[2].split('|')[1], modelfolder) 
-            if show_warnings and timeRun <= 0:
-                print('*** Warning "totalTime": No Run Time for '+resfile+'.')
-            if show_warnings and timeAcc <= 0:
-                print('*** Warning "totalTime": No ACC Time for '+resfile+'.')
+            if show_warnings and (timeRun <= 0 or timeAcc <= 0) and \
+                not ('MARC-' in resfile or 'TEC-' in resfile or 'TEC2-' in resfile or 'POI-' in resfile):
+                print('*** Warning ***', 'timeRun:', timeRun, 'timeAcc:', timeAcc, 'for '+resfile+'.')
+                
             stats.append(timeRun + timeAcc)
         
         elif x[1] == 'ACC':
@@ -933,7 +766,7 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model', show_warni
                 acc = getACC_SVM(path, modelfolder)
                 
             if show_warnings and acc <= 0:
-                print('*** Warning "ACC": not found for '+resfile+'.')
+                print('*** Warning "'+x[0]+'": not found for '+resfile+'.')
             
             stats.append( acc * 100 )
         
@@ -951,6 +784,91 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model', show_warni
     return stats
 
 # --------------------------------------------------------------------------------->  
+def toLatex(df, cols=None, ajust=9, clines=[]):
+    if not cols:
+        cols = df.columns
+        
+    def countCols(cols):
+        ct = 0
+        for c in cols:
+            if type(c) == list:
+                ct += len(c)
+            else:
+                ct += 1
+        return ct
+    
+    def getLine(df, cols, l, ajust=12):
+        def searchColumn(df, col):
+            if '*' in col:
+                import fnmatch
+                filtered = fnmatch.filter(df.columns, col)
+                for c1 in filtered:
+                    if df.at[l,c1] != '-' and df.at[l,c1]:
+                        return c1
+                return filtered[0] if len(filtered) > 0 else col
+            return col
+        
+        line = '&'+ str(df.at[l,df.columns[1]]).rjust(15, ' ') + ' '
+        for g in cols[2:]:
+            if type(g) == list:
+                g1 = g
+            else:
+                g1 = [g]
+            for c in g1:
+                c1 = searchColumn(df, c)   
+                value = df.at[l,c1] if c1 in df.columns else '-'
+                line = line + '& '+ str(value).rjust(ajust, ' ') + ' '
+#         for i in range(2, len(df.columns)):
+#             line = line + '& '+ str(df.at[l,df.columns[i]]).rjust(ajust, ' ') + ' '
+        line = line + '\\\\'
+        return line
+
+    n_cols = (countCols(cols)-2)
+    n_ds = len(df['Dataset'].unique()) -1
+    n_rows = int(int(len(df)) / n_ds)
+    
+    df.fillna('-', inplace=True)
+    
+    print('\\begin{table*}[!ht]')
+    print('\\centering')
+    print('\\resizebox{\columnwidth}{!}{')
+    print('\\begin{tabular}{|c|r||'+('r|'*n_cols)+'}')
+    print('\\hline')
+#     print('\\hline')
+    
+    if n_cols > len(cols): # We have column groups
+        colg = []
+        for i in range(len(cols)):
+            if type(cols[i]) == list:
+                colg.append('\\multicolumn{'+str(len(cols[i]))+'}{r|}{GROUP' + str(i)+'}')
+            else:
+                colg.append(' ')
+        print((' & '.join(colg)) + ' \\\\')
+        
+    colg = []
+    for i in range(len(cols)):
+        if type(cols[i]) == list:
+            colg = colg + [x.replace('_', '-') for x in cols[i]]
+        else:
+            colg.append(cols[i].replace('_', '-'))
+    print((' & '.join(colg)) + ' \\\\')
+    
+    for k in range(0, int(len(df)), n_rows):
+        print('\n\\hline')
+        print('\\hline')
+        print('\\multirow{'+str(n_rows)+'}{2cm}{'+df.at[k,'Dataset'].replace('_', ' ')+'}')
+        for j in range(0, n_rows):
+            print(getLine(df, cols, k+j, ajust))
+            if j in clines:
+                print('\\cline{2-'+str(n_cols+2)+'}')
+    
+#     print('\\hline')
+    print('\\hline')
+    print('\\end{tabular}}')
+    print('\\caption{Results for '+df['Dataset'][0]+' dataset.}')
+    print('\\label{tab:results_'+df['Dataset'][0]+'}')
+    print('\\end{table*}')
+    
 def printLatex(df, ajust=9, clines=[]):
     n_cols = (len(df.columns)-2)
     n_ds = len(df['Dataset'].unique()) -1
@@ -1034,32 +952,39 @@ def getResultFiles(res_path):
         return fl
        
     filesList = []
-    filesList = filesList + findFiles('classification_times.csv')
-    filesList = filesList + findFiles('*_results.txt')
-    filesList = filesList + findFiles('model_approachEnsemble_history.csv')
+    filesList = filesList + findFiles('classification_times.csv') # TEC
+    filesList = filesList + findFiles('*_results.txt') # POI-F / POI-FS / MARC
+#     filesList = filesList + findFiles('MARC*_results.csv') # MARC
+    filesList = filesList + findFiles('model_approachEnsemble_history.csv') # NN / RF / SVM
     return filesList
 
 def decodeURL(ijk):
     rpos = ijk.find('run')
     path = ijk[:ijk.find(os.path.sep, rpos+5)]
     method = ijk[rpos+5:ijk.rfind(os.path.sep)]
-
-    if ijk.endswith('poifreq_results.txt'):
-        file = ijk
+    
+    file = ijk
+    if ijk.endswith('poifreq_results.txt'): # POI-F / POI-FS
         method = method[method.find(os.path.sep)+1:]
-    elif ijk.endswith('model_approachEnsemble_history.csv'):
-        file = ijk
+    elif ijk.endswith('model_approachEnsemble_history.csv'): # TEC
         method = method[:method.find(os.path.sep)] 
-    else:
+    elif not ijk.endswith('_results.csv'): 
         file = glob.glob(os.path.join(path, '**', '*.txt'), recursive=True)[0]
         method = method[:method.find(os.path.sep)]
-
+        
     run = path[rpos:rpos+4]
     run = (run)[3:]
 
-    method, subset = method.split('-')[:2]
-
     prefix = os.path.basename(path[:rpos-1])
+    
+#     if ijk.endswith('poifreq_results.txt'):
+#         method, subset = method.split('-')[:2]
+#         method = method + '_' + subset
+#         from automatize.helper.script_config import getSubset
+#         subset = getSubset(prefix, subset)
+#     else:
+        
+    method, subset = method.split('-')[:2]
 
     model = os.path.dirname(ijk)
     model = model[model.rfind(os.path.sep)+1:]
@@ -1067,7 +992,10 @@ def decodeURL(ijk):
     if ijk.endswith('model_approachEnsemble_history.csv'):
         method += '_'+model.split('_')[-1]
 
-    random = '1' if '-' not in model else model.split('-')[-1]
+    if ijk.endswith('poifreq_results.txt'):
+        random = '1' if model.count('-') <= 1 else model.split('-')[-1]
+    else:
+        random = '1' if '-' not in model else model.split('-')[-1]
 
     return run, random, method, subset, prefix, model, path, file
 
@@ -1103,7 +1031,7 @@ def organizeResults(filesList, sub_set=None):
 def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='model', isformat=True):
     
     importer(['S', 'glob', 'STATS', 'get_stats', 'containErrors', 'np'], globals())
-    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','run','random','method','runtime', 'classifier','accuracy','cls_runtime','error','file'])
+    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','subsubset','run','random','method', 'classifier','accuracy','runtime','cls_runtime','error','file'])
 
     filesList = getResultFiles(res_path)
     
@@ -1114,22 +1042,34 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
         run, random, method, subset, prefix, model, path, file = decodeURL(ijk)
         
         stats = get_stats(file, path, method+'-'+subset, list_stats, modelfolder=model)
+        if 'MARC' in ijk:
+            print(ijk, gstati('time'))
         def gstati(x):
             return stats[list_stats_ind.index(x) // 3]
         def gstat(x):
             return stats[list_stats.index(x)]
         def getrow(run, random, method, subset, prefix, model, path, file, result):
+            
+            if file.endswith('poifreq_results.txt'):
+                from automatize.assets.helper.script_inc import getSubset
+                subset2 = subset
+#                 method = method + '-' + subset
+                subset = getSubset(prefix, subset.split('_')[0])
+            else:
+                subset2 = subset
+            
             return {
                 '#': 0,
                 'timestamp': gstati('endDate'),
                 'dataset': prefix,
                 'subset': subset,
                 'run': run,
+                'subsubset': subset2,
                 'random': random,
                 'method': method,
-                'runtime': result[2] if ijk.endswith('model_approachEnsemble_history.csv') else gstati('time'),
                 'classifier': result[0],
                 'accuracy': result[1],
+                'runtime': result[2] if ijk.endswith('model_approachEnsemble_history.csv') else gstati('time'),
                 'cls_runtime': result[2],
                 'error': containErrors(file) or containWarnings(file),
                 'file': ijk,
@@ -1147,17 +1087,24 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
             aux_hist = getrow(run, random, method, subset, prefix, model, path, file, classifier)
             histres = pd.concat([histres, pd.DataFrame([aux_hist])])
         else:
-            for x in ['MLP', 'RF', 'SVM']:
-                acc = gstat(['ACC ('+x+')', 'ACC', x])
-                if acc > 0:
-                    classifier = [x, acc] + [ gstat(['Time ('+x+')', 'accTime', x],) ]
-                    aux_hist = getrow(run, random, method, subset, prefix, model, path, file, classifier)
-                    histres = pd.concat([histres, pd.DataFrame([aux_hist])])
+#             lscls = ['MLP'] if 'MARC' in ijk else ['MLP', 'RF'] # ['MLP', 'RF', 'SVM']
+#             for x in ['MLP', 'RF', 'SVM']:
+            x = 'MLP'
+            acc = gstat(['ACC ('+x+')', 'ACC', x])
+            if acc > 0:
+                classifier = [x, acc] + [ gstat(['Time ('+x+')', 'accTime', x],) ]
+                aux_hist = getrow(run, random, method, subset, prefix, model, path, file, classifier)
+                histres = pd.concat([histres, pd.DataFrame([aux_hist])])
         
     # ---
     # Post treatment:
-    histres['name']   = histres['method'] + '-' + histres['subset'] + '-' + histres['classifier']
-    histres['key'] = histres['dataset'] + '-' + histres['subset'] + '-' + histres['run']
+    histres['total_time']   = histres['runtime'] + histres['cls_runtime']
+    
+#     histres['name']   = histres['method'].str + '-' + histres['subset'].str + '-' + histres['classifier'].str
+#     histres['name']   = histres['method'].map(str) + '-' + histres['classifier'].map(str)
+    histres['name']   = histres['method'].map(str) + '-' + histres['subsubset'].map(str) + '-' + histres['classifier'].map(str)
+    
+    histres['key'] = histres['dataset'].map(str) + '-' + histres['subset'].map(str) + '-' + histres['run'].map(str)
     # Ordering / Renaming:
     histres.reset_index(drop=True, inplace=True)
 
@@ -1169,51 +1116,62 @@ def runningProblems(ijk):
     e3 = containTimeout(ijk)
     s = False
     if e1 or e2 or e3:
-        s = ('[ERROR]' if e1 else '[  -  ]')+('[WARN.]' if e2 else '[  -  ]')+('[T.OUT]' if e3 else '[  -  ]')
+        s = ('[ER]' if e1 else '[--]')+('[WN]' if e2 else '[--]')+('[TC]' if e3 else '[--]')
     return s
 
 def check_run(res_path, show_warnings=False):
     
     importer(['S', 'glob', 'STATS', 'get_stats', 'check_run', 'format_hour', 'np'], globals())
-    filesList = []
-
-    def findFiles(x):
-        search = os.path.join(res_path, '**', x)
-        fl = []
-        for files in glob.glob(search, recursive=True):
-            fileName, fileExtension = os.path.splitext(files)
-            fl.append(files) #filename with extension
-        return fl
-            
-    filesList = filesList + findFiles('*.txt')
     
-    def decode_url(ijk):
-        rpos = ijk.find('run')
-        path = ijk[:ijk.find(os.path.sep, rpos+5)]
-        method = ijk[rpos+5:ijk.rfind(os.path.sep)]
+    filesList = getResultFiles(res_path)
+#     filesList = []
 
-        if ijk.endswith('poifreq_results.txt'):
-            method = method[method.find(os.path.sep):]
-
-        run = path[rpos:rpos+4]
-        run = (run)[3:]
-        
-        method, subset = method.split('-')[:2]
-        
-        prefix = os.path.basename(path[:rpos-1])
-
-        return run, method, subset, prefix, path
+#     def findFiles(x):
+#         search = os.path.join(res_path, '**', x)
+#         fl = []
+#         for files in glob.glob(search, recursive=True):
+#             fileName, fileExtension = os.path.splitext(files)
+#             fl.append(files) #filename with extension
+#         return fl
             
+#     filesList = filesList + findFiles('*.txt')
+    
+#     def decode_url(ijk):
+#         rpos = ijk.find('run')
+#         path = ijk[:ijk.find(os.path.sep, rpos+5)]
+#         method = ijk[rpos+5:ijk.rfind(os.path.sep)]
+
+#         run = path[rpos:rpos+4]
+#         run = (run)[3:]
+
+#         if ijk.endswith('poifreq_results.txt'):
+#             subset = method[:method.find(os.path.sep)].split('-')[-1]
+#             method = method[method.find(os.path.sep)+1:]
+#         else:
+#             method, subset = method.split('-')[:2]
+
+#         prefix = os.path.basename(path[:rpos-1])
+
+#         return run, method, subset, prefix, path
+    
+    def adj(s, size=15):
+        return s.ljust(size, ' ')
+    
+    SEP = ' ' #'\t'
     filesList.sort()
     for ijk in filesList:
-        run, method, subset, prefix, path = decode_url(ijk)
-        e = runningProblems(ijk)
+        if 'POI-' in ijk and not ijk.endswith('poifreq_results.txt'):
+            continue
+        run, random, method, subset, prefix, model, path, file = decodeURL(ijk)
+        e = runningProblems(file)
+        
+        res = get_stats(file, path, method, STATS(['AccTT']), model, show_warnings=show_warnings)
+        line = '[' + adj(format_float(res[0]),6) +']['+ format_hour(res[1])+']'
+        
         if e:
-            print('[*] NOT OK:\t', method, '\t', prefix, '\t', run, '\t', subset, '\t', e)
+            print('[*] NOT OK:'+SEP, adj(method, 20), SEP, adj(prefix), SEP, adj(run,3), SEP, adj(subset), SEP, e, line)
         else:
-            res = get_stats(ijk, path, method, STATS(['AccTT']), show_warnings=show_warnings)
-            print('        OK:\t', method, '\t', prefix, '\t', run, '\t', subset, 
-                  '\t ACC:', format_float(res[0]), '\t t:', format_hour(res[1]))
+            print('        OK:'+SEP, adj(method, 20), SEP, adj(prefix), SEP, adj(run,3), SEP, adj(subset), SEP, line)
 
 
 def compileResults(res_path, sub_set=None, list_stats=STATS(['S']), isformat=True, k=False):

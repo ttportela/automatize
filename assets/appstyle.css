@@ -34,6 +34,43 @@ blockquote {
     font-size: 90%;
 }
 
+:root {
+    --dataset-bg-opacity: 1;
+}
+
+.dataset-color-multiple_trajectories 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-raw_trajectories 
+{ background-color: rgba(var(--bs-success-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-semantic_trajectories 
+{ background-color: rgba(var(--bs-warning-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-multivariate_ts 
+{ background-color: rgba(var(--bs-info-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-univariate_ts 
+{ background-color: rgba(var(--bs-secondary-rgb),var(--dataset-bg-opacity))!important; }
+
+.dataset-color-raw 
+{ background-color: var(--bs-teal)!important; opacity: var(--dataset-bg-opacity); }
+.dataset-color-specific 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-generic 
+{ background-color: rgba(var(--bs-danger-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-category 
+{ background-color: var(--bs-pink)!important; opacity: var(--dataset-bg-opacity); }
+.dataset-color-poi 
+{ background-color: var(--bs-purple)!important; opacity: var(--dataset-bg-opacity)); }
+.dataset-color-spatial 
+{ background-color: #6bc29a!important; opacity: var(--dataset-bg-opacity); }
+/* .dataset-color-5dims 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-allfeat 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; } */
+
+
+.traj-slider {
+    min-width: 100%;
+}
+
 .traj-color1-rangeslider .rc-slider-track,
 .traj-color1-rangeslider .rc-slider-handle {
   background-color: cyan;

@@ -10,7 +10,7 @@ Created on Jun, 2020
 @author: Tarlis Portela
 '''
 from .main import importer #, display
-importer(['S', 'glob'], globals())
+importer(['S', 'glob', 'np'], globals())
 # -----------------------------------------------------------------------
 def movelets_class_dataframe(file_name, name='movelets', count=0):
     importer(['json'], globals())
@@ -238,6 +238,7 @@ def trajectory_statistics(ls_trajs):
     attr = list(ls_trajs[0].points[0].keys())
     num_attr = len(attr)
     stats=pd.DataFrame()
+    df = df.select_dtypes(include=np.number)
     stats["Mean"]=df.mean()
     stats["Std.Dev"]=df.std()
     stats["Var"]=df.var()
@@ -295,7 +296,7 @@ def movelets_markov2(movelets, attribute=None, concat_edges=True):
                     p1 = p2
 
     # Create Graph
-    name="Movelets Marcov Graph"
+    name="Movelets Markov Graph"
     return name, nodes, edges, groups, no_colors, ed_colors
         
 def graph_nx(name, nodes, edges, groups, no_colors, ed_colors, draw=True):
@@ -371,7 +372,7 @@ def movelets_markov(movelets, attribute=None, concat_edges=True):
     importer(['markov'], globals())
     
     from graphviz import Digraph
-    G = Digraph(comment='Movelets Marcov Tree')
+    G = Digraph(comment='Movelets Markov Tree')
 #     G.attr(fontsize='10')
     nodes = set()
     edges = dict()
@@ -443,11 +444,16 @@ def movelets_sankey(movelets, attribute=None, title='Movelets Sankey Diagram'):
         
     sourceTargetDf = pd.DataFrame()
     
+    aux_mov = []
+    
     for m in movelets:
+        if attribute and attribute not in m.attributes():
+            continue
         idx, x = lbladd(m.label, 1)
 #         lvladd(1, idx, x)
+        aux_mov.append(m)
     
-    aux_mov = movelets.copy()
+#     aux_mov = movelets.copy()
     
     has_lvl = True
     i = 0
@@ -727,7 +733,13 @@ class Movelet:
     
     def add_point(self, point):
         assert isinstance(point, dict)
-        self.data.append(point)
+        if isinstance(list(point.values())[0], dict):
+            px = {}
+            for k, v in point.items():
+                px[k] = list(v.values())[0]
+            self.data.append(px)
+        else:
+            self.data.append(point)
         
     def toString(self):
         return str(self) + ' ('+'{:3.2f}'.format(self.quality)+'%)'    

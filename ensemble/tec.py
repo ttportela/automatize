@@ -72,7 +72,7 @@ importer(['S'], globals())
 
 def ClassifierEnsemble(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble'):
 #     from ..main import importer
-    importer(['S', 'datetime', 'tf', 'TEC.report', 'KerasClassifier'], globals())
+    importer(['S', 'datetime', 'tf', 'TEC.report', 'KerasClassifier', 'readDataset'], globals())
     
 #     import os
 #     import pandas as pd
@@ -89,7 +89,8 @@ def ClassifierEnsemble(data_path, results_path, ensembles, dataset='specific', s
         TRAIN_FILE = os.path.join(data_path, dataset+'_train.csv')
         TEST_FILE  = os.path.join(data_path, dataset+'_test.csv')
         
-    df_test = pd.read_csv(TEST_FILE)
+#     print(TRAIN_FILE)
+    df_test = readDataset(TEST_FILE, missing='-999') #pd.read_csv(TEST_FILE)
     y_test = df_test.drop_duplicates(subset=['tid', 'label'],
                                        inplace=False)['label'].values
 

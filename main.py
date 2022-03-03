@@ -363,16 +363,17 @@ def importer(key=['S'], this=None):
         if set(key) & set(['*', 'movelets', 'markov']):
             module = importlib.import_module('graphviz')
             mdic.update( {'Digraph': getattr(module, 'Digraph')} )
-                
-    if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
-        module = importlib.import_module(automatize_name+'.ts_io')
-        if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
-            mdic.update( {'load_from_tsfile_to_dataframe': getattr(module, 'load_from_tsfile_to_dataframe')} )
-            
-    if set(key) & set(['*', 'io', 'readDataset']):
-        module = importlib.import_module(automatize_name+'.preprocessing')
+    
+    if set(key) & set(['*', 'io', 'ts_io', 'load_from_tsfile_to_dataframe', 'readDataset']):
         if set(key) & set(['*', 'io', 'readDataset']):
+            module = importlib.import_module(automatize_name+'.preprocessing')
+#             if set(key) & set(['*', 'io', 'readDataset']):
             mdic.update( {'readDataset': getattr(module, 'readDataset')} )
+    
+        if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
+            module = importlib.import_module(automatize_name+'.io.ts_io')
+#             if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
+            mdic.update( {'load_from_tsfile_to_dataframe': getattr(module, 'load_from_tsfile_to_dataframe')} )
         
     if this is not None:
         this.update(mdic)

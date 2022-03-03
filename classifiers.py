@@ -6,7 +6,7 @@ Created on May 16, 2018
 # from sklearn.metrics import classification_report
 # from _dummy_thread import exit
 from .main import importer #, display
-importer(['S'], globals())
+importer(['S', 'K'], globals())
 
 def Approach1(X_train, y_train, X_test, y_test, par_batch_size, par_epochs, par_lr, par_dropout, save_results, dir_path, modelfolder='model') :
     
@@ -328,6 +328,7 @@ def ApproachMLP(X_train, y_train, X_test, y_test, par_batch_size, par_epochs, pa
 def f1(y_true, y_pred):
 #     from ..main import importer
     importer(['K'], globals())
+    importer(['K'], locals())
     
     def recall(y_true, y_pred):
         """Recall metric.

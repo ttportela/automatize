@@ -18,20 +18,22 @@ from .main import importer #, display
 importer(['S'], globals())
 #-------------------------------------------------------------------------->>
 
-def readDataset(data_path, folder=None, file='train.csv', class_col = 'label'):
+def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', missing='?'):
 #     from ..main import importer
     
     if folder:
         data_path = os.path.join(data_path, folder)
     
-    if '.csv' in file or '.zip' in file or '.ts' in file:
+    if '.csv' in data_path or '.zip' in data_path or '.ts' in data_path:
+        url = data_path
+    elif '.csv' in file or '.zip' in file or '.ts' in file:
         url = os.path.join(data_path, file)
     else:
         url = os.path.join(data_path, file+'.csv')
     
 #     print(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts'))
     if '.csv' in url and os.path.exists(url):
-        df = pd.read_csv(url, na_values='?')
+        df = pd.read_csv(url, na_values=missing)
     elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
         file = file.replace('.csv', '.zip')
         df = convert_zip2csv(data_path, file, class_col=class_col)
@@ -40,7 +42,7 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label'):
         url = url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')
         df = load_from_tsfile_to_dataframe(url)
     else:
-        df = pd.read_csv(url, na_values='?') # should not be used
+        df = pd.read_csv(url, na_values=missing) # should not be used
     return df
 
 # --------------------------------------------------------------------------------
@@ -303,7 +305,7 @@ def write_trainAndTest(data_path, train, test, tid_col='tid', class_col='label',
     return train, test
 
 #-------------------------------------------------------------------------->>
-def organizeFrame(df, columns_order, tid_col='tid', class_col='label'):
+def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
     if (set(df.columns) & set(['lat', 'lon'])) and not 'space' in df.columns:
         df[["lat", "lon"]] = df[["lat", "lon"]].astype(str) 
         df['space'] = df["lat"] + ' ' + df["lon"]
@@ -311,7 +313,10 @@ def organizeFrame(df, columns_order, tid_col='tid', class_col='label'):
         if columns_order is not None:
             columns_order.insert(columns_order.index('lat'), 'space')
             
-    elif 'space' in df.columns and not (set(df.columns) & set(['lat', 'lon'])):
+    elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
+        if 'lat_lon' in df.columns:
+            df.rename(columns={'lat_lon': 'space'}, inplace=True)
+        
         ll = df['space'].str.split(" ", n = 1, expand = True) 
         df["lat"]= ll[0]
         df["lon"]= ll[1]
@@ -319,7 +324,7 @@ def organizeFrame(df, columns_order, tid_col='tid', class_col='label'):
         if columns_order is not None:
             columns_order.insert(columns_order.index('space')+1, 'lat')
             columns_order.insert(columns_order.index('space')+2, 'lon')
-        
+    
     # For Columns ordering:
     if columns_order is None:
         columns_order = df.columns
@@ -498,33 +503,50 @@ def createZIP(data_path, df, file, tid_col='tid', class_col='label', select_cols
     zipf.close()
     
 #-------------------------------------------------------------------------->>
-def convert_zip2csv(folder, file, cols=None, class_col = 'label'):
+def read_zip(zipFile, cols=None, class_col='label', tid_col='tid', missing='?'):
+    data = pd.DataFrame()
+    with zipFile as z:
+        files = z.namelist()
+        files.sort()
+        for filename in files:
+            if cols is not None:
+                df = pd.read_csv(z.open(filename), names=cols, na_values=missing)
+            else:
+                df = pd.read_csv(z.open(filename), header=None, na_values=missing)
+            df[tid_col]   = filename.split(" ")[1][1:]
+            df[class_col] = filename.split(" ")[2][1:-3]
+            data = pd.concat([data,df])
+    return data
+
+def convert_zip2csv(folder, file, cols=None, class_col = 'label', tid_col='tid', missing='?'):
 #     from ..main import importer
     importer(['S', 'zip'], globals())
     
-    data = pd.DataFrame()
+#     data = pd.DataFrame()
     print("Converting "+file+" data from... " + folder)
     if '.zip' in file:
         url = os.path.join(folder, file)
     else:
         url = os.path.join(folder, file+'.zip')
-    with ZipFile(url) as z:
-        files = z.namelist()
-        files.sort()
-        for filename in files:
-#             data = filename.readlines()
-#             print(filename)
-            if cols is not None:
-                df = pd.read_csv(z.open(filename), names=cols, na_values='?')
-            else:
-                df = pd.read_csv(z.open(filename), header=None, na_values='?')
-            df['tid']   = filename.split(" ")[1][1:]
-            df[class_col] = filename.split(" ")[2][1:-3]
-            data = pd.concat([data,df])
+        
+#     with ZipFile(url) as z:
+#         files = z.namelist()
+#         files.sort()
+#         for filename in files:
+# #             data = filename.readlines()
+# #             print(filename)
+#             if cols is not None:
+#                 df = pd.read_csv(z.open(filename), names=cols, na_values='?')
+#             else:
+#                 df = pd.read_csv(z.open(filename), header=None, na_values='?')
+#             df['tid']   = filename.split(" ")[1][1:]
+#             df[class_col] = filename.split(" ")[2][1:-3]
+#             data = pd.concat([data,df])
     print("Done.")
+    data = read_zip(ZipFile(url), cols, class_col, tid_col, missing)
     return data
     
-def zip2csv(folder, file, cols, class_col = 'label'):
+def zip2csv(folder, file, cols, class_col = 'label', tid_col='tid', missing='?'):
 #     from ..main import importer
 #     importer(['S'], locals())
     
@@ -543,7 +565,7 @@ def zip2csv(folder, file, cols, class_col = 'label'):
 #             df[class_col] = filename.split(" ")[2][1:-3]
 #             data = pd.concat([data,df])
 #     print("Done.")
-    data = convert_zip2csv(folder, file, cols, class_col)
+    data = convert_zip2csv(folder, file, cols, class_col, tid_col, missing)
     print("Saving dataset as: " + os.path.join(folder, file+'.csv'))
     data.to_csv(os.path.join(folder, file+'.csv'), index = False)
     print("Done.")
@@ -567,7 +589,7 @@ def zip2csv(folder, file, cols, class_col = 'label'):
 #         except:
 #             pass
 
-def zip2arf(folder, file, cols, tid_col='tid', class_col = 'label'):
+def zip2arf(folder, file, cols, tid_col='tid', class_col = 'label', missing='?'):
     data = pd.DataFrame()
     print("Converting "+file+" data from... " + folder)
     if '.zip' in file:
@@ -577,7 +599,7 @@ def zip2arf(folder, file, cols, tid_col='tid', class_col = 'label'):
     with ZipFile(url) as z:
         for filename in z.namelist():
 #             data = filename.readlines()
-            df = pd.read_csv(z.open(filename), names=cols)
+            df = pd.read_csv(z.open(filename), names=cols, na_values=missing)
 #             print(filename)
             df[tid_col]   = filename.split(" ")[1][1:]
             df[class_col] = filename.split(" ")[2][1:-3]
@@ -634,6 +656,30 @@ def convert2ts(data_path, folder, file, cols=None, tid_col='tid', class_col = 'l
     print(" --------------------------------------------------------------------------------")
     return data
 
+def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label'):
+    import pm4py
+    if '.xes' in file:
+        url = os.path.join(folder, file)
+    else:
+        url = os.path.join(folder, file+'.xes')
+    
+    print("Converting "+file+" data from... " + folder)
+    log_xes = pm4py.read_xes(url)
+    
+    newName = os.path.join(folder, file.replace('.xes', '')+'.csv')
+    print("Saving dataset as: " + newName)
+    
+    data = pm4py.convert_to_dataframe(log_xes)
+    
+    # TODO tid and label
+    
+    data.to_csv(newName)
+    
+    print("Done.")
+    print(" --------------------------------------------------------------------------------")
+    return data
+
+#-------------------------------------------------------------------------->>
 def joinTrainAndTest(dir_path, cols, train_file="train.csv", test_file="test.csv", tid_col='tid', class_col = 'label'):
 #     from ..main import importer
 #     importer(['S'], locals())
@@ -677,10 +723,11 @@ def convertDataset(dir_path, k=None, cols = None, tid_col='tid', class_col='labe
         elif os.path.exists(os.path.join(dir_path, file+'.zip')):
             df = convert_zip2csv(dir_path, file, cols, class_col)
         else:
-            print("File "+file+" not found, nothing to do.")
+#             print("File "+file+" not found, nothing to do.")
+            raise Exception("File "+file+" not found, nothing to do.")
             
         if not cols:
-            cols = df.columns
+            cols = list(df.columns)
         columns_order_zip, columns_order_csv = organizeFrame(df, cols, tid_col, class_col)
         
         if os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')) and \
