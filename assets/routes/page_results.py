@@ -20,15 +20,9 @@ from automatize.results import format_hour
 
 from automatize.app_base import app
 from automatize.assets.config import *
-from automatize.assets.helper.script_inc import METHODS_NAMES
+from automatize.assets.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
-
-CLASSIFIERS_NAMES = {
-    'MLP': 'Neural Network',
-    'RF':  'Random Forrest',
-    'SVM': 'Support Vector Machine',
-}
 
 def render_page_results(pathname):
     content = []

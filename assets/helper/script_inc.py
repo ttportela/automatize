@@ -53,6 +53,12 @@ METHODS_NAMES = {
     
 }
 
+CLASSIFIERS_NAMES = {
+    'MLP': 'Neural Network',
+    'RF':  'Random Forrest',
+    'SVM': 'Support Vector Machine',
+}
+
 DESCRIPTOR_NAMES = {
     '*.*': None, 
     'multiple_trajectories.Gowalla':          'BrightkiteGowalla', 

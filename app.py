@@ -67,7 +67,7 @@ def display_page(pathname):
         file = PAGES_ROUTE+ pathname+'.md'
 #         print(pathname, file)
         if os.path.exists(file):
-            return render_markdown_file(file)
+            return render_markdown_file(file, div=True)
         else:
             return underDev(pathname)
     # You could also return a 404 "URL not found" page here

@@ -25,6 +25,6 @@ def render_markdown_file(file, div=False):
     from dash import dcc
     f = open(file, "r")
     if div:
-        return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'})
+        return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'}, className='markdown')
     else:
         return dcc.Markdown(f.read())

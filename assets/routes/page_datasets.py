@@ -10,14 +10,18 @@ import io
 import dash
 from dash import dash_table
 from dash import dcc
-from dash import html
+from dash import html, ALL
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
+# from dash import html, callback_context, MATCH, ALL
+
+from automatize.results import format_hour
 
 from automatize.app_base import app
 from automatize.assets.config import *
 # from automatize.assets.helper.script_inc import DATASET_TYPES
 from automatize.assets.helper.datasets_inc import *
+from automatize.assets.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # DATA_PATH='../../datasets'
 
@@ -31,32 +35,7 @@ def render_page_datasets(pathname):
     else:
         return render_dataset(pathname)
 
-def render_dataset(pathname):
-    components = []
-    
-    file = glob.glob(os.path.join(DATA_PATH, '*', '*', os.path.basename(pathname)+'.md'))[0]
-    with open(file, "r") as f:
-        components.append(dcc.Markdown(f.read()))
-        
-    file = glob.glob(os.path.join(DATA_PATH, '*', '*', os.path.basename(pathname)+'-stats.md'))
-    if len(file) > 0 and os.path.exists(file[0]):
-        with open(file[0], "r") as f:
-            components.append(html.Br())
-            components.append(html.Hr())
-            components.append(html.H6('Dataset Statistics:'))
-            components.append(dcc.Markdown(f.read()))
-    
-    components.append(html.H6('Best Result:'))
-    components.append(html.Br())
-    components.append(html.Hr())
-    components.append(html.H6('Related Publications:'))
-    components.append(html.Br())
-    components.append(html.Hr())
-    components.append(html.H6('Download Files:'))
-    components.append(html.Br())
-    
-    return html.Div(components, style={'margin': '20px'})
-        
+
 def render_datasets(data_path=DATA_PATH):
     lsds = list_datasets_dict(data_path)
     components = []
@@ -67,12 +46,6 @@ def render_datasets(data_path=DATA_PATH):
         components.append(html.H4(DATASET_TYPES[category] + ':'))
         components.append(render_datasets_category(category, dslist, data_path))
         components.append(html.Hr())
-    
-#     for category, name in DATASET_TYPES.items():
-#         components.append(html.Br())
-#         components.append(html.H4(name + ':'))
-#         components.append(render_datasets_category(category, data_path))
-#         components.append(html.Hr())
         
     return html.Div(components)
     
@@ -81,28 +54,10 @@ def render_datasets_category(category, dsdict, data_path=DATA_PATH):
     df = pd.DataFrame()
     for dataset, subsets in dsdict.items():
         aux = {}
-        aux['Name'] = '<div class="dash-cell-value"><a href="/datasets/'+dataset+'" class="btn btn-link">'+dataset+'</a></div>'
+        aux['Name'] = '<div class="dash-cell-value"><a href="/datasets/'+category+'/'+dataset+'" class="btn btn-link">'+dataset+'</a></div>'
         aux['Category'] = getBadges(category, dataset, subsets)
         aux['File'] = os.path.join(data_path, category, dataset, dataset+'.md')
         df = df.append(aux, ignore_index=True)
-    
-    
-#     files = glob.glob(os.path.join(data_path, category, '*', '*.md'))
-    
-#     df = pd.DataFrame()
-    
-#     for f in files:
-#         tmp = os.path.dirname(f).split(os.path.sep)
-#         aux = {}
-#         name = os.path.basename(f).split('.')[0]
-        
-#         aux['Name'] = '<div class="dash-cell-value"><a href="/datasets/'+name+'" class="btn btn-link">'+name+'</a></div>'
-#         #html.A(name, href='/datasets/'+name) #'['+name+'](/datasets/'+name+')'
-        
-#         aux['Category'] = getBadges(f, name)
-#         aux['File'] = f
-# #         print(aux)
-#         df = df.append(aux, ignore_index=True)
         
     return dash_table.DataTable(
         id='table-datasets',
@@ -176,35 +131,197 @@ def render_datasets_all(data_path=DATA_PATH):
 #             }
     )
 
-def getBadges(category, dataset, subsets):
-#     colors={'multiple_trajectories':'bg-primary', 'raw_trajectories':'bg-success', 'semantic_trajectories':'bg-warning',
-#             'generic':'bg-danger', 'multivariate_ts':'bg-info', 'univariate_ts':'bg-secondary'}
-    def toBadge(cat, s):
-        return '<span class="badge rounded-pill dataset-color-'+cat+'">'+ s +'</span>'
+# ------------------------------------------------------------
+def render_dataset(pathname):
+    components = []
+    category, dataset = pathname.split(os.path.sep)[2:4]
     
-    # Read the descriptors:
-#     subsets.sort()
-    badges = [toBadge((category if x == 'specific' else x), translateCategory(dataset, category, x)) for x in subsets]
+    file = glob.glob(os.path.join(DATA_PATH, category, dataset, dataset+'.md'))[0]
+    with open(file, "r") as f:
+        components.append(dcc.Markdown(f.read()))
+        
+    file = glob.glob(os.path.join(DATA_PATH, category, dataset, dataset+'-stats.md'))
+    if len(file) > 0 and os.path.exists(file[0]):
+        with open(file[0], "r") as f:
+            components.append(html.Br())
+            components.append(html.Hr())
+            components.append(html.H6('Dataset Statistics:'))
+            components.append(dcc.Markdown(f.read()))
+    
+    components.append(html.Br())
+    components.append(html.Hr())
+    components.append(html.H6('Best Result:'))
+#     components.append(html.Br())
+    components.append(render_results(dataset))
+    components.append(html.Br())
+    components.append(html.Hr())
+    components.append(html.H6('Related Publications:'))
+#     components.append(html.Br())
+    components.append(render_related_publications(dataset))
+    components.append(html.Br())
+    components.append(html.Hr())
+    components.append(html.H6('Download Files:'))
+#     components.append(html.Br())
+    components.append(render_downloads(category, dataset))
+    components.append(dcc.Download(id="download-ds"))
+    components.append(html.Br())
+    
+    return html.Div(components, style={'margin': '20px'})
 
-#     files = glob.glob(os.path.join(os.path.dirname(file), '..', 'descriptors', '*'+name+'*.json'))
-#     files = [os.path.basename(x).split('.')[0] for x in files]
-#     for x in files:
-#         if 'generic' in x:
-#             badges.add('generic')
-#         elif 'raw' in x:
-#             badges.add('raw_trajectories')
-#         elif 'semantic' in x:
-#             badges.add('semantic_trajectories')
-#         elif 'multivariate_ts' in x:
-#             badges.add('multivariate_ts')
-#         elif 'univariate_ts' in x:
-#             badges.add('univariate_ts')
-            
-    # Base Category
-#     tmp = os.path.dirname(file).split(os.path.sep)
-#     badges = list(badges)
-#     badges.sort()
-#     badges = [tmp[-2]] + badges
-#     badges = [translateCategory(dataset, category)] + badges
+def message(msg):
+    return html.Span(msg, style={'font-style': 'italic'})
+
+def render_results(dataset):
+    
+    if not os.path.exists(RESULTS_FILE):
+        return message('Result file not set in application.')
+    
+    df = pd.read_csv(RESULTS_FILE, index_col=0)
+    df = df[df['dataset'] == dataset]
+    
+    if len(df) <= 0:
+        return message('Results not available for this dataset.')
+    
+    records = []
+    def apline(i, key, value, df):
+        line = {}
+        line['Best'] = key.replace('_', ' ').title()
+        
+#         i = df[key].idxmin() if key != 'accuracy' else df[key].idxmax()
+        line['Result'] = format_hour(df[key][i]) if key != 'accuracy' else df[key][i]
+        
+        method = df['method'][i]
+        method = METHODS_NAMES[method] if method in METHODS_NAMES.keys() else method
+        line['Method'] = '['+method+'](../method/'+method.split('-')[0]+')'
+        
+        method = df['classifier'][i]
+        method = CLASSIFIERS_NAMES[method] if method in CLASSIFIERS_NAMES.keys() else method
+        line['Classifier'] = method
+        records.append(line)
+    
+    i = df['accuracy'].idxmax()
+    apline(i, 'accuracy', df['accuracy'][i], df)
+    i = df['runtime'].idxmin()
+    apline(i, 'runtime', format_hour(df['runtime'][i]), df)
+    i = df[df['cls_runtime'] > 0]['cls_runtime'].idxmin()
+    apline(i, 'cls_runtime', format_hour(df['cls_runtime'][i]), df)
+    i = df['total_time'].idxmin()
+    apline(i, 'total_time', format_hour(df['total_time'][i]), df)
+        
+    return dash_table.DataTable(data=records, columns=[
+            {"name": ' ', "id":  'Best'},
+            {"name": 'Result', "id":  'Result'},
+            {"name": 'Method', "id":  'Method', 'type': 'text', "presentation": "markdown",},
+            {"name": 'Classifier', "id":  'Classifier'},
+        ], 
+        style_cell={'padding-left': '5px', 'padding-right': '5px'}, css=[{
+            'selector': 'table',
+            'rule': '''
+                width: auto !important;
+            '''
+        }],
+        markdown_options={'link_target': '_self',},
+    )
+    
+#     return html.Div([
+#             html.Span(method+': '),
+#             html.Span(str(acc)),
+# #             html.Br(),
+#         ]),
+
+def render_related_publications(dataset):
+    if not os.path.exists(RESULTS_FILE):
+        return message('Result file not set in application.')
+    
+    df = pd.read_csv(RESULTS_FILE, index_col=0)
+    df = df[df['dataset'] == dataset]
+    
+    if len(df) <= 0:
+        return message('Related publications not available for this dataset.')
+    
+    txt = '| Title | Authors | Year | Venue | Links | Cite |\n|:------|:--------|------|:------|:------|:----:|\n'
+    
+    ls = [METHODS_NAMES[x].split('-')[0] if x in METHODS_NAMES.keys() else x for x in df['method'].unique()]
+#     ls = list(df['method'].unique())
+    for method in set(ls):
+        file = os.path.join('automatize', 'assets', 'method', method+'.md')
+        if os.path.exists(file):
+            with open(file, 'r') as f:
+                line = f.read().splitlines()
+                line = line[-1]
+                if line.startswith('|'):
+                    txt += line + '\n'
+
+    return dcc.Markdown(txt, className='markdown')
+#     return html.Div(
+#         children=[html.A(dbc.Badge(
+#             x,
+#             color="white",
+#             text_color="primary",
+#             className="border me-1 btn-lg",
+#         ), href='../method/'+x.split('-')[0]) for x in ls],
+# #         style={'content: ', '; '},
+#     )
+
+def render_downloads(category, dataset):
+    files = glob.glob(os.path.join(DATA_PATH, category, dataset, '*.*'))
+    descs = list_subsets(dataset, category, os.path.join(DATA_PATH, category, dataset, dataset+'.md'), True)
+    
+    ls = []
+    for f in files:
+        if not f.endswith('.md'):
+            ls.append(f)
+    
+    components = [dbc.ListGroupItem(
+            html.A(os.path.basename(x), href="javascript:void(0);", #href=dataset+'/'+os.path.basename(ls[i]), 
+                   id={
+                        'type': 'download-ds-file',
+                        'index': dataset+'/'+os.path.basename(x)
+                   },
+            )
+        ) for x in ls]
+    
+    if len(descs) > 0:
+        components = components + \
+            [dbc.ListGroupItem(
+                [
+                    html.A(os.path.basename(x), href="javascript:void(0);", #href=dataset+'/'+os.path.basename(ls[i]), 
+                       id={
+                            'type': 'download-ds-file',
+                            'index': x
+                       },
+                    ),
+                    dccBadge(dataset, category, translateDesc(dataset, category, os.path.basename(x)), {'float':'right'}),
+                ]) for x in descs]
+    
+    return dbc.ListGroup(components)
+
+# ------------------------------------------------------------
+def dccBadge(dataset, category, subset, style={}):
+    return dbc.Badge(translateCategory(dataset, category, subset), 
+                     style=style,
+                     color="primary", 
+                     className="me-1 " + 'dataset-color-'+(category if subset == 'specific' else subset))
+
+def toBadge(dataset, category, subset):
+    return '<span class="badge rounded-pill dataset-color-'+(category if subset == 'specific' else subset)+'">'+translateCategory(dataset, category, subset) +'</span>'
+
+def getBadges(category, dataset, subsets):
+    # Read the descriptors:
+    badges = [toBadge(dataset, category, x) for x in subsets]
     
     return ' '.join([x for x in badges])
+
+@app.callback(
+    Output("download-ds", "data"),
+#     Output({'type': 'download-ds-file', 'index': MATCH}, 'n_clicks'),
+    Input({'type': 'download-ds-file', 'index': ALL}, 'n_clicks'),
+    State({'type': 'download-ds-file', 'index': ALL}, 'id'),
+    prevent_initial_call=True,
+)
+def download(n_clicks, id):
+    triggered = [t["prop_id"] for t in dash.callback_context.triggered][0]
+    triggered = eval(triggered.replace('.n_clicks', ''))
+    href = triggered['index']
+    href = glob.glob(os.path.join(DATA_PATH, '*', href))[0]
+    return dcc.send_file(href)

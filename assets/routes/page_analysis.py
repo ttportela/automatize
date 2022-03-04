@@ -74,8 +74,8 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
             html.Div(style = {'display':'inline'}, children = [
                 html.Strong('Number os Trajectories: '),
                 html.Span(str(samples)),
-                html.Br(),
-                html.Span(', '.join(['Class '+str(k)+': '+str(v) for k,v in classes.items()])),
+#                 html.Br(),
+#                 html.Span(', '.join(['Class '+str(k)+': '+str(v) for k,v in classes.items()])),
             ]),
             html.Div(style = {'display':'inline'}, children = [
                 html.Strong('Attributes: '),
@@ -93,7 +93,7 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
             ]),
             html.Div(style = {'display':'inline'}, children = [
                 html.Strong('Classes: '),
-                html.Span(str(num_attr)),
+                html.Span(str(len(labels))),
                 html.Br(),
                 html.Span('[' + (', '.join(labels)) + ']'),
             ]),
@@ -112,6 +112,12 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
             }
         ))
         components.append(html.Hr())
+        components.append(html.Div(style = {'display':'inline'}, children = [
+                html.Br(),
+                html.Strong('Trajectories per Class: '),
+                html.Br(),
+                html.Span(', '.join(['C('+str(k)+'): '+str(v) for k,v in classes.items()])),
+            ]))
         
     return components
 
@@ -149,10 +155,10 @@ def parse_files(contents, filename, date):
 
             df.columns = df.columns.astype(str)
 
-            organizeFrame(df)
-            if 'space' in df.columns:
-                df['lat_lon'] = df['space']
-            update_trajectories(df)
+            columns_order_zip, columns_order_csv = organizeFrame(df)
+#             if 'space' in df.columns:
+#                 df['lat_lon'] = df['space']
+            update_trajectories(df[columns_order_csv])
         elif 'json' in filename:
             # Assume that the user uploaded an excel file
 #             df = pd.read_excel(io.BytesIO(decoded))

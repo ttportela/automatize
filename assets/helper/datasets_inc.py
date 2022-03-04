@@ -71,27 +71,18 @@ def list_datasets_dict(data_path=DATA_PATH):
         
     return datasets_dict
 
-def list_subsets(dataset, category, file):    
-    def translateDesc(dataset, category, descName):        
-        dst, dsn = descName.split('_')[0:2]
-        if dsn in ['allfeat', '5dims']:
-            return False
-        
-        if getDescName(category, dataset) == dst:
-            return dsn
-        elif dataset in dst:
-            return dsn
-        return False
-    
+def list_subsets(dataset, category, file, return_files=False):        
     subsets = set()
     desc_files = glob.glob(os.path.join(os.path.dirname(file), '..', 'descriptors', '*.json'))
     for f in desc_files:
 #         print(os.path.basename(f).split('.')[0], os.path.dirname(f).split(os.path.sep))
-        if f.endswith('_hp.json'):
-            descName = os.path.basename(f).split('.')[0]
-            descName = translateDesc(dataset, category, descName)
-            if descName:
+        descName = os.path.basename(f) #.split('.')[0]
+        descName = translateDesc(dataset, category, descName)
+        if descName:
+            if f.endswith('_hp.json') and not return_files:
                 subsets.add(descName)
+            elif return_files:
+                subsets.add(f)
       
     subsets = list(subsets)
     subsets.sort()
@@ -100,6 +91,18 @@ def list_subsets(dataset, category, file):
         subsets.insert(0, 'specific')
 
     return subsets
+
+# ------------------------------------------------------------
+def translateDesc(dataset, category, descName):        
+    dst, dsn = descName.split('.')[0].split('_')[0:2]
+    if dsn in ['allfeat', '5dims']:
+        return False
+
+    if getDescName(category, dataset) == dst:
+        return dsn
+    elif dataset in dst:
+        return dsn
+    return False
 
 def translateCategory(dataset, category, descName=None):
     if descName:        

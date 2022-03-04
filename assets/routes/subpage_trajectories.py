@@ -64,6 +64,17 @@ def page_trajectories_filter(ls_trajs, from_trajs, to_trajs, attributes, sel_att
         html.Hr(),
     ], style = {'display':'inline'})
     
+def getAttrSize(T, sel_attributes):
+    size = 0
+    for i in range(T.size):
+        for attr in sel_attributes:
+            size = max(size, len(str(T.points[i][attr])))
+    return size
+    
+CH_SIZE = 10
+def getAttrCHS(length, size):
+    return str(length*size*(CH_SIZE/2)+length*(CH_SIZE/2)*3)+'px'
+
 def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
     ncor = 7
     ls_components = []
@@ -76,13 +87,11 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
         if sel_attributes == '':
             sel_attributes = attributes
             
-        size = 10 # in chars
-        chsz = 12
+#         size = 10 # in chars
+#         chsz = 12
         import random
         T = random.sample(ls_trajs, 1)[0]
-        for i in range(T.size):
-            for attr in sel_attributes:
-                size = max(size, len(str(T.points[i][attr])))
+        size = getAttrSize(T, sel_attributes) # in chars
                 
         ls_components.append(page_trajectories_filter(ls_trajs, from_trajs, to_trajs, attributes, sel_attributes))
 
@@ -91,7 +100,7 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
     #         points = T.points_trans()
             T = ls_trajs[k]
             ls_components.append(html.Div(className='traj-color'+str((k % ncor) + 1)+'-rangeslider traj-slider', children = [
-                html.Div(style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(chsz)+'px'}, children = [
+                html.Div(style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}, children = [
                     html.Span(T.tid), 
                     html.Br(),
                     html.Strong(T.label),
@@ -103,17 +112,17 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
                     value=[0, T.size-1],
     #                 disabled=True,
                 )]),
-            ], style={'width': str(T.size*size*(chsz/2)+T.size*(chsz/2)*3)+'px'}))
+            ], style={'width': getAttrCHS(T.size, size)}))
             for attr in T.attributes:
                 if attr in sel_attributes:
                     values = []
                     for m in ls_movs:
-                        if m.tid == T.tid:
+                        if m.tid == T.tid and attr in m.attributes():
                             values += [m.start, m.start+m.size]
 #                     print(values)
                     ls_components.append(html.Div(
                         className='traj-color'+str((k % ncor) + 1)+'-rangeslider traj-slider traj-slider', children = [
-                        html.A(attr, style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(chsz)+'px'}),
+                        html.A(attr, style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
                         html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
                             marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
                             min=0,
@@ -122,7 +131,7 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
                             value=list(set(values)),
                             disabled=True,
                         )]),
-                    ], style={'width': str(T.size*size*(chsz/2)+T.size*(chsz/2)*3)+'px'}))
+                    ], style={'width': getAttrCHS(T.size, size)}))
     #         ls_components.append(dash_table.DataTable(
     #             id='table-tid-'+str(T.tid),
     #             style_data={
@@ -156,9 +165,10 @@ def render_page_movelets(T, ls_movs):
 #     ncor = 7
     ls_components = []
     attributes = T.attributes
+    size = getAttrSize(T, attributes)
 
     ls_components.append(html.Div(children = [
-        html.Div(style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': '12px'}, children = [
+        html.Div(style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}, children = [
             html.Span(T.tid), 
             html.Br(),
             html.Strong(T.label),
@@ -169,7 +179,7 @@ def render_page_movelets(T, ls_movs):
             max=T.size-1,
             value=[0, T.size-1],
         )]),
-    ]))
+    ], style={'width': getAttrCHS(T.size, size)}))
     ls_components.append(html.Hr())
     
 #     print(ls_movs)
@@ -179,7 +189,7 @@ def render_page_movelets(T, ls_movs):
             for attr in m.attributes():
                 ls_components.append(html.Div(children = [
                     html.A(attr, 
-                           style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': '12px'}),
+                           style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
                     html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
                         marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
                         min=0,
@@ -190,7 +200,7 @@ def render_page_movelets(T, ls_movs):
         #                 style={'display': 'block'}
     #                         disabled=True,
                     )]),
-                ]))
+                ], style={'width': getAttrCHS(T.size, size)}))
             ls_components.append(html.Hr())
     
     return html.Div(ls_components)

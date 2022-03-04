@@ -1,6 +1,6 @@
-### 1. HiPerMovelets
+### HiPerMovelets
 
-\[ [publication](https://dx.doi.org/10.1080/13658816.2021.2018593) ] \[ [sources](https://github.com/bigdata-ufsc/HiPerMovelets) ] \[ [datasets](/datasets) ] \[ [runnable](/assets/methods/HIPERMovelets.jar) ]
+\[ [Runnable](/assets/method/HIPERMovelets.jar) \]
 
 **HIPERMovelets: high-performance movelet extraction for trajectory classification** is a new method for movelets discovery, developed as an optimization for MASTERMovelets.
 
@@ -40,3 +40,9 @@ This implementation has three options of optimizations.
 - *HIPERMovelets-Log*: the greedy search method, plus, limits the movelets size to the ln size of the trajectory (`-version hiper -Ms -3`).
 - *HIPERMovelets-Pivots*: limits the movelets search space to the points that are neighbour of well qualified movelets of size one (`-version hiper-pivots`).
 - *HIPERMovelets-Pivots-Log*: plus, limits the movelets size to the ln size of the trajectory (`-version hiper-pivots -Ms -3`).
+
+##### Reference:
+
+| Title | Authors | Year | Venue | Links | Cite |
+|:------|:--------|------|:------|:------|:----:|
+| HiPerMovelets: high-performance movelet extraction for trajectory classification | Portela, T. T.; Carvalho, J. T.; Bogorny, V. | 2022 | International Journal of Geographical Information Science | [Article](https://doi.org/10.1080/13658816.2021.2018593) [Repository](https://github.com/bigdata-ufsc/HiPerMovelets) | [BibTex](https://github.com/bigdata-ufsc/research-summary/blob/master/resources/bibtex/Portela2020hipermovelets.bib) |

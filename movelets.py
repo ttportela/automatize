@@ -733,13 +733,26 @@ class Movelet:
     
     def add_point(self, point):
         assert isinstance(point, dict)
-        if isinstance(list(point.values())[0], dict):
-            px = {}
-            for k, v in point.items():
-                px[k] = list(v.values())[0]
-            self.data.append(px)
-        else:
-            self.data.append(point)
+        px = {}
+        for k, v in point.items():
+            if isinstance(v, dict):
+                v = list(v.values())[0]
+            if k == 'lat_lon' or k == 'space':
+                v = v.split(' ')
+                px['lat'] = v[0]
+                px['lon'] = v[1]
+            else:
+                px[k] = v
+                
+        self.data.append(px)
+        
+#         if isinstance(list(point.values())[0], dict):
+#             px = {}
+#             for k, v in point.items():
+#                 px[k] = list(v.values())[0]
+#             self.data.append(px)
+#         else:
+#             self.data.append(point)
         
     def toString(self):
         return str(self) + ' ('+'{:3.2f}'.format(self.quality)+'%)'    
@@ -784,8 +797,15 @@ class Trajectory:
     def __init__(self, tid, label, attributes, new_points, size):
         self.tid          = tid
         self.label        = label
-        self.attributes   = attributes
+        self.attributes   = []
         self.size         = size
+        
+        for attr in attributes:
+            if (attr == 'lat_lon' or attr == 'space') and 'lat' not in self.attributes:
+                self.attributes.append('lat')
+                self.attributes.append('lon')
+            else:
+                self.attributes.append(attr)
         
         self.points       = []
         if new_points is not None:
@@ -804,7 +824,18 @@ class Trajectory:
                 
     def add_point(self, point):
         assert isinstance(point, dict)
-        self.points.append(point)
+        px = {}
+        for k, v in point.items():
+            if k == 'lat_lon' or k == 'space':
+                v = v.split(' ')
+                px['lat'] = v[0]
+                px['lon'] = v[1]
+            else:
+                px[k] = v
+                
+        self.points.append(px)
+        
+#         self.points.append(point)
         
     def toString(self):
         return str(self)
