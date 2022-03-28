@@ -74,17 +74,21 @@ def importer(key=['S'], this=None):
         
     # 3rd Party:
     if set(key) & set(['*', 'others', 'glob', 'glob2', 'tf', 'tensorflow', 'gh']):
-        if set(key) & set(['*', 'glob', 'glob2']):
+        if set(key) & set(['*', 'others', 'glob', 'glob2']):
             module = importlib.import_module('glob2')
             mdic.update( {'glob': module} )
 
-        if set(key) & set(['*', 'tf', 'tensorflow']):
+        if set(key) & set(['*', 'others', 'tf', 'tensorflow']):
             module = importlib.import_module('tensorflow')
             mdic.update( {'tf': module} )   
 
-        if set(key) & set(['*', 'gh']):
+        if set(key) & set(['*', 'others', 'gh']):
             module = importlib.import_module('geohash2')
-            mdic.update( {'gh': module} )     
+            mdic.update( {'gh': module} )   
+            
+        if set(key) & set(['*', 'others', 're']):
+            module = importlib.import_module('re')
+            mdic.update( {'re': module} )  
     
     # FOR neural networks:
     if set(key) & set(['*', 'pynn', 'models', 'layers', 'initializers', 'regularizers', 'callbacks', 'optimizers', 

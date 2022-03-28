@@ -60,8 +60,8 @@ def render_model_filter(movelets=[], model='', from_value=0, to_value=100, attri
                         options=[
                             {'label': 'Sankey Model',    'value': 'sankey'},
                             {'label': 'Markov Model',    'value': 'markov'},
-    #                         {'label': 'Tree (as graph)', 'value': 'graph'},
-                            {'label': 'Tree (as text)',  'value': 'tree'},
+                            {'label': 'Tree Model',  'value': 'tree'},
+                            {'label': 'Quality Tree', 'value': 'qtree'},
                         ],
                         value=model,
                         style = {'width':'100%'},
@@ -132,6 +132,9 @@ def render_model(movelets=[], model='', from_value=0, to_value=100, attributes=[
 #         )
     elif model == 'tree':
         fig = html.Div(render_tree(ls_movs.copy()))
+    elif model == 'qtree':
+        fig = html.Div(render_quality_tree(ls_movs))
+        
     else:
         fig = html.H4('...')
     
@@ -140,16 +143,249 @@ def render_model(movelets=[], model='', from_value=0, to_value=100, attributes=[
         html.Div(style = {'width':'100%'}, children = [fig])
     ]
 
+
+## ------------------------------------------------------------------------------------------------
 def render_tree(ls_movs):
-    components = []
+    ncor = 7
+    def getTitleElem(x, ident=1):
+        return html.A(id='tree-link', children=getMoveletBox(x.data, ident))
+#         return html.A(id='tree-link', children=html.Span('{:3.2f}'.format(x.data.quality)+'%'))
+    
+    def render_element(root, ident=1):
+        if len(root.children) > 0:
+            return [getTitleElem(root, ident),
+                    html.Ul(
+                        [html.Li(render_element(x, ident+1)) for x in root.children]
+                    )]
+        else:
+            return getTitleElem(root, ident)
+    
+    if len(ls_movs) > 0:
+        tree = createTree(ls_movs)    
+        return [ html.Div(html.Ul([html.Li(render_element(tree))]), className='tree') ]
+    
+    return [html.Span('No movelets to render a tree')]
+
+
+## ------------------------------------------------------------------------------------------------
+def render_quality_tree(ls_movs):
+    ncor = 7
+    def getTitleElem(x, ident=1):
+        return html.A(id='tree-link', children=[
+            html.Span('Mov-'+str(x.data.mid)),
+            html.Br(),
+            html.Span('{:3.2f}'.format(x.data.quality)+'%')
+        ])
+    
+    def render_element(root, ident=1):
+        if len(root.children) > 0:
+            return [getTitleElem(root, ident),
+                    html.Ul(
+                        [html.Li(render_element(x, ident+1)) for x in root.children]
+                    )]
+        else:
+            return getTitleElem(root, ident)
+    
+    if len(ls_movs) > 0:
+        tree = createTree(ls_movs)    
+        return [ html.Div(html.Ul([html.Li(render_element(tree))]), className='tree') ]
+    
+    return [html.Span('No movelets to render a tree')]
+
+## ------------------------------------------------------------------------------------------------
+def getMoveletBox(m, ident):
+    
+    n = m.size
+    feats = list(m.attributes())
+    
+    WD = 10
+    for i in range(n):
+        for attr in feats:
+            WD = max(WD, len(str(m.data[i][attr])))
+    WD = WD * 12
+    
+    HG = 20
+    
+    return html.Div(
+        html.Div(
+            html.Div([
+                html.Span('{:3.2f}'.format(m.quality)+'%', style={"float":"left", "position":"relative", "top":"-5px"}),
+                html.Div(''
+                         , className="rc-slider-rail"
+                         , style={"left": str(int((100/n)))+"%","width":str(int((n-1)*100/n))+"%",}
+                ),
+                html.Div('', 
+                         className="rc-slider-track rc-slider-track-1", 
+                         style={"left": str(int((100/n)))+"%","right":"auto","width":str(int((n-1)*100/n))+"%",}
+                ),
+                
+                html.Div([
+                    html.Span('', className="", style={"left": "0%"})
+                ]+[
+                    html.Span('', className="rc-slider-dot rc-slider-dot-active", style={"left": str(int((i+1)*100/n))+"%"})
+                for i in range(n)], className="rc-slider-step"),
+                
+                html.Div([
+                    html.Span('mov-'+str(m.mid)
+                    , className="rc-slider-mark-text rc-slider-mark-text-active"
+                    , style={"transform": "translateX(-50%)", "left": "0%"})
+                ]+[
+                    html.Span('p'+str(1+m.start+i)
+                    , className="rc-slider-mark-text rc-slider-mark-text-active"
+                    , style={"transform": "translateX(-50%)", "left": str(int((i+1)*100/n))+"%"})
+                for i in range(n)], className="rc-slider-mark"),
+                
+            ] + \
+            [
+                
+                html.Div([
+                    html.Span(str(feats[k])
+                    , className="rc-slider-mark-text rc-slider-mark-text-active"
+                    , style={"transform": "translateX(-50%)", "left": "0%", "top": str(int(HG*(k+1)))+'px'})
+                ]+[
+                    html.Span(str(m.data[i][feats[k]])
+                    , className="rc-slider-mark-text rc-slider-mark-text-active"
+                    , style={"transform": "translateX(-50%)", 
+                             "left": str(int((i+1)*100/n))+"%", 
+                             "top": str(int(HG*(k+1)))+'px',
+                             "width":"max-content",
+                            })
+                for i in range(n)], className="rc-slider-mark")
+                
+            for k in range(len(feats))]
+            , className="rc-slider rc-slider-with-marks"
+            , style={"position":"relative"})
+        , style={"padding":"0px 25px 25px"})
+    , style={"width": str(int(n*WD))+"px", "height": str(int(HG*(len(feats)+2)))+'px'})
+
+
+## ------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------
+def old_getMoveletBox(m, ident):
+#         ncor = 7
+    colClass = ''#'col-sm-2'
+    boxStyle = style={"padding-bottom": "25px", "margin-bottom": "5px", 
+#            "width": str((len(m.data)+1)*150)+"px", 
+           "width": "max-content",
+           "text-align": "center"}
+    return html.Div([dbc.Row(
+        [dbc.Col([ # FIRST COL (ATTR names)
+            html.Div([
+#                     html.Div('{:3.2f}'.format(m.quality)+'%', 
+# #                         className="rc-slider-handle rc-slider-handle-1",
+#                         style={"right": "auto",},
+# #                         style={"right": "auto", "margin-top": "0"},
+#                     ),
+                html.Div(
+                    html.Span(
+                        '{:3.2f}'.format(m.quality)+'%', 
+                        className="rc-slider-mark-text rc-slider-mark-text-active",
+                        style={"color":"black", "transform": "translateX(-50%)"},
+                    ), 
+                    className="rc-slider-mark",
+                    style={"right": "auto", "top":"0"},
+                ),
+                html.Div(
+                    html.Span(
+                        'size: '+str(m.size), 
+                        className="rc-slider-mark-text rc-slider-mark-text-active",
+                        style={"transform": "translateX(-50%)"},
+                    ), 
+                    className="rc-slider-mark",
+                    style={"right": "auto"},
+                ),],
+                style={"position": "relative"},
+                className="rc-slider rc-slider-with-marks",
+            )
+        ], className=colClass)] + \
+        [dbc.Col([ # SUBSEQ COLs (points)
+            html.Div([
+                html.Div('', 
+                    className="rc-slider-handle rc-slider-handle-1",
+                    style={"right": "auto", "transform": "translateX(-50%)"},
+#                         style={"right": "auto", "margin-top": "0"},
+                ),
+                html.Div(
+                    html.Span(
+                        'p'+str(m.start+i+1), 
+                        className="rc-slider-mark-text rc-slider-mark-text-active",
+                        style={"transform": "translateX(-50%)"},
+                    ), 
+                    className="rc-slider-mark",
+                    style={"right": "auto"},
+                ),],
+                style={"position": "relative"},
+                className="rc-slider rc-slider-with-marks",
+            )
+        ], className=colClass) for i in range(len(m.data))],
+        style={"padding": "0px 25px 0px"}, 
+    )] + \
+    [dbc.Row(
+        [dbc.Col([ # FIRST COL (attr name)
+            html.Div([
+                html.Div(
+                    html.Span(
+                        str(k), 
+                        className="rc-slider-mark-text rc-slider-mark-text-active",
+                        style={"transform": "translateX(-50%)"},
+                    ), 
+                    className="rc-slider-mark",
+                    style={"right": "auto"},
+                ),],
+                style={"position": "relative"},
+                className="rc-slider rc-slider-with-marks",
+            )], 
+            className=colClass,
+        )] + \
+        [dbc.Col([ # SUBSEQ COLs (values)
+            html.Div([
+#                     html.Div('', 
+#                         className="rc-slider-handle rc-slider-handle-1",
+#                         style={"right": "auto", "transform": "translateX(-50%)"},
+# #                         style={"right": "auto", "margin-top": "0"},
+#                     ),
+                html.Div(
+                    html.Span(
+                        str(m.data[i][k]), 
+                        className="rc-slider-mark-text rc-slider-mark-text-active",
+                        style={"transform": "translateX(-50%)"},
+                    ), 
+                    className="rc-slider-mark",
+                    style={"right": "auto"},
+                ),],
+                style={"position": "relative", "width": "max-content"},
+                className="rc-slider rc-slider-with-marks",
+            )],
+        className=colClass) for i in range(len(m.data)) ],
+        style={"padding": "0px 25px 0px"},
+    ) for k in m.attributes()],
+    style=boxStyle,
+    className='movelet-box')
+
+def old_render_tree(ls_movs):        
+    def getTitleElem(x, ident=1):
+        return html.Summary(html.A(id='tree-link', children=
+                      html.Span('Mov-'+str(x.data.mid) + ' ({:3.2f}'.format(x.data.quality)+'%)' )
+               ))
+    
+    def render_element(root, ident=1):
+        if len(root.children) > 0:
+            return html.Details([
+                getTitleElem(root, ident),
+                getMoveletBox(root.data, ident),
+                dbc.ListGroup(
+                    [dbc.ListGroupItem(render_element(x, ident+1)) for x in root.children]
+                )]
+            )
+        else:
+            return html.Div([getTitleElem(root, ident), getMoveletBox(root.data, ident),])
+    
+#     components = []
     
     if len(ls_movs) > 0:
         tree = createTree(ls_movs)
-        s = tree.traversePrint()
-        for line in s.split('\n'):
-            components += [
-                html.Br(),
-                html.Span(line),
-            ]
+#         print(tree.traversePrint())
+
+        return [html.Div(dbc.ListGroup([dbc.ListGroupItem(render_element(tree))])) ]
     
-    return components
+    return [html.Span('No movelets to render a tree')]

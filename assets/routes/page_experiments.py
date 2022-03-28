@@ -18,8 +18,8 @@ from automatize.script import gensh, trimsuffix
 
 from automatize.app_base import app
 from automatize.assets.config import *
-from automatize.assets.helper.script_inc import *
-from automatize.assets.helper.datasets_inc import list_datasets
+from automatize.helper.script_inc import *
+from automatize.helper.datasets_inc import list_datasets
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
     

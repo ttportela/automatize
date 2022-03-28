@@ -1,3 +1,5 @@
+assets
 ensemble
 marc
-poifreq
+pois
+scripts

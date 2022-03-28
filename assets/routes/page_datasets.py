@@ -20,8 +20,8 @@ from automatize.results import format_hour
 from automatize.app_base import app
 from automatize.assets.config import *
 # from automatize.assets.helper.script_inc import DATASET_TYPES
-from automatize.assets.helper.datasets_inc import *
-from automatize.assets.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from automatize.helper.datasets_inc import *
+from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # DATA_PATH='../../datasets'
 
@@ -49,7 +49,15 @@ def render_datasets(data_path=DATA_PATH):
         
     return html.Div(components)
     
-def render_datasets_category(category, dsdict, data_path=DATA_PATH):
+def render_datasets_category(category, dsdict, data_path=DATA_PATH):    
+    dsdict = dict(sorted(dsdict.items()))
+    
+    if len(dsdict) > 30:
+        return render_datasets_category_ls(category, dsdict, data_path)
+    else:
+        return render_datasets_category_tb(category, dsdict, data_path)
+    
+def render_datasets_category_tb(category, dsdict, data_path=DATA_PATH):
     
     df = pd.DataFrame()
     for dataset, subsets in dsdict.items():
@@ -61,7 +69,6 @@ def render_datasets_category(category, dsdict, data_path=DATA_PATH):
         
     return dash_table.DataTable(
         id='table-datasets',
-#         columns=[{"name": i, "id": i, "presentation": "html"} for i in df.columns[:-1]],
         columns=[{
             'id': 'Name',
             'name': 'Dataset',
@@ -72,19 +79,22 @@ def render_datasets_category(category, dsdict, data_path=DATA_PATH):
             'name': 'Category',
             'type': 'text',
             "presentation": "markdown",
-#             'format': FormatTemplate.money(0)
         }],
         markdown_options={'link_target': '_self', 'html': True},
         data=df[df.columns[:-1]].to_dict('records'),
         css=[{'selector': 'td', 'rule': 'text-align: left !important;'},
              {'selector': 'th', 'rule': 'text-align: left !important; font-weight: bold'}
         ],
-#             style_cell={
-#                 'width': '{}%'.format(len(df_stats.columns)*2),
-#                 'textOverflow': 'ellipsis',
-#                 'overflow': 'hidden'
-#             }
-    )   
+    )
+    
+def render_datasets_category_ls(category, dsdict, data_path=DATA_PATH):    
+    return html.Div([
+        html.Div(html.A(dataset,
+                        href='/datasets/'+category+'/'+dataset, 
+                        className="btn btn-link"), 
+                 style={'display': 'inline-table'})
+        for dataset, subsets in dsdict.items()
+    ])
 
 def render_datasets_all(data_path=DATA_PATH):
     files = glob.glob(os.path.join(data_path, '*', '*', '*.md'))
@@ -133,20 +143,27 @@ def render_datasets_all(data_path=DATA_PATH):
 
 # ------------------------------------------------------------
 def render_dataset(pathname):
-    components = []
+    components = []    
+    if len(pathname.split(os.path.sep)) < 4:
+        return underDev(pathname)
+    
     category, dataset = pathname.split(os.path.sep)[2:4]
+    file = os.path.join(DATA_PATH, category, dataset, dataset+'.md')
+    if not os.path.isfile(file):
+        return underDev(pathname)
     
     file = glob.glob(os.path.join(DATA_PATH, category, dataset, dataset+'.md'))[0]
     with open(file, "r") as f:
-        components.append(dcc.Markdown(f.read()))
+        components.append(html.H3(dataset))
+        components.append(dcc.Markdown(f.read(), className='markdown'))
         
     file = glob.glob(os.path.join(DATA_PATH, category, dataset, dataset+'-stats.md'))
     if len(file) > 0 and os.path.exists(file[0]):
         with open(file[0], "r") as f:
             components.append(html.Br())
             components.append(html.Hr())
-            components.append(html.H6('Dataset Statistics:'))
-            components.append(dcc.Markdown(f.read()))
+#             components.append(html.H4('Dataset Statistics:'))
+            components.append(dcc.Markdown(f.read(), className='markdown'))
     
     components.append(html.Br())
     components.append(html.Hr())

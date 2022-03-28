@@ -15,7 +15,8 @@ Created on Jun, 2020
 # from sklearn.model_selection import KFold
 # import matplotlib.pyplot as plt
 from .main import importer #, display
-importer(['S'], globals())
+importer(['S', 'glob'], globals())
+from automatize.io.converter import *
 #-------------------------------------------------------------------------->>
 
 def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', missing='?'):
@@ -31,6 +32,7 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
     else:
         url = os.path.join(data_path, file+'.csv')
     
+    url = os.path.abspath(url)
 #     print(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts'))
     if '.csv' in url and os.path.exists(url):
         df = pd.read_csv(url, na_values=missing)
@@ -40,15 +42,53 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
     elif '.ts' in url or os.path.exists(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')):
         importer(['ts_io'], globals())
         url = url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')
-        df = load_from_tsfile_to_dataframe(url)
+        df = load_from_tsfile_to_dataframe(url, replace_missing_vals_with=missing)
     else:
         df = pd.read_csv(url, na_values=missing) # should not be used
     return df
 
+
+def readDsDesc(data_path, folder=None, file='train.csv', tid_col='tid', class_col='label', missing='?'):
+    df = readDataset(data_path, folder, file, class_col, missing)
+    
+    columns_order = [x for x in df.columns if x not in [tid_col, class_col]]
+    df = df[columns_order + [tid_col, class_col]]
+    
+    if folder == None:
+        folder = os.path.basename(data_path)
+        data_path = os.path.dirname(data_path)
+    
+    
+    from automatize.helper.script_inc import getDescName
+    desc = glob.glob(os.path.join(data_path, 'descriptors', \
+                                  getDescName(os.path.basename(data_path), folder)+'_specific_hp.json'))
+    if len(desc) > 0:
+        attrs = readAttributes(desc[0])
+        df.set_axis(attrs + [tid_col, class_col], axis=1, inplace=True)
+    
+    return df
+
+def readAttributes(desc_file):
+    importer(['json'], globals())
+    f = open(desc_file)
+    desc = json.load(f)
+    f.close()
+    
+    attrs = []
+    for at in desc['attributes']:
+        if at['type'].startswith('composite'):
+            for i in ['x', 'y', 'z'] if at['type'].startswith('composite3_') else ['x', 'y']:
+                attrs.append(at['text'].split('_')[0] + '_' + i)
+        else:
+            attrs.append(at['text'])
+#         attrs.append(at['text'])
+        
+    return attrs
+
 # --------------------------------------------------------------------------------
 def readData_Folders_File(path, col_names, file_ext='.txt', delimiter=',', file_prefix=''):
 #     from ..main import importer
-    importer(['S', 'glob'], globals())
+#     importer(['S', 'glob'], globals())
     
     filelist = []
     filesList = []
@@ -81,7 +121,7 @@ def readData_Folders_File(path, col_names, file_ext='.txt', delimiter=',', file_
 
 def readData_Files(path, col_names, file_ext='.txt', delimiter=',', file_prefix=''):   
 #     from ..main import importer
-    importer(['S', 'glob'], globals())
+#     importer(['S', 'glob'], globals())
      
     filelist = []
     filesList = []
@@ -178,27 +218,38 @@ def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', 
         print(s)
     
 #-------------------------------------------------------------------------->>
-def countClasses(data_path, folder, file='train.csv', class_col = 'label'):
-    df = readDataset(data_path, folder, file, class_col)
-    return countClasses_df(df, class_col)
+def countClasses(data_path, folder, file='train.csv', tid_col = 'tid', class_col = 'label', markd=False):
+    df = readDataset(data_path, folder, file, class_col, tid_col, markd)
+    return countClasses_df(df, tid_col, class_col, markd)
 
-def countClasses_df(df, class_col = 'label'):
-    group = df.groupby([class_col, 'tid'])
-    df2 = group.apply(lambda x: x[class_col].unique())
-    print("Number of Samples: " + str(len(df['tid'].unique())))
-    print("Samples by Class:")
-    print(df2.value_counts())
+def countClasses_df(df, tid_col = 'tid', class_col = 'label', markd=False):
+    group = df.groupby([class_col, tid_col])
+    df2 = group.apply(lambda x: ', '.join([str(s) for s in list(x[class_col].unique())]))
+    md = "Number of Samples: " + str(len(df[tid_col].unique()))
+    md += '\n\r'
+    md += "Samples by Class:"
     
-    return df2.value_counts()
+    if markd:
+        md += '\n\r'
+        md += df2.value_counts().to_markdown(tablefmt="github", headers=["Label", "#"])
+        return md
+    else:
+        print(md)
+        print(df2.value_counts())
+        return df2.value_counts()
 
-def datasetStatistics(data_path, folder, file_prefix='', class_col = 'label'):
+def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_col = 'label', to_file=False):
 #     from ..main import importer
 #     importer(['S'], locals())
+
+    def addLine(i):
+        return '\n\r' + ('&nbsp;'.join(['\n\r' for x in range(i)])) + '\n\r'
     
-    train = readDataset(data_path, folder, file_prefix+'train.csv', class_col)
-    test = readDataset(data_path, folder, file_prefix+'test.csv', class_col)
-    print('\n--------------------------------------------------------------------')
-    print('Descriptive Statistics for', folder)
+    train = readDsDesc(data_path, folder, file_prefix+'train.csv', tid_col, class_col, missing='NaN')
+    test = readDsDesc(data_path, folder, file_prefix+'test.csv', tid_col, class_col, missing='NaN')
+    
+    md = '##### Descriptive Statistics for ' + folder
+    
     sam_train = len(train.tid.unique())
     sam_test  = len(test.tid.unique())
     points    = len(train) + len(test)
@@ -211,38 +262,136 @@ def datasetStatistics(data_path, folder, file_prefix='', class_col = 'label'):
     avg_size = points / samples
     diff_size = max( avg_size - min(bot_train, bot_test) , max(top_train, top_test) - avg_size )
     
-    print('Number of Classes:     =>', len(classes))
-    print('Number of Attributes:  =>', len(train.columns))
-    print('Number of Trajs:       =>', samples, 'total /', sam_train, 'train +', sam_test, 'test')
-    print('Number of Points:      =>', points, 'total /', len(train), 'train +', len(test), 'test')
-    print('Avg Size of Trajs:     =>', '{:.2f}'.format(avg_size), ' / ±', diff_size)
-    print('Longest Size:          =>', top_train, 'train /', top_test, 'test')
-    print('Shortest Size:         =>', bot_train, 'train /', bot_test, 'test')
-    print('Train / Test hold-out: =>', sam_train, '-', '{:.2f}% ..'.format(sam_train*100/samples),
-                                       sam_test,  '-', '{:.2f}%'.format(sam_test*100/samples))
+    stats_df = pd.DataFrame({
+        'Number of Classes': [len(classes), '-', '-'],
+        'Number of Attributes': [len(train.columns), '-', '-'],
+        'Avg Size of Trajs': ['{:.2f}'.format(avg_size) + ' / ±' + str(diff_size), '-', '-'],
+        'Number of Trajs': [str(samples), str(sam_train), str(sam_test)],
+        'Hold-out': ['100%', '{:.2f}%'.format(sam_train*100/samples),
+                     '{:.2f}%'.format(sam_test*100/samples)],
+        'Number of Points': [str(points), str(len(train)), str(len(test))],
+        'Longest Size':  [str(max(top_train, top_test)), str(top_train), str(top_test)],
+        'Shortest Size': [str(max(bot_train, bot_test)), str(bot_train), str(bot_test)],
+    }, index=['Total', 'Train', 'Test'])
     
-    print('\n--------------------------------------------------------------------')
-    print('Attributes: ')
-    print(list(train.columns))
-    print('\nFeatures Selection (by Variance): ')
+    md += addLine(1)
+    md += stats_df.to_markdown(tablefmt="github", colalign="right")
+    md += addLine(2)
+    
+#     print('\n--------------------------------------------------------------------')
+    md += '###### Attributes: '
+    md += ', '.join([str(x) for x in train.columns])
+    md += addLine(1)
+    md += '###### Labels: '
+#     md += addLine(1)
+    md += ', '.join([str(x) for x in classes])
+    md += addLine(2)
+    
+#     md += addLine(2)
+    df = pd.concat([train, test])
+    df.drop(['tid'], axis=1, inplace=True)
+    stats = df.describe(include='all').fillna('')
+    md += stats.to_markdown(tablefmt="github")
+    md += addLine(2)
+    
+    md += 'Descriptive Statistics (by Variance): '
+    md += addLine(1)
     stats=pd.DataFrame()
-    df = train.apply(pd.to_numeric, args=['coerce'])
-    stats["Mean"]=df.mean(axis=0, skipna=True)#skipna=True)
-    stats["Std.Dev"]=df.std(axis=0, skipna=True)
-    stats["Variance"]=df.var(axis=0, skipna=True)
-    print(stats.sort_values('Variance', ascending=False))
-    print('\nClasses: ')
-    print(classes, '\n')
-    print('\n--------------------------------------------------------------------')
-    print('Statistics from TRAIN:')
-    countClasses_df(train)
-    print()
-    train.describe()
-    print('\n--------------------------------------------------------------------')
-    print('Statistics from TEST.:')
-    countClasses_df(test)
-    print()
-    test.describe()
+    dfx = df.apply(pd.to_numeric, args=['coerce'])
+    stats["Mean"]=dfx.mean(axis=0, skipna=True)
+    stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
+    stats["Variance"]=dfx.var(axis=0, skipna=True)
+
+    for col in df.columns:
+        if not np.issubdtype(df[col].dtype, np.number):
+            categories = list(df[col].unique())
+            df[col] = pd.Categorical(df[col], categories, ordered=True)
+            stats["Mean"][col] = categories[int( np.median(df[col].cat.codes) )]
+            stats["Std.Dev"][col] = np.std(df[col].cat.codes)
+            stats["Variance"][col] = np.var(df[col].cat.codes)
+    
+    md += stats.sort_values('Variance', ascending=False).to_markdown(tablefmt="github")
+    md += addLine(2)
+    
+    
+    if len(classes) < 15:
+    #     print('\n--------------------------------------------------------------------')
+        md += '###### Labels for TRAIN:'
+        md += addLine(1)
+        md += countClasses_df(train, markd=True)
+        md += addLine(2)
+    #     md += train.describe().to_markdown(tablefmt="github")
+    #     md += addLine(2)
+
+    #     print('\n--------------------------------------------------------------------')
+        md += '###### Labels for TEST.:'
+        md += addLine(1)
+        md += countClasses_df(test, markd=True)
+#         md += addLine(2)
+    #     md += test.describe().to_markdown(tablefmt="github")
+    #     md += addLine(2)
+    
+    if to_file:
+        f = open(to_file, "w")
+        f.write(f''+md)
+        f.close()
+    else:
+        print('\n--------------------------------------------------------------------')
+        print(md)
+    return md
+
+# def datasetStatistics(data_path, folder, file_prefix='', class_col = 'label'):
+# #     from ..main import importer
+# #     importer(['S'], locals())
+    
+#     train = readDataset(data_path, folder, file_prefix+'train.csv', class_col)
+#     test = readDataset(data_path, folder, file_prefix+'test.csv', class_col)
+#     print('\n--------------------------------------------------------------------')
+#     print('Descriptive Statistics for', folder)
+#     sam_train = len(train.tid.unique())
+#     sam_test  = len(test.tid.unique())
+#     points    = len(train) + len(test)
+#     samples = sam_train + sam_test
+#     top_train = train.groupby(['tid']).count().sort_values('label').tail(1)['label'].iloc[0]
+#     bot_train = train.groupby(['tid']).count().sort_values('label').head(1)['label'].iloc[0]
+#     top_test  = test.groupby(['tid']).count().sort_values('label').tail(1)['label'].iloc[0]
+#     bot_test  = test.groupby(['tid']).count().sort_values('label').head(1)['label'].iloc[0]
+#     classes = train[class_col].unique()
+#     avg_size = points / samples
+#     diff_size = max( avg_size - min(bot_train, bot_test) , max(top_train, top_test) - avg_size )
+    
+#     print('Number of Classes:     =>', len(classes))
+#     print('Number of Attributes:  =>', len(train.columns))
+#     print('Number of Trajs:       =>', samples, 'total /', sam_train, 'train +', sam_test, 'test')
+#     print('Number of Points:      =>', points, 'total /', len(train), 'train +', len(test), 'test')
+#     print('Avg Size of Trajs:     =>', '{:.2f}'.format(avg_size), ' / ±', diff_size)
+#     print('Longest Size:          =>', top_train, 'train /', top_test, 'test')
+#     print('Shortest Size:         =>', bot_train, 'train /', bot_test, 'test')
+#     print('Train / Test hold-out: =>', sam_train, '-', '{:.2f}% ..'.format(sam_train*100/samples),
+#                                        sam_test,  '-', '{:.2f}%'.format(sam_test*100/samples))
+    
+#     print('\n--------------------------------------------------------------------')
+#     print('Attributes: ')
+#     print(list(train.columns))
+#     print('\nFeatures Selection (by Variance): ')
+#     stats=pd.DataFrame()
+#     df = train.apply(pd.to_numeric, args=['coerce'])
+#     stats["Mean"]=df.mean(axis=0, skipna=True)#skipna=True)
+#     stats["Std.Dev"]=df.std(axis=0, skipna=True)
+#     stats["Variance"]=df.var(axis=0, skipna=True)
+#     print(stats.sort_values('Variance', ascending=False))
+#     print('\nClasses: ')
+#     print(classes, '\n')
+#     print('\n--------------------------------------------------------------------')
+#     print('Statistics from TRAIN:')
+#     countClasses_df(train)
+#     print()
+#     train.describe()
+#     print('\n--------------------------------------------------------------------')
+#     print('Statistics from TEST.:')
+#     countClasses_df(test)
+#     print()
+#     test.describe()
 
 #-------------------------------------------------------------------------->>
 def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix=''):
@@ -516,167 +665,6 @@ def read_zip(zipFile, cols=None, class_col='label', tid_col='tid', missing='?'):
             df[tid_col]   = filename.split(" ")[1][1:]
             df[class_col] = filename.split(" ")[2][1:-3]
             data = pd.concat([data,df])
-    return data
-
-def convert_zip2csv(folder, file, cols=None, class_col = 'label', tid_col='tid', missing='?'):
-#     from ..main import importer
-    importer(['S', 'zip'], globals())
-    
-#     data = pd.DataFrame()
-    print("Converting "+file+" data from... " + folder)
-    if '.zip' in file:
-        url = os.path.join(folder, file)
-    else:
-        url = os.path.join(folder, file+'.zip')
-        
-#     with ZipFile(url) as z:
-#         files = z.namelist()
-#         files.sort()
-#         for filename in files:
-# #             data = filename.readlines()
-# #             print(filename)
-#             if cols is not None:
-#                 df = pd.read_csv(z.open(filename), names=cols, na_values='?')
-#             else:
-#                 df = pd.read_csv(z.open(filename), header=None, na_values='?')
-#             df['tid']   = filename.split(" ")[1][1:]
-#             df[class_col] = filename.split(" ")[2][1:-3]
-#             data = pd.concat([data,df])
-    print("Done.")
-    data = read_zip(ZipFile(url), cols, class_col, tid_col, missing)
-    return data
-    
-def zip2csv(folder, file, cols, class_col = 'label', tid_col='tid', missing='?'):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-#     data = pd.DataFrame()
-#     print("Converting "+file+" data from... " + folder)
-#     if '.zip' in file:
-#         url = os.path.join(folder, file)
-#     else:
-#         url = os.path.join(folder, file+'.zip')
-#     with ZipFile(url) as z:
-#         for filename in z.namelist():
-# #             data = filename.readlines()
-#             df = pd.read_csv(z.open(filename), names=cols)
-# #             print(filename)
-#             df['tid']   = filename.split(" ")[1][1:]
-#             df[class_col] = filename.split(" ")[2][1:-3]
-#             data = pd.concat([data,df])
-#     print("Done.")
-    data = convert_zip2csv(folder, file, cols, class_col, tid_col, missing)
-    print("Saving dataset as: " + os.path.join(folder, file+'.csv'))
-    data.to_csv(os.path.join(folder, file+'.csv'), index = False)
-    print("Done.")
-    print(" --------------------------------------------------------------------------------")
-    return data
-
-# def convertToCSV(path): 
-# #     from ..main import importer
-# #     importer(['S'], locals())
-    
-#     dir_path = os.path.dirname(os.path.realpath(path))
-#     files = [x for x in os.listdir(dir_path) if x.endswith('.csv')]
-
-#     for file in files:
-#         try:
-#             df = pd.read_csv(file, sep=';', header=None)
-#             print(df)
-#             df.drop(0, inplace=True)
-#             print(df)
-#             df.to_csv(os.path.join(folder, file), index=False, header=None)
-#         except:
-#             pass
-
-def zip2arf(folder, file, cols, tid_col='tid', class_col = 'label', missing='?'):
-    data = pd.DataFrame()
-    print("Converting "+file+" data from... " + folder)
-    if '.zip' in file:
-        url = os.path.join(folder, file)
-    else:
-        url = os.path.join(folder, file+'.zip')
-    with ZipFile(url) as z:
-        for filename in z.namelist():
-#             data = filename.readlines()
-            df = pd.read_csv(z.open(filename), names=cols, na_values=missing)
-#             print(filename)
-            df[tid_col]   = filename.split(" ")[1][1:]
-            df[class_col] = filename.split(" ")[2][1:-3]
-            data = pd.concat([data,df])
-    print("Done.")
-    
-    print("Saving dataset as: " + os.path.join(folder, file+'.csv'))
-    data.to_csv(os.path.join(folder, file+'.csv'), index = False)
-    print("Done.")
-    print(" --------------------------------------------------------------------------------")
-    return data
-
-def convert2ts(data_path, folder, file, cols=None, tid_col='tid', class_col = 'label'):
-    print("Converting "+file+" data from... " + data_path + " - " + folder)
-    data = readDataset(data_path, folder, file, class_col)
-    
-    file = file.replace('specific_',  '')
-    
-    tsName = os.path.join(data_path, folder, folder+'_'+file.upper()+'.ts')
-    tsDesc = os.path.join(data_path, folder, folder+'.md')
-    print("Saving dataset as: " + tsName)
-    if cols == None:
-        cols = [x for x in data.columns if x not in [tid_col, class_col]]
-    
-    f = open(tsName, "w")
-    
-    if os.path.exists(tsDesc):
-        fd = open(tsDesc, "r")
-        for line in fd:
-            f.write("# " + line)
-#         fd.close()
-
-    f.write("#\n")
-    f.write("@problemName " + folder + '\n')
-    f.write("@timeStamps false")
-    f.write("@missing "+ str('?' in data)+'\n')
-    f.write("@univariate "+ ('false' if len(cols) > 1 else 'true') +'\n')
-    f.write("@dimensions " + str(len(cols)) + '\n')
-    f.write("@equalLength false" + '\n')
-    f.write("@seriesLength " + str(len(data[data[tid_col] == data[tid_col][0]])) + '\n')
-    f.write("@classLabel true " + ' '.join([str(x).replace(' ', '_') for x in list(data[class_col].unique())]) + '\n')
-    f.write("@data\n")
-    
-    for tid in data[tid_col].unique():
-        df = data[data[tid_col] == tid]
-        line = ''
-        for col in cols:
-            line += ','.join(map(str, list(df[col]))) + ':'
-        f.write(line + str(df[class_col].unique()[0]) + '\n')
-        
-    f.write('\n')
-    f.close()
-    print("Done.")
-    print(" --------------------------------------------------------------------------------")
-    return data
-
-def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label'):
-    import pm4py
-    if '.xes' in file:
-        url = os.path.join(folder, file)
-    else:
-        url = os.path.join(folder, file+'.xes')
-    
-    print("Converting "+file+" data from... " + folder)
-    log_xes = pm4py.read_xes(url)
-    
-    newName = os.path.join(folder, file.replace('.xes', '')+'.csv')
-    print("Saving dataset as: " + newName)
-    
-    data = pm4py.convert_to_dataframe(log_xes)
-    
-    # TODO tid and label
-    
-    data.to_csv(newName)
-    
-    print("Done.")
-    print(" --------------------------------------------------------------------------------")
     return data
 
 #-------------------------------------------------------------------------->>

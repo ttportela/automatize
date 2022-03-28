@@ -34,6 +34,17 @@ ls_trajs = []
 ls_movs  = []
 # ------------------------------------------------------------
 
+def reset():
+    global from_trajs, to_trajs, sel_attributes, sel_traj, ls_tids, ls_trajs, ls_movs
+    from_trajs = 0
+    to_trajs = 100
+    sel_attributes = []
+    sel_traj = ''
+    # ------------------------------------------------------------
+    ls_tids  = set()
+    ls_trajs = []
+    ls_movs  = []
+
 # app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})
 
 # app = dash.Dash()   #initialising dash app
@@ -122,11 +133,11 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
     return components
 
 def parse_contents(contents, filename, date):
-    content_type, content_string = contents.split(',')
+#     content_type, content_string = contents.split(',')
     
-    return parse_files(contents, filename, date)
+#     return parse_files(contents, filename, date)
 
-def parse_files(contents, filename, date):
+# def parse_files(contents, filename, date):
     content_type, content_string = contents.split(',')
 
     # DECODE DATAFRAME:
@@ -278,6 +289,7 @@ def update_mov_view(list_of_contents, range_value, sel_attribute, model):#, from
 
 
 def render_page_analysis():
+    reset()
     return dcc.Tabs(id="tabs", value='tab-1', children=[
         dcc.Tab(label='Movelets Statistics', value='tab-1', children=[render_content('tab-1')]),
         dcc.Tab(label='Trajectories and Movelets', value='tab-2', children=[render_content('tab-2')]),

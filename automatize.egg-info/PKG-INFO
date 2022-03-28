@@ -1,10 +1,36 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: automatize
-Version: 0.2.0
-Summary: UNKNOWN
-Home-page: UNKNOWN
-Author: UNKNOWN
-Author-email: UNKNOWN
+Version: 0.1.0
+Summary: Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+Home-page: https://github.com/ttportela/automatize
+Author: tarlis
+Author-email: tarlis@tarlis.com.br
 License: UNKNOWN
-Description: UNKNOWN
 Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+---
+
+Welcome to Automatize Framework for Multiple Aspect Trajectory Analysis
+
+- [Analysis](/analysis): Multiple Aspect Trajectory Analysis Tool;
+- [Methods](/methods): Methods for trajectory classification and movelet extraction;
+- [Datasets](/datasets): Datasets descriptions and files;
+- [Experiments](/experiments): Experiments on trajectory datasets and method rankings;
+- [Publications](/publications): Multiple Aspect Trajectory Analysis related publications.
+
+To use Automatize as a python library, find examples in this sample Jupyter Notebbok: [Automatize_Sample_Code.ipynb](./assets/examples/Automatize_Sample_Code.ipynb)
+
+### Reference:
+
+Portela, Tarlis Tortelli; Bogorny, Vania; Bernasconi, Anna; Renso, Chiara. **AutoMATitze: Multi-Aspect Trajectory Data Mining Tool Library.** 2022. 23rd IEEE International Conference on Mobile Data Management (MDM), 2022, pp. xxx-xxx, doi: xxx.
+

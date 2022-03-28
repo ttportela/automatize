@@ -1,7 +1,7 @@
 import os
 import glob2 as glob
 from automatize.assets.config import DATA_PATH
-from automatize.assets.helper.script_inc import getDescName
+from automatize.helper.script_inc import getDescName
 
 DATASET_TYPES = {
     'multiple_trajectories':     'Multiple Aspect Trajectories', 
@@ -64,6 +64,8 @@ def list_datasets_dict(data_path=DATA_PATH):
     
         datasets = []
         for f in files:
+            if f.endswith('-stats.md'):
+                continue
             tmp = os.path.dirname(f).split(os.path.sep)
             name = os.path.basename(f).split('.')[0]
 

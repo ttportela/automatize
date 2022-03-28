@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('.')))
 
 import io
 import base64
-from datetime import datetime
+from datetime import datetime, date
 
 import dash
 from dash import dash_table
@@ -16,21 +16,26 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
 from automatize.helper.CDDiagram import draw_cd_diagram 
-from automatize.results import format_hour
+from automatize.results import format_hour, format_float
 
 from automatize.app_base import app
 from automatize.assets.config import *
-from automatize.assets.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
+
+DATA = None
+# ------------------------------------------------------------
 
 def render_page_results(pathname):
     content = []
     
-    if pathname == '/results':
-        content = render_experiments()
-    else:
-        content = render_method(pathname)
+#     if pathname == '/results':
+    global DATA
+    DATA = None
+    content = render_experiments()
+#     else:
+#         content = render_method(pathname)
         
     return html.Div(children=[
 #         html.H3('Experimental Evaluations', style={'margin':10}),
@@ -48,25 +53,54 @@ def render_method(pathname):
 #     file = glob.glob(os.path.join(DATA_PATH, '*', '*', os.path.basename(pathname)+'.md'))[0]
 #     f = open(file, "r")
 #     return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'})
-        
     
 @app.callback(
     Output(component_id='output-results', component_property='children'),
     Input('input-results-datasets', 'value'),
     Input('input-results-methods', 'value'),
     Input('input-results-classifiers', 'value'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename'),
+    State('upload-data', 'last_modified'),
 )
-def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers=None):
-    return render_experiments(sel_datasets, sel_methods, sel_classifiers)
+def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers=None, 
+                            contents=None, filename=None, fdate=None):
+    if contents is not None:
+        global DATA
+#         print(filename, date)
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        try:
+            if 'csv' in filename:
+#                 df = pd.DataFrame()
+                decoded = io.StringIO(decoded.decode('utf-8'))
+                DATA = [pd.read_csv(decoded), filename, datetime.fromtimestamp(fdate)]
+                return render_experiments(None, None, None)
+            else:
+                return [dbc.Alert("File format invalid (use CSV exported with 'automatize.results.history').", color="danger", style = {'margin':10})] + \
+                    render_experiments(None, None, None)
+        except Exception as e:
+#             raise e
+            print(e)
+            return [dbc.Alert("There was an error processing this file.", color="danger", style = {'margin':10})] + \
+                    render_experiments(None, None, None)
     
-def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, path=EXP_PATH):
+    return render_experiments(sel_datasets, sel_methods, sel_classifiers)
+  
+def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
 #     hsf = os.path.join('automatize', 'assets', 'experiments_history.csv')
 #     from automatize.results import history
 #     df = history(path)
 #     df.to_csv(hsf)
+    global DATA
 
-    time = datetime.fromtimestamp(os.path.getmtime(RESULTS_FILE))
-    df = pd.read_csv(RESULTS_FILE, index_col=0)
+    time = date.today()
+    if DATA:
+        df = DATA[0].copy()
+        time = DATA[2]
+    else:
+        df = pd.read_csv(file, index_col=0)
+        time = datetime.fromtimestamp(os.path.getmtime(file))
     
     df['set'] = df['dataset'] #+ '-' + df['subset']
     
@@ -96,6 +130,25 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
         html.Div([
             html.Div([
                 html.Div([
+                    dcc.Upload(
+                        id='upload-data',
+                        children=html.Div([
+                            'Visualizing '+DATA[1] if DATA else 'Provide results in CSV file',
+                            html.A(' (Drag and Drop or Select Files)')
+                        ]),
+                        style={
+            #                 'width': '90%',
+                            'height': '50px',
+                            'lineHeight': '50px',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '20px'
+                        },
+                        # Allow multiple files to be uploaded
+                        multiple=False
+                    ),
                     html.Strong('Datasets: '),
                     dcc.Dropdown(
                         id='input-results-datasets',
@@ -106,6 +159,8 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
                         value=sel_datasets,
                         style = {'width':'100%'},
                     ),
+                ], style={'width': '50%', 'padding': 10, 'flex': 1}),
+                html.Div([
                     html.Strong('Classifiers: '),
                     dcc.Dropdown(
                         id='input-results-classifiers',
@@ -117,8 +172,6 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
                         value=sel_classifiers,
                         style = {'width':'100%'},
                     ),
-                ], style={'width': '50%', 'padding': 10, 'flex': 1}),
-                html.Div([
                     html.Strong('Methods: '),
                     dcc.Dropdown(
                         id='input-results-methods',
@@ -143,7 +196,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
 def render_experiments_panels(df):
     return dcc.Tabs(id="results-tabs", value='tab-1', children=[
         dcc.Tab(label='Critical Difference', value='tab-1', children=[render_expe_graph(df.copy())]),
-        dcc.Tab(label='Average Ranking', value='tab-2', children=[render_avg_rank(df.copy())]),
+        dcc.Tab(label='Average Ranking', value='tab-2', children=[render_ranks(df.copy())]),
         dcc.Tab(label='Raw Results', value='tab-3', children=[render_expe_table(df.copy())]),
     ])
     
@@ -195,30 +248,67 @@ def render_expe_graph(df):
         html.A("hfawaz/cd-diagram", href='https://github.com/hfawaz/cd-diagram'),
         html.Br(),
         ])
+def render_ranks(df): 
+    return html.Div([
+        html.H4('Accuracy Ranks:'),
+        render_avg_rank(df, rank_col='accuracy', ascending=False),
+        html.Hr(), html.Br(),
+        html.H4('Total Time Ranks:'),
+        render_avg_rank(df, rank_col='total_time', ascending=True, format_func=format_hour),
+        html.Hr(), html.Br(),
+        html.H4('Classification Time Ranks:'),
+        render_avg_rank(df[df['cls_runtime'] > 0], rank_col='cls_runtime', ascending=True, format_func=format_hour),
+        html.Br(),
+    ], style={'margin':10})
 
-def render_avg_rank(df): 
+def render_avg_rank(df, rank_col='accuracy', ascending=False, format_func=format_float): 
     cls_name = 'method'
     ds_key = 'key'
-    rank_col = 'accuracy'
     
-#     m = len(df[cls_name].unique())
-#     nb_datasets = df.groupby([ds_key]).size()
+    components = [html.Br()]
     
-#     sorted_df = df.sort_values([cls_name, ds_key])
-    
-#     print('sorted_df[rank_col]', sorted_df)
-    
-#     rank_data = np.array(sorted_df[rank_col]).reshape(m, nb_datasets)
-#     sorted_df['rank'] = sorted_df[rank_col].rank()
+    for dataset in df['dataset'].unique():
+        dfx = df[df['dataset'] == dataset]
+        dfx['rank'] = dfx[rank_col].rank(ascending=ascending)
+#         print(1, dfx)
+        dfx = dfx.groupby([cls_name, 'classifier']).mean(['rank'])
+#         print(2, dfx)
+        dfx = dfx.sort_values(['rank']).reset_index()
+    #     print(3, dfx)
 
-    sorted_df = df.sort_values([cls_name, ds_key])
-    sorted_df = sorted_df.rank(ascending=True).groupby(cls_name).mean()
-
-    for row in sorted_df.items():
-        print(row)
+        rankItems = []
+        for i in range(len(dfx)):
+            rankItems.append(dbc.ListGroupItem(
+                dbc.Row(
+                    [
+                        dbc.Col(dbc.Badge(str(i+1)+'º', color="light", text_color="primary", className="ms-1")),
+                        dbc.Col(html.Span( METHODS_NAMES[dfx[cls_name][i]] 
+                                          if dfx[cls_name][i] in METHODS_NAMES.keys() else dfx[cls_name][i] )),
+                        dbc.Col(html.Span( CLASSIFIERS_NAMES[dfx['classifier'][i]] 
+                                          if dfx['classifier'][i] in CLASSIFIERS_NAMES.keys() else dfx['classifier'][i] )),
+                        dbc.Col(html.Span( format_func(dfx[rank_col][i]) )),
+                        dbc.Col(html.Span(str(dfx['rank'][i]) + ' (Avg Rank)')),
+                    ]
+                ),
+#                 [
+# #                 html.Span(str(i+1)+'º'),
+                
+#                 dbc.Badge(str(i+1)+'º', color="light", text_color="primary", className="ms-1"),
+#                 html.Span(dfx['rank'][i]),
+#                 html.Span(dfx[cls_name][i]),
+#                 html.Span(dfx['classifier'][i]),
+#                 html.Span(dfx[rank_col][i]),
+#             ], 
+                color="info" if i==0 else "light", style={'width': 'auto'}))
+#             print(i+1, dfx['rank'][i], dfx[cls_name][i], dfx['classifier'][i], dfx[rank_col][i])
+        
+#         components.append(html.Br())
+        components.append(html.H6(dataset+':'))
+        components.append(dbc.ListGroup(rankItems))
+#         components.append(html.Hr()) 
+        components.append(html.Br())
     
-#     print('sorted_df', sorted_df)
-    return underDev('Methods Rank')
+    return html.Div(components)#, style={'margin':10})
 
 def render_expe_table(df):
     

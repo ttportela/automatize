@@ -61,8 +61,9 @@ def oneof(method, ls):
     return any([x for x in ls if x in method])
 
 def trimsuffix(method):
-    end = min(method.find('+') if '+' in method else len(method), method.find('-') if '-' in method else len(method))
-    return method[:end]
+#     end = min(method.find('+') if '+' in method else len(method), method.find('-') if '-' in method else len(method))
+    end = method.find('+') if '+' in method else len(method)
+    return method[:end] #.replace('-2', '').replace('-3', '').replace('-4', '')
 #     return (method.replace('+Log', '').replace('+TF50', '').replace('+TR50', '').replace('+TF75', '').replace('+TR75', '')\
 #                     .replace('+TF', '').replace('+TR', '').replace('-2', '').replace('-3', '').replace('-4', ''))
 
@@ -79,19 +80,22 @@ def configMethod(method, params):
     
     
     if 'hiper' in method:
-        mname = 'HT' if 'hipert' in method else 'H'
+        mname = 'H'
 #         runopts = '-version ' + trimsuffix(method) + ' '
 
-        if 'pivots' in method:
+        if '-pivots' in method:
             mname += 'p'
-        if 'ce' in method:
-            mname += 'ce'
-        if 'random' in method:
-            mname += 'r'
-        if 'entropy' in method:
-            mname += 'en'
+#         if 'ce' in method:
+#             mname += 'ce'
+#         if 'random' in method:
+#             mname += 'r'
+#         if 'entropy' in method:
+#             mname += 'en'
                         
     elif 'ultra' in method:
+#         if 'ultra-wp' in method:
+#             mname = 'Uwp'
+#         else:
         mname = 'U'
 #         runopts = '-version ' + trimsuffix(method) + ' '    
     elif 'random' in method:
@@ -134,8 +138,10 @@ def configMethod(method, params):
     else:
         mname = trimsuffix(method).capitalize() # method.replace('+Log', '')
 #         runopts = '-version ' + trimsuffix(method) + ' '
-       
-            
+        if '-' in trimsuffix(method):
+            mname += trimsuffix(method).split('-', 1)[1]
+
+
 #     if '+TF' in method:
 #         mname += 'f'
     if '+TF' in method:
@@ -165,17 +171,17 @@ def configMethod(method, params):
         islog=False
 
 
-    if '-2' in method:
+    if '+2' in method:
         mname += 'D2'
         if 'SM' in method:
             runopts += '-Al true '
         else:
             runopts += '-mnf -2 '
         
-    if '-3' in method:
+    if '+3' in method:
         mname += 'D3'
         runopts += '-mnf -3 '
-    if '-4' in method:
+    if '+4' in method:
         mname += 'D4'
         runopts += '-mnf -4 '
        
@@ -224,21 +230,38 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     THREADS = str(params['threads'])
     GIG     = str(params['gig'])
     
+    
+    print('DATAPATH="'+data+'"')
+    data = '${DATAPATH}'
+    print('RESPATH="'+results+'"')
+    results = '${RESPATH}'
+    print('MNAME="'+mname+'-'+var+'"')
+    MNAME = '${MNAME}'
+    print()
+    
     if k:
         data = os.path.join(data, '${RUN}')
         results = os.path.join(results, prefix.replace('/', '_'), '${RUN}')
     else:
-        results = os.path.join(results, prefix.replace('/', '_'))
+        results = os.path.join(results, prefix.replace('/', '_'), 'run0')
     
     if k:
         print('for RUN in '+ ' '.join(['"run'+str(x)+'"' for x in list(k)]) )
         print('do')
+        
+#     print('FOLDER="'+results+'"')
+#     results = '${FOLDER}'
     print('DIR="'+results+'"')
-    print('if [ -d "${DIR}/'+mname+'-'+var+'" ]; then')
-    print('   echo "${DIR}/'+mname+'-'+var+'... [OK]"')
-    print('else')
-    
+#     print('DIR="'+ os.path.join('${FOLDER}', mname+'-'+var) +'"')
     results = '${DIR}'
+    DIRF = os.path.join(results, MNAME)
+#     print('if [ -d "${DIR}/'+mname+'-'+var+'" ]; then')
+#     print('   echo "${DIR}/'+mname+'-'+var+'... [OK]"')
+    print('if [ -d "'+DIRF+'" ]; then')
+    print('   echo "'+DIRF+' ... [OK]"')
+    print('else')
+    print()
+    
 #     dsvar = 'specific' if '_ts' not in data else prefix
     dsvar = var if '_ts' not in data else prefix
     
@@ -253,7 +276,8 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             ensemble_methods = [['MML'], ['npoi']]
 #         movelets_method = 'MML' if 'ensemble_methods' not in params else params['ensemble_methods'][0]
 #         pois_method = 'npoi' if 'ensemble_methods' not in params else params['ensemble_methods'][1]
-        print('mkdir -p "${DIR}/'+mname+'-'+var+ '"')
+#         print('mkdir -p "${DIR}/'+mname+'-'+var+ '"')
+        print('mkdir -p "'+DIRF+'"')
         print('')
         
         for movelets_method in ensemble_methods[0]:
@@ -264,12 +288,13 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                     methods = ['movelets_nn', 'marc']
 
                 pois = ('_'.join(params['features']))+'_'+('_'.join([str(n) for n in params['sequences']]))
-                poif_line     = os.path.join('${DIR}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois) #+'_'+var)
-                movelets_line = os.path.join('${DIR}', movelets_method+'-'+var) # IF DIFFERENT METHOD, CHANGE modelfolder NAME!!
+                poif_line     = os.path.join('${FOLDER}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois)
+                # IF DIFFERENT METHOD, CHANGE modelfolder NAME!!
+                movelets_line = os.path.join('${FOLDER}', movelets_method+'-'+var) 
 
                 metsuff = movelets_method+ (pois_method if method != 'TEC2' else '')
                 
-                Ensemble(data, results, prefix, mname+'-'+var, methods=methods, \
+                Ensemble(data, results, prefix, MNAME, methods=methods, \
                      modelfolder='model_'+metsuff, save_results=True, print_only=print_only, pyname=pyname, \
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset=dsvar, num_runs=1,\
                      movelets_line=movelets_line, poif_line=poif_line)
@@ -279,12 +304,12 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         if method == 'MARC':
             train_file = dsvar+"_train.csv" if '_ts' not in data else dsvar+"_TRAIN.ts"
             test_file  = dsvar+"_test.csv"  if '_ts' not in data else dsvar+"_TEST.ts"
-            MARC(data, results, prefix, mname+'-'+var, print_only=print_only, prg_path=os.path.join(prog_path, 'automatize','marc'), 
+            MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=os.path.join(prog_path, 'automatize','marc'), 
                  pyname=pyname, extra_params=GIG+' '+THREADS, train=train_file, test=test_file)
 
 
         elif 'poi' in method: #method == 'npoi' or method == 'poi' or method == 'wnpoi':
-            POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, or_methodsuffix=dsvar if '_ts' not in data else 'specific')
+            POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, or_methodsuffix=dsvar if '_ts' not in data else 'specific', or_folder_alias=MNAME)
 
 
     #     elif 'super' in method:                    
@@ -300,32 +325,32 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 
         elif 'SM' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
-            Movelets(data, results, prefix, mname+'-'+var, json, \
+            Movelets(data, results, prefix, MNAME, json, \
                        Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, \
                        print_only=print_only, jar_name='SUPERMovelets', java_opts='-Xmx'+GIG+'G', \
                        pyname=pyname, timeout=timeout, impl=2)
 
         elif 'MM' in method or 'MMp' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
-            Movelets(data, results, prefix, mname+'-'+var,  json, Ms=islog, n_threads=THREADS, extra=runopts, \
+            Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
                         prg_path=prog_path, print_only=print_only, jar_name='MASTERMovelets', java_opts='-Xmx'+GIG+'G', \
                         pyname=pyname, timeout=timeout, impl=2)
 
         elif 'Movelets' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
-            Movelets(data, results, prefix, mname+'-'+var,  json, Ms=islog, n_threads=THREADS, extra=runopts, \
+            Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
                         prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
                         pyname=pyname, timeout=timeout, impl=1)
 
         elif oneof(method, ['Dodge', 'Xiao', 'Zheng']):
             timeout = params['timeout'] if 'timeout' in params.keys() else None
-            Movelets(data, results, prefix, mname+'-'+var,  json, Ms=islog, n_threads=THREADS, extra=runopts, \
+            Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
                         prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
                         pyname=pyname, timeout=timeout, impl=0)
 
 
         else: #if 'hiper' in method or 'ultra' in method or 'random' in method or 'indexed' in method or method == 'pivots': 
-            Movelets(data, results, prefix, mname+'-'+var, json+'_hp', version=trimsuffix(method), \
+            Movelets(data, results, prefix, MNAME, json+'_hp', version=trimsuffix(method), \
                      Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, print_only=print_only, \
                      jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
 
@@ -334,19 +359,20 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             print('# --------------------------------------------------------------------------------------')
             print('for FOLD in '+ ' '.join(['"run'+str(x)+'"' for x in range(1, params['samples']+1)]) )
             print('do')
-            print(pyname+' '+automatize_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+mname+'-'+var+'"') #MERGE
+            print(pyname+' '+automatize_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             if doacc :
-                print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+mname+'-'+var+'"') #MLP_RF
+                print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
 
         elif doacc and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
             print('# --------------------------------------------------------------------------------------')
-            print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+mname+'-'+var+'"') #MLP_RF
+            print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
             print()
         
-    print('echo "${DIR}/'+mname+'-'+var+' => Done."')
+#     print('echo "${DIR}/'+mname+'-'+var+' => Done."')
+    print('echo "'+DIRF+' ... Done."')
     if call_exit:
         print('exit 1')
     print('fi')

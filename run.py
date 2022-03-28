@@ -38,13 +38,16 @@ def Movelets(data_folder, res_path, prefix, folder, descriptor, version=None, ms
 #     importer(['S'], locals())
     
 #     print('# --------------------------------------------------------------------------------------')
-    print('# ' + res_path + ' - ' +folder)
-    print('# --------------------------------------------------------------------------------------')
+#     print('# ' + res_path + ' - ' +folder)
+#     print('# --------------------------------------------------------------------------------------')
     
     if prefix != None:
         res_folder = os.path.join(res_path, prefix, folder)
     else:
         res_folder = os.path.join(res_path, folder)
+    
+#     print('DIR="'+ res_folder +'"')
+#     res_folder = '${DIR}'
     mkdir(res_folder, print_only)
     
     program = os.path.join(prg_path, jar_name+'.jar')
@@ -220,16 +223,19 @@ def MARC(data_folder, res_path, prefix, folder, train="train.csv", test="test.cs
     importer(['S', 'datetime'], globals())
         
 #     print("# ---------------------------------------------------------------------------------")
-    print("# MARC: " + res_path + ' - ' +folder)
-    print("# ---------------------------------------------------------------------------------")
+#     print("# MARC: " + res_path + ' - ' +folder)
+#     print("# ---------------------------------------------------------------------------------")
 #     print('echo MARC - ' + res_path + ' - ' +folder)
-    print()
+#     print()
     
     if prefix != None:
         res_folder = os.path.join(res_path, prefix, folder)
     else:
         res_folder = os.path.join(res_path, folder)
 #     res_folder = os.path.join(res_path, prefix, folder)
+
+#     print('DIR="'+ res_folder +'"')
+#     res_folder = '${DIR}'
     mkdir(res_folder, print_only)
     
     TRAIN_FILE   = os.path.join(data_folder, train)
@@ -284,24 +290,30 @@ def k_POIFREQ(k, data_folder, res_path, prefix, dataset, sequences, features, me
 #         print(subpath_data, subpath_rslt, None, dataset, sequences, features, py_name, print_only, doclass)
         POIFREQ(subpath_data, subpath_rslt, None, dataset, sequences, features, method, pyname, print_only, doclass)
         
-def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', print_only=False, doclass=True, or_methodsuffix=None):
+def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', print_only=False, doclass=True, or_methodsuffix=None, or_folder_alias=None):
 #     from ..main import importer
 #     importer(['S'], locals())
         
     ds_var = or_methodsuffix if or_methodsuffix else dataset
     result_name =  ('_'.join(features)) +'_'+ ('_'.join([str(n) for n in sequences]))
-    folder = method.upper()+'-'+result_name +'-'+ ds_var
+    
+    if or_folder_alias:
+        folder = or_folder_alias
+    else:
+        folder = method.upper()+'-'+result_name +'-'+ ds_var
     
 #     print("# ---------------------------------------------------------------------------------")
-    print("# "+method.upper()+": " + res_path + ' - ' +folder)
-    print("# ---------------------------------------------------------------------------------")
-    print()
+#     print("# "+method.upper()+": " + res_path + ' - ' +folder)
+#     print("# ---------------------------------------------------------------------------------")
+#     print()
     
     if prefix != None:
         res_folder = os.path.join(res_path, prefix, folder)
     else:
         res_folder = os.path.join(res_path, folder)
         
+#     print('DIR="'+ res_folder +'"')
+#     res_folder = '${DIR}'
     mkdir(res_folder, print_only)
     
     if print_only:
