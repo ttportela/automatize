@@ -1,12 +1,13 @@
 LICENSE
 README.md
-setup.cfg
+pyproject.toml
 setup.py
 assets/__init__.py
 assets/config.py
 automatize.egg-info/PKG-INFO
 automatize.egg-info/SOURCES.txt
 automatize.egg-info/dependency_links.txt
+automatize.egg-info/requires.txt
 automatize.egg-info/top_level.txt
 ensemble/__init__.py
 ensemble/tec.py
