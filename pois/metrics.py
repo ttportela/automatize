@@ -1,10 +1,14 @@
-# from sklearn.metrics import f1_score
-# from sklearn.metrics import accuracy_score
-# from sklearn.metrics import precision_score
-# from sklearn.metrics import recall_score
-# import numpy as np
-# import pandas as pd
-# from datetime import datetime
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+@author: Francisco Vicenzi (adapted)
+'''
 import os, sys
 script_dir = os.path.dirname( __file__ )
 main_dir = os.path.abspath(os.path.join( script_dir, '..' , '..'))

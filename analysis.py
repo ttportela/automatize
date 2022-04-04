@@ -1,52 +1,21 @@
+# -*- coding: utf-8 -*-
 '''
-Created on Jun, 2020
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
 # --------------------------------------------------------------------------------
 # # ANALYSIS
-# import os
-# import sys
-# import numpy as np
-# import pandas as pd
-# import glob2 as glob
-# from datetime import datetime
-
-# from sklearn import preprocessing
-
-# import keras
-# from keras.models import Model
-# from keras.layers import Dense, Dropout, LSTM, Input, Activation
-# from keras import optimizers
-# --------------------------------------------------------------------------------
-# # Para garantir reprodutibilidade
-# from numpy.random import seed
-# import tensorflow # import set_random_seed
 from .main import importer #, display
 importer(['S'], globals())
 
 # --------------------------------------------------------------------------------
 # from automatize.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
 # --------------------------------------------------------------------------------
-
-# def def_random_seed_compat(random_num=1, seed_num=1):
-#     # Para garantir reprodutibilidade
-#     from numpy.random import seed
-#     import tensorflow # import set_random_seed
-#     seed(seed_num)
-#     tensorflow.compat.v1.set_random_seed(random_num)
-    
-# def def_random_seed(random_num=1, seed_num=1):
-#     # Para garantir reprodutibilidade
-#     from numpy.random import seed
-#     import tensorflow # import set_random_seed
-#     seed(seed_num)
-# #     tensorflow.random.set_seed(random_num)
-#     tensorflow.set_random_seed(random_num)
-    
-# --------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------->
-
 def ACC4All(res_path, prefix, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
                    data_path=''):
 #     import os
@@ -60,12 +29,6 @@ def ACC4All(res_path, prefix, save_results = True, modelfolder='model', classifi
 
     filelist = []
     filesList = []
-
-    # 1: Build up list of files:
-#     for files in glob.glob(os.path.join(res_path, prefix, "*.txt")):
-#         fileName, fileExtension = os.path.splitext(files)
-#         filelist.append(fileName) #filename without extension
-#         filesList.append(files) #filename with extension
     
     for files in glob.glob(os.path.join(res_path, prefix, "**", "*.txt")):
         fileName, fileExtension = os.path.splitext(files)
@@ -114,42 +77,6 @@ def ALL_Classifiers(res_path, prefix, dir_path, save_results = True, modelfolder
         if not os.path.exists(os.path.join(dir_path, modelfolder)):
             os.makedirs(os.path.join(dir_path, modelfolder))
         pd.DataFrame(times).to_csv(times_file)
-
-# --------------------------------------------------------------------------------->
-# def RN4All(res_path, prefix, save_results = True, modelfolder='model'):
-#     filelist = []
-#     filesList = []
-
-#     # 1: Build up list of files:
-# #     for files in glob.glob(os.path.join(res_path, prefix, "*.txt")):
-# #         fileName, fileExtension = os.path.splitext(files)
-# #         filelist.append(fileName) #filename without extension
-# #         filesList.append(files) #filename with extension
-    
-#     for files in glob.glob(os.path.join(res_path, prefix, "**", "*.txt")):
-#         fileName, fileExtension = os.path.splitext(files)
-#         method = os.path.basename(fileName)#[:-4]
-#         path = os.path.dirname(fileName)#[:-len(method)]
-#         todo = not os.path.exists( os.path.join(path, 'model') )
-#         empty = not os.path.exists( os.path.join(path, "train.csv") )
-#         if todo and not empty:
-#             ALLRN(path, '', '', save_results, modelfolder)
-#         else:
-#             print(method + (" Done." if not empty else " Empty."))
-            
-# def ALLRN(res_path, prefix, dir_path, save_results = True, modelfolder='model'):
-# #     def_random_seed(random_num, seed_num)
-    
-#     dir_path = os.path.join(res_path, prefix, dir_path)
-    
-#     t_mlp = Classifier_MLP(dir_path, save_results, modelfolder)
-    
-#     # ------
-#     if (save_results) :
-#         if not os.path.exists(os.path.join(dir_path, modelfolder)):
-#             os.makedirs(os.path.join(dir_path, modelfolder))
-#         pd.DataFrame({'SVM': [0], 'RF': [0], 'MLP': [t_mlp]}).to_csv(
-#             os.path.join(dir_path, modelfolder, "classification_times.csv"))
             
 # ----------------------------------------------------------------------------------
 def MLP(res_path, prefix, dir_path, save_results = True, modelfolder='model'):
@@ -274,27 +201,6 @@ def Classifier_SVM(dir_path, save_results = True, modelfolder='model', X_train =
     # ---------------------------------------------------------------------------------
     print("Done. " + str(time) + " milliseconds")
     print("---------------------------------------------------------------------------------")
-    return time
-
-# def SVM_for_all(res_path, prefix):
-#     filelist = []
-#     filesList = []
-
-#     # 1: Build up list of files:
-#     for files in glob.glob(os.path.join(res_path, prefix, "*")):
-#         fileName, fileExtension = os.path.splitext(files)
-#         filelist.append(fileName) #filename without extension
-#         filesList.append(files) #filename with extension
-    
-#     for ijk in filesList:
-#         method = ijk[len(res_path)+len(prefix)+2:]
-#         empty = not os.path.exists( os.path.join(res_path, prefix, method, "train.csv") )
-#         if not empty:
-#             ACC_SVM(prefix, method, modelfolder)
-#         else:
-#             print(method + (" Done." if not empty else " Empty."))
-
-# ----------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------->  
 # Importing the dataset

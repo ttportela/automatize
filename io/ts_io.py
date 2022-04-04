@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
-# *** autoring: adapted from sktime package ***
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+@author sktime package (adapted)
+'''
 import itertools
 import os
 import textwrap
@@ -8,6 +17,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score as acc
 
+from tqdm.auto import tqdm
 
 class TsFileParseException(Exception):
     """
@@ -25,11 +35,11 @@ class LongFormatDataParseException(Exception):
 
     pass
 
-def load_from_tsfile_to_dataframe(full_file_path_and_name,return_separate_X_and_y=False,replace_missing_vals_with="?"):
+def load_from_tsfile_to_dataframe(full_file_path_and_name,return_separate_X_and_y=False,replace_missing_vals_with="?", opLabel='Processing TS'):
     full_file = open(full_file_path_and_name, "r", encoding="utf-8")
-    return load_from_tsfile(full_file,return_separate_X_and_y,replace_missing_vals_with)
+    return load_from_tsfile(full_file,return_separate_X_and_y,replace_missing_vals_with, opLabel)
 
-def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_with="NaN"):
+def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_with="NaN", opLabel='Processing TS'):
     """Loads data from a .ts file into a Pandas DataFrame.
 
     Parameters
@@ -55,9 +65,7 @@ def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_wit
         all time-series and (if relevant) a column "class_vals" the
         associated class values.
     """
-
     # Initialize flags and variables used when parsing the file
-
     metadata_started = False
     data_started = False
 
@@ -74,12 +82,17 @@ def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_wit
     instance_list = []
     class_val_list = []
     line_num = 0
-
+        
     # Parse the file
     # print(full_file_path_and_name)
 #     with full_file as file:
     if file:
-        for line in file:
+#         for line in file:
+        for line in tqdm(file, desc=opLabel):
+#         def readLine(line):
+#             global metadata_started, data_started, has_problem_name_tag, has_timestamps_tag, has_univariate_tag
+#             global has_class_labels_tag, has_data_tag, previous_timestamp_was_int, prev_timestamp_was_timestamp
+#             global num_dimensions, is_first_case, instance_list, class_val_list, line_num
             # Strip white space from start/end of line and change to
             # lowercase for use below
             line = line.strip().lower()
@@ -697,6 +710,7 @@ def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_wit
 
             line_num += 1
 
+#         list(map(lambda line: readLine(line), tqdm(file, desc=opLabel)))
         file.close()
     # Check that the file was not empty
 

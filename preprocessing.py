@@ -1,19 +1,13 @@
+# -*- coding: utf-8 -*-
 '''
-Created on Jun, 2020
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
-# --------------------------------------------------------------------------------
-# # PREPROCESSOR - DATASETS
-# import os
-# from zipfile import ZipFile
-# import pandas as pd
-# import numpy as np 
-# import glob2
-# import random
-# from sklearn.model_selection import train_test_split
-# from sklearn.model_selection import KFold
-# import matplotlib.pyplot as plt
 from .main import importer #, display
 importer(['S', 'glob'], globals())
 from automatize.io.converter import *
@@ -84,76 +78,6 @@ def readAttributes(desc_file):
 #         attrs.append(at['text'])
         
     return attrs
-
-# --------------------------------------------------------------------------------
-def readData_Folders_File(path, col_names, file_ext='.txt', delimiter=',', file_prefix=''):
-#     from ..main import importer
-#     importer(['S', 'glob'], globals())
-    
-    filelist = []
-    filesList = []
-
-    # 1: Build up list of files:
-    for files in glob.glob(os.path.join(path, '**/*'+file_ext )):
-        fileName, fileExtension = os.path.splitext(files)
-        filelist.append(fileName) #filename without extension
-        filesList.append(files) #filename with extension
-    
-    # 2: Create and concatenate in a DF:
-    ct = 1
-    df = pd.DataFrame()
-    for ijk in filesList:
-        frame = pd.read_csv(ijk, names=col_names, sep=delimiter, na_values='?')
-        s = ijk[len(folder):-4].split("/")
-        
-        fname = s[0][:-3]
-        
-        frame['id']    = s[1]
-        frame['tid']   = ct
-        frame['label'] = str(fname).replace(file_prefix, '')
-        frame['time']  = frame.index +1
-        df = pd.concat([df,frame])
-        ct += 1
-#     df['t'] = df.index +1
-#     df = df[['time', 'signal', 'tid', 'id', 'label']]
-#     df.reset_index(level=0, inplace=True)
-    return df
-
-def readData_Files(path, col_names, file_ext='.txt', delimiter=',', file_prefix=''):   
-#     from ..main import importer
-#     importer(['S', 'glob'], globals())
-     
-    filelist = []
-    filesList = []
-
-    # 1: Build up list of files:
-    for files in glob.glob(os.path.join(path, '*'+file_ext)):
-        fileName, fileExtension = os.path.splitext(files)
-        filelist.append(fileName) #filename without extension
-        filesList.append(files) #filename with extension
-    
-    # 2: Create and concatenate in a DF:
-    ct = 1
-    df = pd.DataFrame()
-    for ijk in filesList:
-        frame = pd.read_csv(ijk, names=col_names, sep=delimiter, na_values='?')
-        
-        fname = os.path.basename(ijk)[:-4]
-        frame['label'] = str(fname).replace(file_prefix, '')
-        
-        #2.1: split by activity:
-        ls = splitframe(frame, 'activity_id')
-        for frameAux in ls:
-            frameAux['tid']   = ct
-            ct += 1
-            frameAux.insert(0, 'time', range(1, 1 + len(frameAux)))
-            df = pd.concat([df,frameAux])
-    
-    df.reset_index()
-    
-    return df
-# ----------------------------------------------------------------------------->>
-
 
 # --------------------------------------------------------------------------------
 def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', label_col='label', file=False):
@@ -340,70 +264,11 @@ def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_
         print(md)
     return md
 
-# def datasetStatistics(data_path, folder, file_prefix='', class_col = 'label'):
-# #     from ..main import importer
-# #     importer(['S'], locals())
-    
-#     train = readDataset(data_path, folder, file_prefix+'train.csv', class_col)
-#     test = readDataset(data_path, folder, file_prefix+'test.csv', class_col)
-#     print('\n--------------------------------------------------------------------')
-#     print('Descriptive Statistics for', folder)
-#     sam_train = len(train.tid.unique())
-#     sam_test  = len(test.tid.unique())
-#     points    = len(train) + len(test)
-#     samples = sam_train + sam_test
-#     top_train = train.groupby(['tid']).count().sort_values('label').tail(1)['label'].iloc[0]
-#     bot_train = train.groupby(['tid']).count().sort_values('label').head(1)['label'].iloc[0]
-#     top_test  = test.groupby(['tid']).count().sort_values('label').tail(1)['label'].iloc[0]
-#     bot_test  = test.groupby(['tid']).count().sort_values('label').head(1)['label'].iloc[0]
-#     classes = train[class_col].unique()
-#     avg_size = points / samples
-#     diff_size = max( avg_size - min(bot_train, bot_test) , max(top_train, top_test) - avg_size )
-    
-#     print('Number of Classes:     =>', len(classes))
-#     print('Number of Attributes:  =>', len(train.columns))
-#     print('Number of Trajs:       =>', samples, 'total /', sam_train, 'train +', sam_test, 'test')
-#     print('Number of Points:      =>', points, 'total /', len(train), 'train +', len(test), 'test')
-#     print('Avg Size of Trajs:     =>', '{:.2f}'.format(avg_size), ' / ±', diff_size)
-#     print('Longest Size:          =>', top_train, 'train /', top_test, 'test')
-#     print('Shortest Size:         =>', bot_train, 'train /', bot_test, 'test')
-#     print('Train / Test hold-out: =>', sam_train, '-', '{:.2f}% ..'.format(sam_train*100/samples),
-#                                        sam_test,  '-', '{:.2f}%'.format(sam_test*100/samples))
-    
-#     print('\n--------------------------------------------------------------------')
-#     print('Attributes: ')
-#     print(list(train.columns))
-#     print('\nFeatures Selection (by Variance): ')
-#     stats=pd.DataFrame()
-#     df = train.apply(pd.to_numeric, args=['coerce'])
-#     stats["Mean"]=df.mean(axis=0, skipna=True)#skipna=True)
-#     stats["Std.Dev"]=df.std(axis=0, skipna=True)
-#     stats["Variance"]=df.var(axis=0, skipna=True)
-#     print(stats.sort_values('Variance', ascending=False))
-#     print('\nClasses: ')
-#     print(classes, '\n')
-#     print('\n--------------------------------------------------------------------')
-#     print('Statistics from TRAIN:')
-#     countClasses_df(train)
-#     print()
-#     train.describe()
-#     print('\n--------------------------------------------------------------------')
-#     print('Statistics from TEST.:')
-#     countClasses_df(test)
-#     print()
-#     test.describe()
-
 #-------------------------------------------------------------------------->>
-def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix=''):
+def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix='', \
+                      outformats=['zip', 'csv', 'mat']):
 #     from ..main import importer
     importer(['S', 'random'], globals())
-    
-    # TODO separete/join lat, lon <=> space
-#     df[["lat", "lon"]] = df[["lat", "lon"]].astype(str) # joins:
-#     df['space'] = df['lat'] + ' ' + df['lon']
-#     ll = df['space'].str.split(" ", n = 1, expand = True) # separate:
-#     df["lat"]= ll[0]
-#     df["lon"]= ll[1]
     
     train = pd.DataFrame()
     test = pd.DataFrame()
@@ -423,33 +288,12 @@ def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid'
         print("Train samples: " + str(train.loc[train[class_col] == label][tid_col].unique()))
         print("Test samples: " + str(test.loc[test[class_col] == label][tid_col].unique()))
     
-#     # WRITE Train / Test Files >> FOR MASTERMovelets:
-#     # TODO here goes space column
-#     createZIP(data_path, train, fileprefix+'train', tid_col, class_col)
-#     createZIP(data_path, test, fileprefix+'test', tid_col, class_col)
-
-#     # WRITE Train / Test Files >> FOR V3:
-#     # TODO here goes lat,lon columns
-#     train.to_csv(os.path.join(data_path, fileprefix+"train.csv"), index = False)
-#     test.to_csv(os.path.join(data_path, fileprefix+"test.csv"), index = False)
-    
-    write_trainAndTest(data_path, train, test, tid_col, class_col, fileprefix)
-    
-    return train, test
-
-def write_trainAndTest(data_path, train, test, tid_col='tid', class_col='label', fileprefix=''):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    # WRITE Train / Test Files >> FOR MASTERMovelets:
-    # TODO here goes space column
-    createZIP(data_path, train, fileprefix+'train', tid_col, class_col)
-    createZIP(data_path, test, fileprefix+'test', tid_col, class_col)
-
-    # WRITE Train / Test Files >> FOR V3:
-    # TODO here goes lat,lon columns
-    train.to_csv(os.path.join(data_path, fileprefix+"train.csv"), index = False)
-    test.to_csv(os.path.join(data_path, fileprefix+"test.csv"), index = False)
+    # WRITE Train / Test Files
+    columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+    for outType in outformats:
+        writeFiles(data_path, fileprefix, train, test, tid_col, class_col, \
+                 columns_order_zip if outType == 'zip' else columns_order_csv, outType)
+#     write_trainAndTest(data_path, train, test, tid_col, class_col, fileprefix)
     
     return train, test
 
@@ -486,8 +330,30 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
     
     return columns_order_zip, columns_order_csv
 
+def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spliting Data'):
+    ktrain = []
+    ktest = []
+    for x in range(k):
+        ktrain.append( pd.DataFrame() )
+        ktest.append( pd.DataFrame() )
+
+#     print("Spliting data...")
+    kfold = KFold(n_splits=k, shuffle=True, random_state=random_num)
+#         for label in df[class_col].unique(): 
+    def addData(label):
+        tids = df.loc[df[class_col] == label].tid.unique()
+        x = 0
+        for train_idx, test_idx in kfold.split(tids):
+            ktrain[x] = pd.concat([ktrain[x], df.loc[df[tid_col].isin(tids[train_idx])]])
+            ktest[x]  = pd.concat([ktest[x],  df.loc[df[tid_col].isin(tids[test_idx])]])
+            x += 1
+    list(map(lambda label: addData(label), tqdm(df[class_col].unique(), desc=opLabel)))
+    
+    print("Done.")
+    return ktrain, ktest
+
 def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
-                            columns_order=None, ktrain=None, ktest=None):
+                            columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat']):
 #     from ..main import importer
     importer(['S', 'KFold'], globals())
     
@@ -496,30 +362,11 @@ def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class
     columns_order_zip, columns_order_csv = organizeFrame(df, columns_order, tid_col, class_col)
     
     if not ktrain:
-        ktrain = []
-        ktest = []
-        for x in range(k):
-            ktrain.append( pd.DataFrame() )
-            ktest.append( pd.DataFrame() )
-
-
-        print("Spliting data...")
-        kfold = KFold(n_splits=k, shuffle=True, random_state=random_num)
-        for label in df[class_col].unique(): 
-            tids = df.loc[df[class_col] == label][tid_col].unique()
-    #         print("Trajectory IDs for label: " + label)
-    #         print(tids)
-
-            x = 0
-            for train_idx, test_idx in kfold.split(tids):
-                ktrain[x] = pd.concat([ktrain[x], df.loc[df[tid_col].isin(tids[train_idx])]])
-                ktest[x]  = pd.concat([ktest[x],  df.loc[df[tid_col].isin(tids[test_idx])]])
-                x += 1
-        print("Done.")
+        ktrain, ktest = splitData(df, k, random_num, tid_col, class_col)
     else:
         print("Train and test data provided.")
     
-    print("Writing files...")
+#     print("Writing files...")
     for x in range(k):
         path = 'run'+str(x+1)
         
@@ -530,20 +377,18 @@ def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class
         test_aux  = ktest[x]
             
         
-        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
-        createZIP(data_path, train_aux, os.path.join(path, fileprefix+'train'), tid_col, class_col, select_cols=columns_order_zip)
-        createZIP(data_path, test_aux, os.path.join(path,  fileprefix+'test'), tid_col, class_col, select_cols=columns_order_zip)
-
-        # WRITE CSV Train / Test Files >> FOR HIPERMovelets:
-        train_aux[columns_order_csv].to_csv(os.path.join(data_path, path, fileprefix+"train.csv"), index = False)
-        test_aux[columns_order_csv].to_csv(os.path.join(data_path, path,  fileprefix+"test.csv"), index = False)
+        print("Writing files ... " + str(x+1) +'/'+str(k))
+        for outType in outformats:
+            writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
+                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, \
+                     outType, opSuff=str(x+1))
     print("Done.")
     print(" --------------------------------------------------------------------------------")
     
     return ktrain, ktest
 
 def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
-                            columns_order=None, ktrain=None, ktest=None):
+                            columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat']):
 #     from ..main import importer
     importer(['S', 'KFold'], globals())
     
@@ -552,29 +397,11 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
     columns_order_zip, columns_order_csv = organizeFrame(df, columns_order, tid_col, class_col)
         
     if not ktrain:
-        ktrain = []
-        ktest = []
-        for x in range(k):
-            ktrain.append( pd.DataFrame() )
-            ktest.append( pd.DataFrame() )
-
-        print("Spliting data...")
-        kfold = KFold(k, True, random_num)
-        for label in df[class_col].unique(): 
-            tids = df.loc[df[class_col] == label].tid.unique()
-    #         print("Trajectory IDs for label: " + label)
-    #         print(tids)
-
-            x = 0
-            for train_idx, test_idx in kfold.split(tids):
-                ktrain[x] = pd.concat([ktrain[x], df.loc[df[tid_col].isin(tids[train_idx])]])
-                ktest[x]  = pd.concat([ktest[x],  df.loc[df[tid_col].isin(tids[test_idx])]])
-                x += 1
-        print("Done.")
+        ktrain, ktest = splitData(df, k, random_num, tid_col, class_col)
     else:
         print("Train and test data provided.")
     
-    print("Writing files...")
+#     print("Writing files...")
     for x in range(0, limit, inc):
         path = 'S'+str((x+1)*int(100/k))
         
@@ -588,19 +415,49 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
             test_aux  = pd.concat([test_aux,   ktest[y]])
             
         
+        print("Writing files ... " + str(x+1) +'/'+str(k))
         # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
-        createZIP(data_path, train_aux, os.path.join(path, fileprefix+'train'), tid_col, class_col, select_cols=columns_order_zip)
-        createZIP(data_path, test_aux, os.path.join(path,  fileprefix+'test'), tid_col, class_col, select_cols=columns_order_zip)
+        for outType in outformats:
+            writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
+                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, outType, mat_columns, opSuff=str(x+1))
+#         df2zip(data_path, train_aux, os.path.join(path, fileprefix+'train'), tid_col, class_col, select_cols=columns_order_zip,\
+#               opLabel='Writing TRAIN - ZIP|' + str(x+1))
+#         df2zip(data_path, test_aux, os.path.join(path,  fileprefix+'test'), tid_col, class_col, select_cols=columns_order_zip,\
+#               opLabel='Writing TEST  - ZIP|' + str(x+1))
 
         # WRITE CSV Train / Test Files >> FOR HIPERMovelets:
-        train_aux[columns_order_csv].to_csv(os.path.join(data_path, path, fileprefix+"train.csv"), index = False)
-        test_aux[columns_order_csv].to_csv(os.path.join(data_path, path,  fileprefix+"test.csv"), index = False)
+#         writeOut(data_path, os.path.join(path, fileprefix), train_aux, test_aux, \
+#                  tid_col, class_col, columns_order_csv, 'csv', opSuff=str(x+1))
+#         print('Writing TRAIN / TEST - CSV|' + str(x+1))
+#         train_aux[columns_order_csv].to_csv(os.path.join(data_path, path, fileprefix+"train.csv"), index = False)
+#         test_aux[columns_order_csv].to_csv(os.path.join(data_path, path,  fileprefix+"test.csv"), index = False)
         print(path + '; ', end='')
     print(" Done.")
     print(" --------------------------------------------------------------------------------")
     
     return ktrain, ktest
         
+def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat=['zip'], opSuff=''):
+    if outformat == 'zip':
+        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
+        df2zip(data_path, train, file+'train', tid_col, class_col, select_cols=columns_order,\
+               opLabel='Writing TRAIN - ZIP|' + opSuff)
+        df2zip(data_path, test,  file+'test', tid_col, class_col, select_cols=columns_order, \
+               opLabel='Writing TEST  - ZIP|' + opSuff)
+        
+    elif outformat == 'csv':
+        print('Writing TRAIN / TEST - CSV|' + opSuff)
+        train[columns_order].to_csv(os.path.join(data_path, file+"train.csv"), index = False)
+        test[ columns_order].to_csv(os.path.join(data_path, file+"test.csv"),  index = False)
+        
+    elif outformat == 'mat':
+        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
+        df2mat(train, data_path, file+'train', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
+               opLabel='Writing TRAIN - MAT|' + opSuff)
+        df2mat(test,  data_path, file+'test', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
+               opLabel='Writing TEST  - MAT|' + opSuff)
+        
+    
 #-------------------------------------------------------------------------->>
 def splitframe(data, name='tid'):
 #     from ..main import importer
@@ -623,49 +480,7 @@ def splitframe(data, name='tid'):
 
     return datalist
     
-#-------------------------------------------------------------------------->>
-def createZIP(data_path, df, file, tid_col='tid', class_col='label', select_cols=None):
-#     from ..main import importer
-    importer(['S', 'zip'], globals())
-    
-    EXT = '.r2'
-    if not os.path.exists(data_path):
-        os.makedirs(data_path)
-    zipf = ZipFile(os.path.join(data_path, file+'.zip'), 'w')
-    
-    n = len(str(len(df.index)))
-    tids = df[tid_col].unique()
-    for x in tids:
-        filename = str(x).rjust(n, '0') + ' s' + str(x) + ' c' + str(df.loc[df[tid_col] == x][class_col].iloc[0]) + EXT
-        data = df[df.tid == x]
-        if select_cols is not None:
-            data = data[select_cols]
-        
-        # Remove tid and label:
-        data = data.drop([tid_col, class_col], axis=1)
-        
-        data.to_csv(filename, index=False, header=False)
-        zipf.write(filename)
-        os.remove(filename)
-    
-    # close the Zip File
-    zipf.close()
-    
-#-------------------------------------------------------------------------->>
-def read_zip(zipFile, cols=None, class_col='label', tid_col='tid', missing='?'):
-    data = pd.DataFrame()
-    with zipFile as z:
-        files = z.namelist()
-        files.sort()
-        for filename in files:
-            if cols is not None:
-                df = pd.read_csv(z.open(filename), names=cols, na_values=missing)
-            else:
-                df = pd.read_csv(z.open(filename), header=None, na_values=missing)
-            df[tid_col]   = filename.split(" ")[1][1:]
-            df[class_col] = filename.split(" ")[2][1:-3]
-            data = pd.concat([data,df])
-    return data
+#-------------------------------------------------------------------------->>    
 
 #-------------------------------------------------------------------------->>
 def joinTrainAndTest(dir_path, cols, train_file="train.csv", test_file="test.csv", tid_col='tid', class_col = 'label'):
@@ -722,7 +537,7 @@ def convertDataset(dir_path, k=None, cols = None, tid_col='tid', class_col='labe
             not os.path.exists(os.path.join(dir_path, file+'.zip')):
             print("Saving dataset as: " + os.path.join(dir_path, file+'.zip'))
 #             os.rename(os.path.join(dir_path, file+'.zip'),os.path.join(dir_path, file+'-old.zip'))
-            createZIP(dir_path, df, file, tid_col, class_col, select_cols=columns_order_zip)
+            df2zip(dir_path, df, file, tid_col, class_col, select_cols=columns_order_zip)
         elif os.path.exists(os.path.join(dir_path, file+'.zip')) and \
             not os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')):
             print("Saving dataset as: " + os.path.join(dir_path, file+'.csv'))

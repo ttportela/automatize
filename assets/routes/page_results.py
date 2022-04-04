@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+'''
 import sys, os 
 import pandas as pd
 import glob2 as glob
@@ -18,7 +28,7 @@ from dash.dependencies import Output, Input, State
 from automatize.helper.CDDiagram import draw_cd_diagram 
 from automatize.results import format_hour, format_float
 
-from automatize.app_base import app
+from automatize.assets.app_base import app
 from automatize.assets.config import *
 from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------

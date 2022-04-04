@@ -1,75 +1,18 @@
+# -*- coding: utf-8 -*-
 '''
-Created on Aug, 2020
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
-#TODO: RF não pode fazer aquele reshape?
-#TODO: MARC Model
 from ..main import importer #, display
 importer(['S'], globals())
 
 # --------------------------------------------------------------------------------
 # ANALYSIS By Ensemble Learning Models
-
-# def Ensemble(data_path, results_path, postfix, methods=['movelets','poifreq'], \
-#              modelfolder='model', save_results=True, print_only=False, py_name='python3', \
-#              descriptor='', sequences=[1,2,3], features=['poi'], dataset='specific', num_runs=1,\
-#              movelets_line=None):
-#     import os
-    
-#     ensembles = dict()
-#     for method in methods:
-#         if method is 'poi' or method is 'npoi' or method is 'wnpoi':
-#             from automatize.run import POIFREQ
-# #             sequences = [2, 3]
-# #             features  = ['sequence']
-# #             results_npoi = os.path.join(results_path, prefix, 'npoi')
-#             prefix = ''
-#             core_name = POIFREQ(data_path, results_path, prefix, dataset, sequences, features, \
-#                                 print_only=print_only, doclass=False)
-#             ensembles['npoi'] = core_name
-            
-#         elif method == 'marc':
-#             ensembles['marc'] = data_path
-            
-#         elif method == 'rf':
-#             ensembles['rf'] = data_path
-            
-#         else: # the method is 'movelets':
-#             if movelets_line is None:
-#                 from automatize.run import Movelets
-#                 mname = method.upper()+'L-'+dataset
-#                 prefix = ''
-#                 Movelets(data_path, results_path, prefix, mname, descriptor, Ms=-3, \
-#                          extra='-T 0.9 -BU 0.1 -version '+method, \
-#                          print_only=print_only, jar_name='HIPERMovelets2', n_threads=4, java_opts='-Xmx60G')
-#                 ensembles['movelets'] = os.path.join(results_path, prefix, mname)
-#             else:
-#                 ensembles['movelets'] = movelets_line
-                     
-#     if print_only:
-#         if num_runs == 1:
-#             CMD = py_name + " automatize/Ensemble-cls.py "
-#             CMD = CMD + "\""+data_path+"\" "
-#             CMD = CMD + "\""+os.path.join(results_path, postfix)+"\" "
-#             CMD = CMD + "\""+str(ensembles)+"\" "
-#             CMD = CMD + "\""+dataset+"\" "
-#             print(CMD)
-#             print('')
-#         else:
-#             for i in range(1, num_runs+1):
-#                 print('# Classifier Ensemble run-'+str(i))
-#                 CMD = py_name + " automatize/Ensemble-cls.py "
-#                 CMD = CMD + "\""+data_path+"\" "
-#                 CMD = CMD + "\""+os.path.join(results_path, postfix)+"\" "
-#                 CMD = CMD + "\""+str(ensembles)+"\" "
-#                 CMD = CMD + "\""+dataset+"\" "
-#                 CMD = CMD + "\""+modelfolder+'-'+str(i)+"\" "
-#                 print(CMD)
-#                 print('')
-#     else:
-#         return ClassifierEnsemble(data_path, results_path, ensembles, dataset, save_results, modelfolder)
-
 def ClassifierEnsemble(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble'):
 #     from ..main import importer
     importer(['S', 'datetime', 'tf', 'TEC.report', 'KerasClassifier', 'readDataset'], globals())

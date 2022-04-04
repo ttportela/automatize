@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+'''
 import sys, os 
 import pandas as pd
 sys.path.insert(0, os.path.abspath(os.path.join('.')))
@@ -15,14 +25,12 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-# import dash_uploader as du
 from automatize.preprocessing import readDataset, organizeFrame
 
-# from automatize.assets.base import *
 from automatize.assets.routes.subpage_trajectories import *
 from automatize.assets.routes.subpage_models import *
 
-from automatize.app_base import app
+from automatize.assets.app_base import app
 # ------------------------------------------------------------
 from_trajs = 0
 to_trajs = 100
@@ -160,7 +168,7 @@ def parse_contents(contents, filename, date):
                 decoded = io.BytesIO(decoded)
                 df = read_zip(ZipFile(decoded, "r"))
             elif '.ts' in filename:
-                from automatize.ts_io import load_from_tsfile
+                from automatize.io.ts_io import load_from_tsfile
                 decoded = io.StringIO(decoded.decode('utf-8'))
                 df = load_from_tsfile(decoded, replace_missing_vals_with="?")
 

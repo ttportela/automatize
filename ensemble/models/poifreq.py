@@ -1,6 +1,14 @@
-# import pandas as pd
-# import numpy as np
-# import os
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+@author: Francisco Vicenzi (adapted)
+'''
 from ...main import importer #, display
 importer(['S'], globals())
 
@@ -9,19 +17,7 @@ importer(['S'], globals())
 ### Run Before: poifreq(sequences, dataset, features, folder, result_dir, method='npoi')
 ## --------------------------------------------------------------------------------------------
 def model_poifreq(dir_path):
-
-#     from ..main import importer
     importer(['S', 'POIS'], globals())
-#     from keras.models import Sequential
-#     from keras.layers import Dropout
-#     from keras.layers.core import Dense
-#     from keras.optimizers import Adam
-#     from keras.regularizers import l2
-#     from keras.callbacks import EarlyStopping
-#     from keras.callbacks import History
-#     from metrics import compute_acc_acc5_f1_prec_rec
-#     import numpy as np
-
 
     keep_prob = 0.5
 

@@ -1,34 +1,19 @@
-# MODELS:
-# def model_rf(keys, vocab_size, num_classes, max_length, x_train, y_train, x_test, y_test):
-#     from sklearn.ensemble import RandomForestClassifier
-#     classifier = RandomForestClassifier()
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
-#     nx, nsamples, ny = np.shape(x_train)
-#     x_train = x_train.reshape((nsamples,nx*ny))
-#     nx, nsamples, ny = np.shape(x_test)
-#     x_test = x_test.reshape((nsamples,nx*ny))
+Created on Dec, 2021
+License GPL v.3 or superior
 
-#     print("[Data Model:] Building random forrest")
-#     classifier = RandomForestClassifier(n_estimators=500, n_jobs = -1, random_state = 1, criterion = 'gini', bootstrap=True)
-#     classifier.fit(x_train, y_train)
-#     print("[Data Model:] OK")
-
-# #     return classifier.predict_proba(x_test)
-#     return classifier
+@author: Tarlis Portela
+@author: Carlos Andres Ferreira (adapted)
+'''
 from ...main import importer #, display
 importer(['S'], globals())
 
 def model_movelets_mlp(folder):
-
-#     from ..main import importer
     importer(['S', 'report', 'loadData', 'MLP'], globals())
-#     from keras.models import Sequential
-#     from keras.layers import Dense, Dropout
-#     from keras.optimizers import Adam
-#     import os
-#     import pandas as pd
-#     from automatize.analysis import loadData
-#     from automatize.Methods import classification_report, classification_report_csv, calculateAccTop5, f1
     
     
     X_train, y_train, X_test, y_test = loadData(folder) # temp

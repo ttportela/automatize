@@ -8,22 +8,28 @@ License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
-import sys, os 
-sys.path.insert(0, os.path.abspath(os.path.join('.')))
+import dash
+import dash_bootstrap_components as dbc
 
-# from automatize.main import importer
-# importer(['S', 'mergeDatasets'], globals())
-from automatize.run import mergeDatasets
+import flask
+from automatize.assets.config import page_title
 
-if len(sys.argv) < 1:
-    print('Please run as:')
-    print('\tMergeDatasets.py', 'PATH TO FOLDER')
-    print('Example:')
-    print('\tensemble-cls.py', '"./results/HiPerMovelets"')
-    exit()
-
-results_path = sys.argv[1]
+# Server Config
+HOST = '0.0.0.0'
+PORT = 8050
+DEBUG = True
 
 
-mergeDatasets(results_path, 'train.csv')
-mergeDatasets(results_path, 'test.csv')
+# Boostrap CSS.
+external_stylesheets=[dbc.themes.BOOTSTRAP]
+
+# app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True, 
+#                 title=page_title, suppress_callback_exceptions=True)
+# server = app.server
+
+server = flask.Flask('automatize')
+
+app = dash.Dash('automatize', server=server,external_stylesheets=external_stylesheets)
+app.config.suppress_callback_exceptions = True
+app.title = page_title
+app._favicon = 'favicon.ico'

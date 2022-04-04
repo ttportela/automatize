@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+'''
 import sys, os 
 script_dir = os.path.dirname( __file__ )
 main_dir = os.path.abspath(os.path.join( script_dir, '..' , '..'))
@@ -24,19 +34,6 @@ RESULTS_DIR = sys.argv[6]
 time = datetime.now()
 poifreq(SEQUENCES, DATASET, FEATURES, path_name, RESULTS_DIR, method=METHOD, save_all=True, doclass=False)
 time_ext = (datetime.now()-time).total_seconds() * 1000
-
-# name = ('_'.join(FEATURES))+'_'+('_'.join([str(n) for n in SEQUENCES]))+'_'+DATASET
-# OUTPUT_FILE = METHOD #'classification-results'
-# time = datetime.now()
-# from automatize.ensemble_models.poifreq_model import model_poifreq
-# os.system('automatize/poifreq/classification-p.py "npoi" "'+name+'" "'+RESULTS_DIR+'" "'+OUTPUT_FILE+'"')
-# time_cls = (datetime.now()-time).total_seconds() * 1000
-
-# f=open(os.path.join(RESULTS_DIR, OUTPUT_FILE+'.txt'), "a+")
-# f.write("Processing time: %d milliseconds\r\n" % (time_ext))
-# f.write("Classification time: %d milliseconds\r\n" % (time_cls))
-# f.write("Total time: %d milliseconds\r\n" % (time_ext+time_cls))
-# f.close()
 
 print("Done. Processing time: " + str(time_ext) + " milliseconds")
 print("# ---------------------------------------------------------------------------------")

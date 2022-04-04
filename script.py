@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
 '''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
 Created on Feb, 2021
+License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
@@ -83,14 +88,14 @@ def configMethod(method, params):
         mname = 'H'
 #         runopts = '-version ' + trimsuffix(method) + ' '
 
-        if '-pivots' in method:
-            mname += 'p'
-#         if 'ce' in method:
-#             mname += 'ce'
-#         if 'random' in method:
-#             mname += 'r'
-#         if 'entropy' in method:
-#             mname += 'en'
+#         if '-pivots' in method:
+#             mname += 'p'
+# #         if 'ce' in method:
+# #             mname += 'ce'
+# #         if 'random' in method:
+# #             mname += 'r'
+# #         if 'entropy' in method:
+# #             mname += 'en'
                         
     elif 'ultra' in method:
 #         if 'ultra-wp' in method:
@@ -104,8 +109,8 @@ def configMethod(method, params):
 
     elif 'super' in method:
         mname = 'S2'
-        if 'class' in method:
-            mname = 'SC'
+#         if 'class' in method:
+#             mname = 'SC'
 #         runopts = '-version ' + trimsuffix(method) + ' '
 
     elif 'master' in method:
@@ -138,8 +143,22 @@ def configMethod(method, params):
     else:
         mname = trimsuffix(method).capitalize() # method.replace('+Log', '')
 #         runopts = '-version ' + trimsuffix(method) + ' '
-        if '-' in trimsuffix(method):
-            mname += trimsuffix(method).split('-', 1)[1]
+
+    if '-' in trimsuffix(method):
+        suff = trimsuffix(method).split('-', 1)[1:]
+        for s in suff:
+            if s == 'pivots':
+                mname += 'p'
+#             elif s == 'ce':
+#                 mname += 'ce'
+            elif s == 'random':
+                mname += 'r'
+            elif s == 'entropy':
+                mname += 'en'
+            elif s == 'class':
+                mname += 'C'
+            else:
+                mname += s
 
 
 #     if '+TF' in method:
@@ -184,6 +203,16 @@ def configMethod(method, params):
     if '+4' in method:
         mname += 'D4'
         runopts += '-mnf -4 '
+        
+    if '+Ms' in method:
+        Ms = int(method[method.find('+Ms')+3:method.find('+Ms')+5])
+        mname += 'S'+str(Ms)
+        runopts += '-Ms ' + str(Ms) + ' '
+        
+    if '+ms' in method:
+        Ms = int(method[method.find('+ms')+3:method.find('+ms')+5])
+        mname += 's'+str(Ms)
+        runopts += '-ms ' + str(Ms) + ' '
        
     if 'samples' in params.keys():
         runopts += '-fold '+str(params['samples'])+' '

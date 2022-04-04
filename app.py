@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
 Created on Dec, 2021
+License GPL v.3 or superior
 
 @author: Tarlis Portela
 '''
@@ -21,28 +25,12 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-# import dash_uploader as du
-
-# from automatize.assets.base import *
-# from automatize.assets.page_trajectories import *
-# from automatize.assets.page_models import *
 from automatize.assets.routes.page_analysis import render_page_analysis
 from automatize.assets.routes.page_datasets import render_page_datasets
 from automatize.assets.routes.page_experiments import render_page_experiments
 from automatize.assets.routes.page_results import render_page_results
 
-# Boostrap CSS.
-# external_stylesheets=[dbc.themes.BOOTSTRAP]
-
-# app = dash.Dash(__name__, external_stylesheets=external_stylesheets,prevent_initial_callbacks=True, title='Multiple Aspect Trajectories Analytics')
-
-# configure the upload folder
-# du.configure_upload(app, r".automatize/assets/tmp")
-
-# app = dash.Dash(__name__,prevent_initial_callbacks=True, title='Multiple Aspect Trajectories Analytics')
-# server = app.server 
-
-from automatize.app_base import app
+from automatize.assets.app_base import *
 from automatize.assets.config import *
 # ------------------------------------------------------------
 
@@ -145,36 +133,10 @@ app.layout = html.Div(id = 'parent', children = [
                         ),
                     ]),
                 ]),
-#                 ]),
-
-#                 html.Img(
-#                     src='data:image/png;base64,{}'.format(
-#                         base64.b64encode(
-#                             open(
-#                                 './assets/GitHub-Mark-{}64px.png'.format(
-#                                     'Light-' if light_logo else ''
-#                                 ),
-#                                 'rb'
-#                             ).read()
-#                         ).decode()
-#                     )
-#                 )
             ],
         ),
     
         html.Div(id='page-content'),
-#         html.H2(id = 'H2', children = 'Tarlis\'s Multiple Aspect Trajectory Analysis', style = {'textAlign':'center',\
-#                                             'marginTop':20,'marginBottom':20}),  
-#         dcc.Tabs(id="tabs", value='tab-1', children=[
-#             dcc.Tab(label='Movelets Statistics', value='tab-1', children=[render_content('tab-1')]),
-#             dcc.Tab(label='Trajectories and Movelets', value='tab-2', children=[render_content('tab-2')]),
-#             dcc.Tab(label='Movelets', value='tab-3', children=[render_content('tab-3')]),
-#             dcc.Tab(label='Movelets Graph', value='tab-4', children=[render_content('tab-4')]),
-# #             dcc.Tab(label='Movelets Sankey', value='tab-5', children=[render_content('tab-5')]),
-# #             dcc.Tab(label='Movelets Tree', value='tab-6', children=[render_content('tab-6')]),
-#         ]),
-#         html.Div(id='tabs-content'),
-#         render_content('tab-1'),
     ]
 )
 
@@ -193,4 +155,5 @@ def render_page_home():
     ], style={'margin': '20px'})
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+#     app.run_server(debug=True)
+    app.run_server(host=HOST, port=PORT, debug=DEBUG)

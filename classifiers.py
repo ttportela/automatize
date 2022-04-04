@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
 '''
-Created on May 16, 2018
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
-@author: andres
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+@author: Carlos Andres Ferreira (adapted)
 '''
-# from sklearn.metrics import classification_report
-# from _dummy_thread import exit
 from .main import importer #, display
 importer(['S', 'K'], globals())
 
@@ -358,41 +362,6 @@ def f1(y_true, y_pred):
     precision = precision(y_true, y_pred)
     recall = recall(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
-# ----------------------------------------------------------------------------------
-
-
-# def classification_report_csv(report, reportfile, classifier):
-#     report_data = []
-#     lines = report.split('\n')   
-#     for line in lines[2:(len(lines)-3)]:
-#         row = {}        
-#         row_data = line.split()
-#         row['class'] = row_data[0]
-#         row['classifier'] = classifier
-#         row['precision'] = float(row_data[1])
-#         row['recall'] = float(row_data[2])
-#         row['f1_score'] = float(row_data[3])
-#         row['support'] = float(row_data[4])
-#         print(row)
-#         report_data.append(row)
-#     import pandas as pd
-#     dataframe = pd.DataFrame.from_dict(report_data)
-#     dataframe.to_csv(reportfile, index = False)
-
-# ---------------------------------------------------------------------------------
-# def calculateAccTop5(classifier, X_test, y_test, K ):
-#     import numpy as np
-#     y_test_pred = classifier.predict_proba(X_test)
-#     order=np.argsort(y_test_pred, axis=1)
-#     n=classifier.classes_[order[:, -K:]]
-#     soma = 0;
-#     for i in range(0,len(y_test)) :
-#         if ( y_test[i] in n[i,:] ) :
-#             soma = soma + 1
-#     accTopK = soma / len(y_test)
-    
-#     return accTopK
-
 
 # by Tarlis ---------------------------------------------------------------------------------
 def calculateAccTop5(classifier, X_test, y_test, K ):

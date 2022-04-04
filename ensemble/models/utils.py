@@ -1,11 +1,20 @@
+# -*- coding: utf-8 -*-
+'''
+Automatize: Multi-Aspect Trajectory Data Mining Tool Library
+The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Dec, 2021
+License GPL v.3 or superior
+
+@author: Tarlis Portela
+@author: Lucas May Petry (adapted)
+'''
+
 ###############################################################################
 #   GOHASH
 ###############################################################################
 from ...main import importer
 importer(['np','gh'], globals())
-# import geohash2 as gh
-# import numpy as np
-
 
 base32 = ['0', '1', '2', '3', '4', '5', '6', '7',
           '8', '9', 'b', 'c', 'd', 'e', 'f', 'g',
