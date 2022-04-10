@@ -53,9 +53,6 @@ def Movelets(data_folder, res_path, prefix, folder, descriptor, version=None, ms
     
     CMD = '-nt %s' % str(n_threads)
     
-    if os.path.sep not in descriptor:
-        descriptor = os.path.join(data_folder, descriptor)
-    
     if impl == 1:
         CMD = CMD + ' -q LSP -p false'
     elif impl == 2:
@@ -63,7 +60,14 @@ def Movelets(data_folder, res_path, prefix, folder, descriptor, version=None, ms
     elif impl > 2 and version:
         CMD = CMD + ' -version ' + version
 
-    CMD = 'java '+java_opts+' -jar "'+program+'" -curpath "'+data_folder+'" -respath "'+res_folder+'" -descfile "'+ descriptor + '.json" ' + CMD
+    if descriptor:
+        if os.path.sep not in descriptor:
+            descriptor = os.path.join(data_folder, descriptor)
+        CMD = '-descfile "'+ descriptor + '.json" ' + CMD
+#     else:
+#         CMD = '-inprefix "'+ prefix + '" ' + CMD
+
+    CMD = 'java '+java_opts+' -jar "'+program+'" -curpath "'+data_folder+'" -respath "'+res_folder+'" ' + CMD
     
     if timeout:
         CMD = 'timeout '+timeout+' '+CMD

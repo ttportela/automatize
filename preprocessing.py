@@ -33,6 +33,10 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
     elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
         file = file.replace('.csv', '.zip')
         df = convert_zip2csv(data_path, file, class_col=class_col)
+    elif '.mat' in url or os.path.exists(url.replace('.csv', '.mat')):
+        importer(['ts_io'], globals())
+        url = url.replace('.csv', '.mat')
+        df = mat2df(url, replace_missing_vals_with=missing)
     elif '.ts' in url or os.path.exists(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')):
         importer(['ts_io'], globals())
         url = url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')
@@ -152,7 +156,8 @@ def countClasses_df(df, tid_col = 'tid', class_col = 'label', markd=False):
     md = "Number of Samples: " + str(len(df[tid_col].unique()))
     md += '\n\r'
     md += "Samples by Class:"
-    
+    md += '\n\r'
+        
     if markd:
         md += '\n\r'
         md += df2.value_counts().to_markdown(tablefmt="github", headers=["Label", "#"])
@@ -226,6 +231,7 @@ def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_
     stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
     stats["Variance"]=dfx.var(axis=0, skipna=True)
 
+    df.fillna('?', inplace=True)
     for col in df.columns:
         if not np.issubdtype(df[col].dtype, np.number):
             categories = list(df[col].unique())
@@ -309,6 +315,8 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
     elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
         if 'lat_lon' in df.columns:
             df.rename(columns={'lat_lon': 'space'}, inplace=True)
+            if columns_order is not None:
+                columns_order[columns_order.index('lat_lon')] = 'space'
         
         ll = df['space'].str.split(" ", n = 1, expand = True) 
         df["lat"]= ll[0]

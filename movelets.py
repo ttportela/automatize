@@ -117,31 +117,7 @@ def read_movelets_statistics(file_name, name='movelets', count=0):
 
             count += 1
 
-        used_features = {x:used_features.count(x) for x in used_features}
-    return used_features, df_stats[['movelet_id', 'tid', 'label', 'size', 'quality', 'n_features', 'features']]
-
-def movelets_statistics(movelets):
-    importer(['json'], globals())
-    
-    df_stats = pd.DataFrame()
-    used_features = []
-    l = len(movelets)
-    for m in movelets:
-        points = m.data
-
-        df_stats = df_stats.append({
-            'movelet_id': m.mid,
-            'tid': m.tid,
-            'label': m.label,
-            'size': m.size,
-            'quality': m.quality,
-            'n_features': len(points[0].keys()),
-            'features': str(list(points[0].keys())),
-        }, ignore_index=True)
-
-        used_features = used_features + list(points[0].keys())
-
-    used_features = {x:used_features.count(x) for x in used_features}
+        used_features = {x:used_features.count(x) for x in set(used_features)}
     return used_features, df_stats[['movelet_id', 'tid', 'label', 'size', 'quality', 'n_features', 'features']]
 
 def read_movelets_statistics_bylabel(path_name, name='movelets'):
@@ -154,8 +130,9 @@ def read_movelets_statistics_bylabel(path_name, name='movelets'):
         stats = aux_df.describe()
         count += len(aux_df['movelet_id'].unique())
         
+        label = aux_df['label'].unique()[0]
         stats = {
-            'label': aux_df['label'].unique()[0],
+            'label': label,
             'movelets': len(aux_df['movelet_id'].unique()),
             'mean_size': stats['size']['mean'],
             'min_size': stats['size']['min'],
@@ -181,15 +158,59 @@ def read_movelets_statistics_bylabel(path_name, name='movelets'):
     cols = cols + [x for x in df.columns if x not in cols]
     return redefine_dataframe(df[cols])
 
-def movelets_statistics_bylabel(used_features, df, label='label'):
+def movelets_statistics(movelets):
+    importer(['json'], globals())
+    
     df_stats = pd.DataFrame()
-    for lbl in df[label].unique():
-        aux_df = df[df[label] == lbl]
+#     used_features = {}
+    l = len(movelets)
+    def processMov(m):
+#     for m in movelets:
+        points = m.data
+
+        stats = {
+            'movelet_id': m.mid,
+            'tid': m.tid,
+            'label': m.label,
+            'size': m.size,
+            'quality': m.quality,
+            'n_features': len(points[0].keys()),
+#             'features': ', '.join(list(points[0].keys())),
+        }
+        
+        stats.update({k: 1 for k in list(points[0].keys())})
+    
+        return stats#df_stats.append(stats, ignore_index=True)
+
+    df_stats = pd.DataFrame.from_records( list(map(lambda m: processMov(m), movelets)) )
+#         if m.label not in used_features.keys():
+#             used_features[m.label] = []
+#         used_features[m.label] = used_features[m.label] + list(points[0].keys())
+
+#     used_features = {l: {x: used_features[l].count(x) for x in used_features[l]} for l in used_features.keys()}
+#     return used_features, df_stats[['movelet_id', 'tid', 'label', 'size', 'quality', 'n_features', 'features']]
+    cols = ['movelet_id', 'tid', 'label', 'size', 'quality', 'n_features']#, 'features']
+    cols = cols + [x for x in df_stats.columns if x not in cols]
+    return df_stats[cols]
+
+def movelets_statistics_bylabel(df, label='label'):
+    df_stats = pd.DataFrame()
+    
+    def countFeatures(used_features, f):
+        for s in f.split(', '):
+            used_features[s] = used_features[s]+1 if s in used_features.keys() else 1
+
+    cols = ['movelet_id', 'tid', 'label', 'size', 'quality', 'n_features']
+    feat_cols = [x for x in df.columns if x not in cols]
+            
+    def processLabel(lbl):
+#     for lbl in df[label].unique():
+        aux_df = df[df['label'] == lbl]
         stats = aux_df.describe()
 #         count += len(aux_df['movelet_id'].unique())
-        
+
         stats = {
-            'label': aux_df['label'].unique()[0],
+            'label': lbl,
             'movelets': len(aux_df['movelet_id'].unique()),
             'mean_size': stats['size']['mean'],
             'min_size': stats['size']['min'],
@@ -204,11 +225,17 @@ def movelets_statistics_bylabel(used_features, df, label='label'):
 #             'features': str(list(points[0].keys())),
         }
         
-        stats.update(used_features)
+        stats.update({k: aux_df[k].sum() for k in feat_cols})
+
+#         used_features = dict()
+#         list(map(lambda f: countFeatures(used_features, f), aux_df['features']))
+#         stats.update(used_features[label])
+#         print(used_features)
+        return stats
+#         df_stats = df_stats.append(stats, ignore_index=True)
         
-        df_stats = df_stats.append(stats , ignore_index=True)
-        
-#     print(df)
+    df_stats = pd.DataFrame.from_records( list(map(lambda lbl: processLabel(lbl), df[label].unique())) )
+#     print(df_stats)
     cols = ['label', 'movelets', 'mean_quality', 'min_quality', 'max_quality', 
             'mean_size', 'min_size', 'max_size',
             'mean_n_features', 'min_n_features', 'max_n_features']

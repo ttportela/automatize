@@ -172,17 +172,7 @@ def configMethod(method, params):
     elif '+T' in method:
         mname += 'TF'+method[method.find('+T')+2:method.find('+T')+4]
         runopts += '-TF 0.' + method[method.find('+T')+2:method.find('+T')+4] + ' '
-#     elif '+TR' in method:
-#         if '+TR50' in method:
-#             mname += 'TR50'
-#             runopts += '-TR 0.5 '
-#         elif '+TR75' in method:
-#             mname += 'TR75'
-#             runopts += '-TR 0.75 '
-#         else:
-#             runopts += '-TR ' + ('0.5' if 'super' in method else '0.9') + ' '
-       
-
+        
     if '+Log' in method:
         islog = -3
         mname += 'L'
@@ -378,8 +368,9 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                         pyname=pyname, timeout=timeout, impl=0)
 
 
-        else: #if 'hiper' in method or 'ultra' in method or 'random' in method or 'indexed' in method or method == 'pivots': 
-            Movelets(data, results, prefix, MNAME, json+'_hp', version=trimsuffix(method), \
+        else: #if 'hiper' in method or 'ultra' in method or 'random' in method or 'indexed' in method or method == 'pivots':
+            desc = json+'_hp' if 'use.mat' in params and not params['use.mat'] else None
+            Movelets(data, results, prefix, MNAME, desc, version=trimsuffix(method), \
                      Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, print_only=print_only, \
                      jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
 

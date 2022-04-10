@@ -17,17 +17,21 @@ DATASET_TYPES = {
     'multiple_trajectories':     'Multiple Aspect Trajectories', 
     'raw_trajectories':          'Raw Trajectories', 
     'semantic_trajectories':     'Semantic Trajectories', 
+    'process':                   'Event Logs',
     'multivariate_ts':           'Multivariate Time Series', 
     'univariate_ts':             'Univariate Time Series',
 }
 
 SUBSET_TYPES = {
-   '*.specific': 'Multiple',
+   '*.specific':                     'Multiple',
    'multiple_trajectories.specific': 'Multiple Aspect',
    'raw_trajectories.specific':      'Raw',
    'semantic_trajectories.specific': 'Semantic',
    'multivariate_ts.specific':       'Multivariate',
    'univariate_ts.specific':         'Univariate',
+#    'process.specific':               'Event Log',
+   'process.process':                'Event Log',
+   'process.*':                      'Semantic',
     
    '*.raw':      'Spatio-Temporal',
     
@@ -101,11 +105,14 @@ def list_subsets(dataset, category, file, return_files=False):
     if 'specific' in subsets:
         subsets.remove('specific')
         subsets.insert(0, 'specific')
+        
+#     if len(subsets) == 0:
+#         subsets = [category]
 
     return subsets
 
 # ------------------------------------------------------------
-def translateDesc(dataset, category, descName):        
+def translateDesc(dataset, category, descName):
     dst, dsn = descName.split('.')[0].split('_')[0:2]
     if dsn in ['allfeat', '5dims']:
         return False
@@ -122,6 +129,8 @@ def translateCategory(dataset, category, descName=None):
             return SUBSET_TYPES[category+'.'+descName]
         elif ('*.'+descName) in SUBSET_TYPES.keys():
             return SUBSET_TYPES['*.'+descName]
+        elif (category+'.*') in SUBSET_TYPES.keys():
+            return SUBSET_TYPES[category+'.*']
         else:
             return descName.capitalize()
         

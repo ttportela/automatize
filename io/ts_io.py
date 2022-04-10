@@ -83,6 +83,9 @@ def load_from_tsfile(file,return_separate_X_and_y=False,replace_missing_vals_wit
     class_val_list = []
     line_num = 0
         
+    # Fix use of parameter:
+    replace_missing_vals_with = str(replace_missing_vals_with)
+        
     # Parse the file
     # print(full_file_path_and_name)
 #     with full_file as file:

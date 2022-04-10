@@ -207,7 +207,8 @@ def any2ts(data_path, folder, file, cols=None, tid_col='tid', class_col = 'label
     print(" --------------------------------------------------------------------------------")
     return data
 
-def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label', opLabel='Converting XES', save=False):
+def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label', opLabel='Converting XES', save=False, start_tid=1):
+    start_tid = start_tid-1
     def getTrace(log, tid):
         t = dict(log[tid].attributes)
     #     t.update(log[tid].attributes)
@@ -215,8 +216,13 @@ def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label', opLabel
     
     def getEvent(log, tid , j, attrs):
         ev = dict(log[tid][j])
+        
+        eqattr = set(attrs.keys()).intersection(set(ev.keys()))
+        for k in eqattr:
+            attrs[k+'_t'] = attrs.pop(k)
+        
         ev.update(attrs)
-        ev['tid'] = tid+1
+        ev['tid'] = start_tid+tid+1
         return ev
     
     
@@ -249,7 +255,7 @@ def xes2csv(folder, file, cols=None, tid_col='tid', class_col = 'label', opLabel
     print(" --------------------------------------------------------------------------------")
     return df
 
-def df2mat(df, folder, file, cols=None, mat_cols=None, desc_cols=None, 
+def df2mat(df, folder, file, cols=None, mat_cols=None, desc_cols=None, label_columns=None, other_dsattrs=None,
            tid_col='tid', class_col='label', opLabel='Converting MAT'):
     
     if '.mat' in file:
@@ -264,30 +270,42 @@ def df2mat(df, folder, file, cols=None, mat_cols=None, desc_cols=None,
         cols = list(df.columns)
     cols = [x for x in cols if x not in [tid_col, class_col]]
     
+    if mat_cols:
+        mat_cols = [x for x in mat_cols if x not in [tid_col, class_col]]
+    
     f = open(url, "w")
     f.write("# Dataset: " + os.path.basename(folder) + ' (comment description)\n')
     f.write("@problemName " + os.path.basename(folder) + '\n')
+    
+    if label_columns:
+        f.write('@labelColumns ' + (','.join(label_columns)) + '\n')
+        
     f.write("@missing "+ str(df.apply(lambda ts: '?' in ts.values, axis=1).any() or df.isnull().any().any())+'\n')
     f.write("@aspects " + str(len(cols)) + '\n')
     f.write('@aspectNames ' + (','.join(cols)) + '\n')
     if mat_cols:
         f.write('@trajectoryAspectNames ' + (','.join(mat_cols)) + '\n')
+        
     if not desc_cols:
         # dictionary in the format: {'aspectName': 'type', 'aspectName': 'type'}
-        desc_cols = {k: 'numeric' if np.issubdtype(df[k].dtype, np.number) else 'nominal' for k in df.columns}
+        desc_cols = {k: 'numeric' if np.issubdtype(df.dtypes[k], np.number) else 'nominal' for k in df.columns}    
     f.write('@aspectDescriptor ' + (','.join(':'.join((key,val)) for (key,val) in desc_cols.items())) + '\n')
+    
+    if other_dsattrs:
+        for k,v in other_dsattrs:
+            f.write('@'+k+' ' + (','.join(v)) + '\n')
+    
     f.write("@data\n")
-        
     def getTrace(df, tid):
         s = ''
         s += '@trajectory \n' + str(tid) + ',' + str(df[class_col].values[0]) + '\n'
         if mat_cols:
             s += '@trajectoryAspects\n'
-            s += df[mat_cols][0:1].to_csv(index=False,header=False)
+            s += df[mat_cols][0:1].to_csv(index=False,header=False, quotechar='"')
 #             s += '\n'
                 
         s += '@trajectoryPoints\n'
-        s += df[cols].to_csv(index=False,header=False)
+        s += df[cols].to_csv(index=False,header=False, quotechar='"')
 #         s += '\n'
 #         print(s)
         return s
@@ -309,3 +327,12 @@ def df2mat(df, folder, file, cols=None, mat_cols=None, desc_cols=None,
 
 #     print("Done.")
 #     print(" --------------------------------------------------------------------------------")
+
+def mat2df(folder, file, cols=None, class_col = 'label', tid_col='tid', missing='?'):
+    
+    if '.mat' in file:
+        url = os.path.join(folder, file)
+    else:
+        url = os.path.join(folder, file+'.mat')
+        
+    

@@ -69,8 +69,11 @@ blockquote {
 { background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
 .dataset-color-raw_trajectories 
 { background-color: rgba(var(--bs-success-rgb),var(--dataset-bg-opacity))!important; }
-.dataset-color-semantic_trajectories 
+.dataset-color-semantic_trajectories,
+.dataset-color-process 
 { background-color: rgba(var(--bs-warning-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-process-default 
+{ background-color: #f7e600!important; opacity: var(--dataset-bg-opacity); }
 .dataset-color-multivariate_ts 
 { background-color: rgba(var(--bs-info-rgb),var(--dataset-bg-opacity))!important; }
 .dataset-color-univariate_ts 

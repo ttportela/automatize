@@ -90,6 +90,8 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
 #         print(sel_attributes)
         if sel_attributes == '':
             sel_attributes = attributes
+        else:
+            sel_attributes = sel_attributes if isinstance(sel_attributes, list) else sel_attributes.split(',') 
             
 #         size = 10 # in chars
 #         chsz = 12

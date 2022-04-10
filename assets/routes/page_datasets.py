@@ -322,18 +322,24 @@ def render_downloads(category, dataset):
     return dbc.ListGroup(components)
 
 # ------------------------------------------------------------
+def badgeClass(category, subset):
+    return 'dataset-color-' + (category if subset in ['specific', '*'] else subset) + ('-default' if subset == category else '')
+
 def dccBadge(dataset, category, subset, style={}):
     return dbc.Badge(translateCategory(dataset, category, subset), 
                      style=style,
                      color="primary", 
-                     className="me-1 " + 'dataset-color-'+(category if subset == 'specific' else subset))
+                     className="me-1 " + badgeClass(category, subset))
 
 def toBadge(dataset, category, subset):
-    return '<span class="badge rounded-pill dataset-color-'+(category if subset == 'specific' else subset)+'">'+translateCategory(dataset, category, subset) +'</span>'
+    return '<span class="badge rounded-pill '+badgeClass(category, subset)+'">'+translateCategory(dataset, category, subset) +'</span>'
 
 def getBadges(category, dataset, subsets):
     # Read the descriptors:
     badges = [toBadge(dataset, category, x) for x in subsets]
+    
+    if category+'.*' in SUBSET_TYPES:
+        badges = [toBadge(dataset, category, '*')] + badges
     
     return ' '.join([x for x in badges])
 

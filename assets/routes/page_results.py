@@ -28,21 +28,23 @@ from dash.dependencies import Output, Input, State
 from automatize.helper.CDDiagram import draw_cd_diagram 
 from automatize.results import format_hour, format_float
 
-from automatize.assets.app_base import app
+from automatize.assets.app_base import app, gess, sess
 from automatize.assets.config import *
 from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
 
-DATA = None
+# DATA = None
 # ------------------------------------------------------------
 
 def render_page_results(pathname):
     content = []
     
 #     if pathname == '/results':
-    global DATA
-    DATA = None
+#     global DATA
+#     DATA = None
+    sess('DATA', None)
+
     content = render_experiments()
 #     else:
 #         content = render_method(pathname)
@@ -76,7 +78,8 @@ def render_method(pathname):
 def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers=None, 
                             contents=None, filename=None, fdate=None):
     if contents is not None:
-        global DATA
+#         global DATA
+        DATA = gess('DATA')
 #         print(filename, date)
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
@@ -85,6 +88,7 @@ def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers
 #                 df = pd.DataFrame()
                 decoded = io.StringIO(decoded.decode('utf-8'))
                 DATA = [pd.read_csv(decoded), filename, datetime.fromtimestamp(fdate)]
+                sess('DATA', DATA)
                 return render_experiments(None, None, None)
             else:
                 return [dbc.Alert("File format invalid (use CSV exported with 'automatize.results.history').", color="danger", style = {'margin':10})] + \
@@ -102,7 +106,8 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
 #     from automatize.results import history
 #     df = history(path)
 #     df.to_csv(hsf)
-    global DATA
+#     global DATA
+    DATA = gess('DATA')
 
     time = date.today()
     if DATA:

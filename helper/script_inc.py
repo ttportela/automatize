@@ -28,10 +28,21 @@ METHODS_NAMES = {
     'hiper+Log': 'HiPerMovelets-Log',
     'hiper-pivots': 'HiPerMovelets-Pivots', 
     'hiper-pivots+Log': 'HiPerMovelets-Pivots-Log',
-    'H': 'HiPerMovelets', 
-    'HL': 'HiPerMovelets-Log',
-    'Hp': 'HiPerMovelets-Pivots', 
-    'HpL': 'HiPerMovelets-Pivots-Log',
+    
+    'H': 'HiPerMovelets τ=90%', 
+    'HL': 'HiPerMovelets-Log τ=90%',
+    'Hp': 'HiPerMovelets-Pivots τ=90%', 
+    'HpL': 'HiPerMovelets-Pivots-Log τ=90%',
+    
+    'HTR75': 'HiPerMovelets τ=75%', 
+    'HTR75L': 'HiPerMovelets-Log τ=75%',
+    'HpTR75': 'HiPerMovelets-Pivots τ=75%', 
+    'HpTR75L': 'HiPerMovelets-Pivots-Log τ=75%',
+    
+    'HTR50': 'HiPerMovelets τ=50%', 
+    'HTR50L': 'HiPerMovelets-Log τ=50%',
+    'HpTR50': 'HiPerMovelets-Pivots τ=50%', 
+    'HpTR50L': 'HiPerMovelets-Pivots-Log τ=50%',
     
     'SM': 'SUPERMovelets',
     'SM+Log': 'SUPERMovelets-Log',
@@ -95,6 +106,8 @@ FEATURES_NAMES = {
     
     'semantic_trajectories.Promoters':      ['sequence'], 
     'semantic_trajectories.SJGS':           ['sequence'], 
+    
+    'process.*':              ['Duration'],
     
     'univariate_ts.*':        ['dim0'],   # channel_1
     

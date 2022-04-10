@@ -30,28 +30,28 @@ from automatize.preprocessing import readDataset, organizeFrame
 from automatize.assets.routes.subpage_trajectories import *
 from automatize.assets.routes.subpage_models import *
 
-from automatize.assets.app_base import app
+from automatize.assets.app_base import app, sess, gess
 # ------------------------------------------------------------
-from_trajs = 0
-to_trajs = 100
-sel_attributes = []
-sel_traj = ''
-# ------------------------------------------------------------
-ls_tids  = set()
-ls_trajs = []
-ls_movs  = []
+# from_trajs = 0
+# to_trajs = 100
+# sel_attributes = []
+# sel_traj = ''
+# # ------------------------------------------------------------
+# ls_tids  = set()
+# ls_trajs = []
+# ls_movs  = []
 # ------------------------------------------------------------
 
 def reset():
-    global from_trajs, to_trajs, sel_attributes, sel_traj, ls_tids, ls_trajs, ls_movs
-    from_trajs = 0
-    to_trajs = 100
-    sel_attributes = []
-    sel_traj = ''
+#     global from_trajs, to_trajs, sel_attributes, sel_traj, ls_tids, ls_trajs, ls_movs
+    sess('from_trajs', 0)
+    sess('to_trajs', 100)
+    sess('sel_attributes', [])
+    sess('sel_traj', '')
     # ------------------------------------------------------------
-    ls_tids  = set()
-    ls_trajs = []
-    ls_movs  = []
+    sess('ls_tids', [])
+    sess('ls_trajs', [])
+    sess('ls_movs', [])
 
 # app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})
 
@@ -60,13 +60,19 @@ def reset():
 
 def render_statistics(ls_tids, ls_trajs, ls_movs):
 #     global ls_tids, ls_trajs, ls_movs
+    # ------------------------------------------------------------
+    ls_tids        = set(gess('ls_tids', []))
+    ls_trajs       = gess('ls_trajs', [])
+    ls_movs        = gess('ls_movs', [])
     
     # Update Screen:
     components = []
     components.append(html.Hr())
     if len(ls_movs) > 0:
-        used_features, df_stats = movelets_statistics(ls_movs)
-        df_stats = movelets_statistics_bylabel(used_features, df_stats)
+#         used_features, df_stats = movelets_statistics(ls_movs)
+#         df_stats = movelets_statistics_bylabel(used_features, df_stats)
+        df_stats = movelets_statistics(ls_movs)
+        df_stats = movelets_statistics_bylabel(df_stats)
         
         components.append(html.Div(style = {'margin':10, 'display':'grid'}, children = [
             html.Div(style = {'display':'inline'}, children = [
@@ -141,22 +147,12 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
     return components
 
 def parse_contents(contents, filename, date):
-#     content_type, content_string = contents.split(',')
-    
-#     return parse_files(contents, filename, date)
-
-# def parse_files(contents, filename, date):
     content_type, content_string = contents.split(',')
 
     # DECODE DATAFRAME:
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename or '.zip' in filename or '.ts' in filename:
-            # Assume that the user uploaded a CSV file
-#             df = pd.read_csv(
-#                 io.StringIO(decoded.decode('utf-8')))
-#             from automatize.preprocessing import readDataset
-#             df = readDataset(os.path.dirname(filename), file=os.path.basename(filename))
 
             df = pd.DataFrame()
             if '.csv' in filename:
@@ -175,12 +171,8 @@ def parse_contents(contents, filename, date):
             df.columns = df.columns.astype(str)
 
             columns_order_zip, columns_order_csv = organizeFrame(df)
-#             if 'space' in df.columns:
-#                 df['lat_lon'] = df['space']
             update_trajectories(df[columns_order_csv])
         elif 'json' in filename:
-            # Assume that the user uploaded an excel file
-#             df = pd.read_excel(io.BytesIO(decoded))
             update_movelets(io.BytesIO(decoded))
         else:
             return dbc.Alert("This file format is not accepted.", color="warning", style = {'margin':10})
@@ -190,25 +182,33 @@ def parse_contents(contents, filename, date):
         return dbc.Alert("There was an error processing this file.", color="danger", style = {'margin':10})
 
     return dbc.Alert("File "+filename+" loaded ("+str(datetime.datetime.fromtimestamp(date))+").", color="info", style = {'margin':10})
-#     render_page_trajectories(ls_trajs, ls_movs)
 
 def update_trajectories(df):
     # TRANSFORM TRAJECTORIES:
-    global ls_tids, ls_trajs
+#     global ls_tids, ls_trajs
+    # ------------------------------------------------------------
+    ls_tids        = set(gess('ls_tids', []))
+    ls_trajs       = gess('ls_trajs', [])
+    
     ls_aux = parse_trajectories(df)
     for T in ls_aux:
         if T.tid not in ls_tids:
             ls_tids.add(T.tid)
             ls_trajs.append(T)
             
+    sess('ls_tids', list(ls_tids))
+    sess('ls_trajs', ls_trajs)
+            
 def update_movelets(data):
     # TRANSFORM Movelets:
-    global ls_movs
+#     global ls_movs
+    ls_movs       = gess('ls_movs', [])
+    
     ls_aux = parse_movelets(data)
     for m in ls_aux:
         ls_movs.append(m)
-#     ls_movs = ls_movs + ls_aux
-#     print(ls_movs)
+        
+    sess('ls_movs', ls_movs)
 
 # ------------------------------------------------------------
 # @du.callback(
@@ -225,12 +225,17 @@ def update_movelets(data):
               State('upload-data', 'last_modified'),
 )
 def update_statistic(list_of_contents, list_of_names, list_of_dates):
+    ls_tids        = set(gess('ls_tids', []))
+    ls_trajs       = gess('ls_trajs', [])
+    ls_movs        = gess('ls_movs', [])
+    
     if list_of_contents is not None:
         children = [
             parse_contents(c, n, d) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         
-        return html.Div(children + render_statistics(ls_tids, ls_trajs, ls_movs))
+#         return html.Div(children + render_statistics(ls_tids, ls_trajs, ls_movs))
+        return html.Div(render_statistics(ls_tids, ls_trajs, ls_movs))
     
 @app.callback(
     Output(component_id='output-data-trajs', component_property='children'),
@@ -241,6 +246,8 @@ def update_statistic(list_of_contents, list_of_names, list_of_dates):
     Input('input-attr-traj', 'value'),
 )
 def update_trajs_list(input_value, range_value, sel_attributes):
+    ls_trajs       = gess('ls_trajs', [])
+    ls_movs        = gess('ls_movs', [])
     return render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes)
 
 
@@ -250,7 +257,11 @@ def update_trajs_list(input_value, range_value, sel_attributes):
     Input('input-traj', 'value'),
 )
 def update_traj_view(input_value):
-    global sel_traj, ls_movs
+#     global sel_traj, ls_movs
+    ls_trajs       = gess('ls_trajs', [])
+    ls_movs        = gess('ls_movs', [])
+#     sel_traj       = gess('sel_traj', '')
+    
     traj = None #ls_trajs[0] if len(ls_trajs) > 0 else None
     if input_value != '':
         for T in ls_trajs:
@@ -271,13 +282,22 @@ def update_traj_view(input_value):
 #               Input('input-from-mov-graph', 'value'),
 #               Input('input-to-mov-graph', 'value'),
 )
-def update_mov_view(list_of_contents, range_value, sel_attribute, model):#, from_value, to_value):
-#     print(range_value)
-#     try:
+def update_mov_view(list_of_contents, range_value, sel_attribute, model):
+    
+    from_trajs     = gess('from_trajs', 0)
+    to_trajs       = gess('to_trajs', 100)
+    
+#     ls_tids        = gess('ls_tids', set())
+    ls_trajs       = gess('ls_trajs', [])
+    ls_movs        = gess('ls_movs', [])
+    
     if len(ls_movs) > 0:
         from_trajs, to_trajs = range_value
         from_trajs = int(from_trajs) if from_trajs != '' else 0
         to_trajs = int(to_trajs) if to_trajs != '' else 10
+        
+        sess('from_trajs', from_trajs)
+        sess('to_trajs', to_trajs)
 
         if len(ls_trajs) > 0:
             attributes = ls_trajs[0].attributes
@@ -310,6 +330,12 @@ def render_page_analysis():
 # @app.callback(Output('tabs-content', 'children'),
 #               Input('tabs', 'value'))
 def render_content(tab):
+    
+    from_trajs     = gess('from_trajs', 0)
+    to_trajs       = gess('to_trajs', 100)
+#     sel_attributes = sess('sel_attributes', [])
+    sel_traj       = gess('sel_traj', '')    
+    
     if tab == 'tab-1':
         return html.Div([
 #             html.H4('Tab content', style = {'margin':10}),
