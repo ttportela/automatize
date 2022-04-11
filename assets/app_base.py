@@ -21,7 +21,10 @@ DEBUG = True
 
 
 # Boostrap CSS.
-external_stylesheets=[dbc.themes.BOOTSTRAP]
+external_stylesheets=[
+    dbc.themes.BOOTSTRAP,
+    'automatize/assets/examples/css/notebook.css',
+]
 
 # app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True, 
 #                 title=page_title, suppress_callback_exceptions=True)

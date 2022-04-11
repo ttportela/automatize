@@ -244,7 +244,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     if isinstance(k, int):
         k = range(1, k+1)
     
-    call_exit = params['call_exit']
+    call_exit = params['call_exit'] if 'call_exit' in params else False
 
     THREADS = str(params['threads'])
     GIG     = str(params['gig'])

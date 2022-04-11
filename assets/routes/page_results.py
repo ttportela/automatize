@@ -100,9 +100,9 @@ def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers
                     render_experiments(None, None, None)
     
     return render_experiments(sel_datasets, sel_methods, sel_classifiers)
-  
-def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
-#     hsf = os.path.join('automatize', 'assets', 'experiments_history.csv')
+
+def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
+    #     hsf = os.path.join('automatize', 'assets', 'experiments_history.csv')
 #     from automatize.results import history
 #     df = history(path)
 #     df.to_csv(hsf)
@@ -140,6 +140,12 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
     f4 = df['name'].isin(names)
     f5 = df['key'].isin(dskeys)
     df = df[f1 & f2 & f3 & f4 & f5]
+                   
+    return df, DATA, time, datasets, methods, classifiers, names, dskeys, sel_datasets, sel_methods, sel_classifiers
+  
+def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
+
+    df, DATA, time, datasets, methods, classifiers, names, dskeys, sel_datasets, sel_methods, sel_classifiers = filter_results(sel_datasets, sel_methods, sel_classifiers, file)
     
     return [
         html.Div([
@@ -205,8 +211,23 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
         render_experiments_panels(df),
         html.Br(),
         html.Span("Last Update: " + time.strftime("%d/%m/%Y, %H:%M:%S"), style={'margin':10}),
-        html.Br(),
+        dbc.Button("download results", id="download-results-btn", color="light"),
+#         html.A('[download results]', href=file, id='download-results-btn'),
+        dcc.Download(id="download-results-csv"),
+        html.Br(), html.Br(),
     ]  
+
+@app.callback(
+    Output("download-results-csv", "data"),
+    Input("download-results-btn", "n_clicks"),
+    State('input-results-datasets', 'value'),
+    State('input-results-methods', 'value'),
+    State('input-results-classifiers', 'value'),
+    prevent_initial_call=True,
+)
+def download_results_csv(n_clicks, sel_datasets=None, sel_methods=None, sel_classifiers=None):
+    df, *x = filter_results(sel_datasets, sel_methods, sel_classifiers, RESULTS_FILE)
+    return dcc.send_data_frame(df.to_csv, "automatize_experimental_history.csv")
 
 def render_experiments_panels(df):
     return dcc.Tabs(id="results-tabs", value='tab-1', children=[

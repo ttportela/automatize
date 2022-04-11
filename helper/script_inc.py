@@ -13,13 +13,20 @@ BASE_METHODS = [
     'MARC',
     'npoi',
     'MM',
+    'MM+Log',
     
 #     'ultra',
 #     'random',
     
     'SM',
+    'SM-2',
+    'SM+Log',
+    'SM-2+Log',
+    
     'hiper', 
-    'hiper-pivots',     
+    'hiper-pivots',  
+    'hiper+Log', 
+    'hiper-pivots+Log',     
 ]
 
 METHODS_NAMES = {

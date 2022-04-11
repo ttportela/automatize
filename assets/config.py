@@ -10,7 +10,7 @@ License GPL v.3 or superior
 '''
 
 DATA_PATH = '../../datasets'
-EXP_PATH  = '../../workdir/results/Ensemble1'
+EXP_PATH  = '../../results'
 README    = 'automatize/README.md'
 
 PAGES_ROUTE =  'automatize/assets'

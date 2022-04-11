@@ -51,6 +51,11 @@ def display_page(pathname):
         return render_page_results(pathname) #render_markdown_file('automatize/assets/experiments.md')
     elif pathname == '/publications':
         return render_markdown_file(PAGES_ROUTE+'/pages/publications.md', div=True)
+    elif pathname == '/tutorial':
+        return html.Div(id='content-home', children=[html.Iframe(
+            src="assets/examples/Automatize_Sample_Code.html", width="100%", height="100vh",
+            style={"height": "100vh", "width": "100%", 'margin': '20px'},
+        )])
     else:
         file = PAGES_ROUTE+ pathname+'.md'
 #         print(pathname, file)
@@ -117,6 +122,12 @@ app.layout = html.Div(id = 'parent', children = [
                         html.A(className='nav-link',
                             children=['Publications'],
                             href="/publications",
+                        ),
+                    ]),
+                    html.Li(className='nav-item', children=[
+                        html.A(className='nav-link',
+                            children=['Tutorial'],
+                            href="/tutorial",
                         ),
                     ]),
                     html.Li(className='nav-item', children=[
