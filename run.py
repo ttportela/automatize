@@ -269,12 +269,10 @@ def MARC(data_folder, res_path, prefix, folder, train="train.csv", test="test.cs
         out = os.popen(CMD).read()
         time = (datetime.now()-time).total_seconds() * 1000
 
-        f=open(OUTPUT_FILE, "a+")
+        f=open(OUTPUT_FILE.replace('"', ''), "a+")
         f.write(out)
         f.write("Processing time: %d milliseconds\r\n" % (time))
         f.close()
-
-        print(captured.stdout)
         print("Done. " + str(time) + " milliseconds")
     print("# ---------------------------------------------------------------------------------")
     

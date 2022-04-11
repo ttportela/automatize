@@ -669,8 +669,7 @@ def graph_nx(name, nodes, edges, groups, no_colors, ed_colors, draw=True):
         paux = max(edges.values())
         edge_sizes = [(x/paux)+1 for x in edges.values()]
         
-        return nx.draw(G, with_labels=True, node_size=10000, node_color=ncod, cmap=cmap, 
-                       edge_labels=edge_labels, width=edge_sizes, edge_color=ecod)
+        return nx.draw(G, with_labels=True, node_size=10000, node_color=ncod, cmap=cmap, width=edge_sizes, edge_color=ecod)
     else:
         
         # 2 ) get node pos

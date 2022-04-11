@@ -4,3 +4,7 @@ assets/.DS_Store
 *.pyc
 ensemble/.DS_Store
 xMethods.py
+scripts/.DS_Store
+pois/.DS_Store
+io/.DS_Store
+helper/.DS_Store
