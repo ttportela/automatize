@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Feb, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-from .main import importer #, display
+from .main import importer, pyshel, PACKAGE_NAME #, display
 importer(['S'], globals())
 
 def gensh(method, datasets, params=None):
-#     from automatize.run import Movelets, MARC, k_MARC
+#     from run import Movelets, MARC, k_MARC
 #     import os, sys
     importer(['sys'], globals())
     
@@ -232,9 +233,9 @@ def configMethod(method, params):
     
 def printRun(method, data, results, prog_path, prefix, mname, var, json, params, runopts, islog, print_only, check_done=True, doacc=True, pyname='python3'):
 #     import os, sys
-#     from automatize.run import Movelets, MARC, POIFREQ, Ensemble#k_MARC, k_Ensemble
+#     from run import Movelets, MARC, POIFREQ, Ensemble#k_MARC, k_Ensemble
     importer(['methods'], globals())
-    automatize_scripts = 'automatize/scripts'
+#     package_scripts = 'automatise/scripts'
         
     if 'k' in params and params['k']:
         k = params['k']
@@ -323,7 +324,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         if method == 'MARC':
             train_file = dsvar+"_train.csv" if '_ts' not in data else dsvar+"_TRAIN.ts"
             test_file  = dsvar+"_test.csv"  if '_ts' not in data else dsvar+"_TEST.ts"
-            MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=os.path.join(prog_path, 'automatize','marc'), 
+            MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=os.path.join(prog_path, PACKAGE_NAME,'marc'), 
                  pyname=pyname, extra_params=GIG+' '+THREADS, train=train_file, test=test_file)
 
 
@@ -379,16 +380,19 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             print('# --------------------------------------------------------------------------------------')
             print('for FOLD in '+ ' '.join(['"run'+str(x)+'"' for x in range(1, params['samples']+1)]) )
             print('do')
-            print(pyname+' '+automatize_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
+#             print(pyname+' '+package_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
+            print(pyshel('MergeDatasets', prog_path, pyname)+' "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             if doacc :
-                print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
+#                 print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
+                print(pyshel('Classifier-MLP_RF', prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
 
         elif doacc and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
             print('# --------------------------------------------------------------------------------------')
-            print(pyname+' '+automatize_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
+#             print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
+            print(pyshel('Classifier-MLP_RF', prog_path, pyname)+' "'+results+'" "'+MNAME+'"') #MLP_RF
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')

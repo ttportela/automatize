@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Feb, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 from .main import importer, display
 importer(['S', 'glob', 'datetime', 're'], globals())
 
-from automatize.helper.script_inc import getSubset
+from .helper.script_inc import getSubset
 # --------------------------------------------------------------------------------
 
 def STATS(name=['*']):
@@ -255,7 +256,7 @@ def results2tex(res_path, methods_dic, prefixes, datasets, list_stats=STATS(['S'
 #     import os
 #     import pandas as pd
 #     from IPython.display import display
-#     from automatize.results import printLatex
+#     from PACKAGE_NAME.results import printLatex
     
     for prefix in prefixes:
         table = pd.DataFrame()
@@ -365,7 +366,7 @@ def resultsDiff(df, ref_cols=[2], list_stats=STATS(['S']), isformat=True, istodi
                 b = df.iloc[:,col]
                 df[str(ref)+'-'+str(col)] = ((b-a) / b * 100.0)
     
-#     from automatize.results import format_stats
+#     from PACKAGE_NAME.results import format_stats
     if isformat:
         for column in df.columns[2:n]:
             df[column] = format_stats(df, column, list_stats)

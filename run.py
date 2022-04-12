@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Jun, 2020
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-from .main import importer #, display
+from .main import importer, pyshel #, display
 importer(['S'], globals())
-automatize_scripts = 'automatize/scripts'
+# package_scripts = os.path.join(PACKAGE_NAME, 'scripts')
 # --------------------------------------------------------------------------------
 
 def k_Movelets(k, data_folder, res_path, prefix, folder, descriptor, version=None, ms = False, Ms = False, extra=False, 
@@ -99,8 +100,8 @@ def Movelets(data_folder, res_path, prefix, folder, descriptor, version=None, ms
         if impl > 1:
             mergeAndMove(res_folder, dir_path, prg_path, print_only, pyname)
         else:
-            prg = os.path.join(prg_path, automatize_scripts, 'MoveDatasets.py')
-            execute(pyname+' "'+prg+'" "'+res_folder+'"', print_only)
+#             prg = os.path.join(prg_path, PACKAGE_SCRIPTS, 'MoveDatasets.py')
+            execute(pyshel('MoveDatasets', prg_path, pyname)+' "'+res_folder+'"', print_only)
     
     if keep_folder <= 1: # keep_folder = 0 or 1, 1 for both
         execute('rm -R "'+os.path.join(res_folder, dir_path)+'"', print_only)
@@ -155,8 +156,8 @@ def mergeClasses(res_folder, prg_path='./', print_only=False, pyname='python3'):
     if print_only:
         dir_from = res_folder
 
-    prg = os.path.join(prg_path, automatize_scripts, 'MergeDatasets.py')
-    execute(pyname+' "'+prg+'" "'+res_folder+'"', print_only)
+#     prg = os.path.join(prg_path, PACKAGE_SCRIPTS, 'MergeDatasets.py')
+    execute(pyshel('MergeDatasets', prg_path, pyname)+' "'+res_folder+'"', print_only)
 #     execute('python3 "'+prg+'" "'+res_folder+'" "test.csv"', print_only)
 
     return dir_from
@@ -248,8 +249,8 @@ def MARC(data_folder, res_path, prefix, folder, train="train.csv", test="test.cs
     
 #     mkdir(os.path.join(res_path, prefix), print_only)
         
-    PROGRAM = os.path.join(prg_path, 'multi_feature_classifier.py')
-    CMD = pyname+' "'+PROGRAM+'" "' + TRAIN_FILE + '" "' + TEST_FILE + '" "' + RESULTS_FILE + '" "' + DATASET_NAME + '" ' + str(EMBEDDING_SIZE) + ' ' + MERGE_TYPE + ' ' + RNN_CELL + ((' ' + extra_params) if extra_params else '')
+#     PROGRAM = os.path.join(prg_path, 'multi_feature_classifier.py')
+    CMD = pyshel('MARC', prg_path, pyname)+' "' + TRAIN_FILE + '" "' + TEST_FILE + '" "' + RESULTS_FILE + '" "' + DATASET_NAME + '" ' + str(EMBEDDING_SIZE) + ' ' + MERGE_TYPE + ' ' + RNN_CELL + ((' ' + extra_params) if extra_params else '')
     
     if os.name == 'nt':
         tee = ' >> '+OUTPUT_FILE 
@@ -320,7 +321,7 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         outfile = os.path.join(res_folder, folder+'.txt')
     
         # RUN:
-        CMD = pyname + " automatize/pois/POIS.py "
+        CMD = pyshel('POIS', pyname=pyname)+" "
         CMD = CMD + "\""+method+"\" "
         CMD = CMD + "\""+(','.join([str(n) for n in sequences]))+"\" "
         CMD = CMD + "\""+(','.join(features))+"\" "
@@ -341,17 +342,17 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         if doclass:
             for s in sequences:
                 pois = ('_'.join(features))+'_'+str(s)
-                print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+                print(pyshel('POIS-Classifier', pyname=pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
                 
             pois = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))
-            print(pyname+' automatize/pois/POIS-Classifier.py "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+            print(pyshel('POIS-Classifier', pyname=pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
         
         return result_file
     else:
 #         from ..main import importer
         importer(['poifreq'], globals())
     
-#         from automatize.ensemble_models.poifreq import poifreq
+#         from PACKAGE_NAME.ensemble_models.poifreq import poifreq
         return poifreq(sequences, dataset, features, data_folder, res_folder, method=method, doclass=doclass)
 
 def k_Ensemble(k, data_path, results_path, prefix, ename, methods=['movelets','poifreq'], \
@@ -400,7 +401,7 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
             
         else: # the method is 'movelets':
             if movelets_line is None:
-#                 from automatize.run import Movelets
+#                 from PACKAGE_NAME.run import Movelets
                 mname = method.upper()+'L-'+dataset
                 prefix = ''
                 Movelets(data_path, results_path, prefix, mname, descriptor, Ms=-3, \
@@ -413,7 +414,7 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
                      
     if print_only:
         if num_runs == 1:
-            CMD = pyname + " "+automatize_scripts+"/Classifier-Ensemble.py "
+            CMD = pyshel('TEC', pyname=pyname)+" "
             CMD = CMD + "\""+data_path+"\" "
             CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
             CMD = CMD + "\""+str(ensembles)+"\" "
@@ -424,9 +425,9 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
             print('')
         else:
             for i in range(1, num_runs+1): # TODO: set a different random number in python
-                print('# Classifier Ensemble run-'+str(i))
+                print('# Classifier TEC run-'+str(i))
 #                 print('mkdir -p "'+os.path.join(results_path, postfix, modelfolder))
-                CMD = pyname + " "+automatize_scripts+"/Classifier-Ensemble.py "
+                CMD = pyshel('TEC', pyname=pyname)+" "
                 CMD = CMD + "\""+data_path+"\" "
                 CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
                 CMD = CMD + "\""+str(ensembles)+"\" "

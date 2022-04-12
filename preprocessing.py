@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 from .main import importer #, display
 importer(['S', 'glob'], globals())
-from automatize.io.converter import *
+
+from .helper.io.converter import *
+from .helper.script_inc import getDescName
 #-------------------------------------------------------------------------->>
 
 def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', missing='?'):
@@ -56,8 +59,6 @@ def readDsDesc(data_path, folder=None, file='train.csv', tid_col='tid', class_co
         folder = os.path.basename(data_path)
         data_path = os.path.dirname(data_path)
     
-    
-    from automatize.helper.script_inc import getDescName
     desc = glob.glob(os.path.join(data_path, 'descriptors', \
                                   getDescName(os.path.basename(data_path), folder)+'_specific_hp.json'))
     if len(desc) > 0:

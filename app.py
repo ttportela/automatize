@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 import sys, os 
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath('.'))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pandas as pd
 sys.path.insert(0, os.path.abspath(os.path.join('.')))
 
@@ -25,13 +30,13 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatize.assets.routes.page_analysis import render_page_analysis
-from automatize.assets.routes.page_datasets import render_page_datasets
-from automatize.assets.routes.page_experiments import render_page_experiments
-from automatize.assets.routes.page_results import render_page_results
+from assets.routes.page_analysis import render_page_analysis
+from assets.routes.page_datasets import render_page_datasets
+from assets.routes.page_experiments import render_page_experiments
+from assets.routes.page_results import render_page_results
 
-from automatize.assets.app_base import *
-from automatize.assets.config import *
+from assets.app_base import *
+from assets.config import *
 # ------------------------------------------------------------
 
 @app.callback(dash.dependencies.Output('page-content', 'children'),
@@ -48,13 +53,13 @@ def display_page(pathname):
     elif pathname == '/experiments':
         return render_page_experiments(pathname)
     elif pathname == '/results':
-        return render_page_results(pathname) #render_markdown_file('automatize/assets/experiments.md')
+        return render_page_results(pathname) #render_markdown_file('./assets/experiments.md')
     elif pathname == '/publications':
         return render_markdown_file(PAGES_ROUTE+'/pages/publications.md', div=True)
     elif pathname == '/tutorial':
         return html.Div(id='content-home', children=[html.Iframe(
-            src="assets/examples/Automatize_Sample_Code.html", width="100%", height="100vh",
-            style={"height": "100vh", "width": "100%", 'margin': '20px'},
+            src="assets/examples/Automatise_Sample_Code.html", width="100%", height="100vh",
+            style={"height": "100vh", "width": "100%"},
         )])
     else:
         file = PAGES_ROUTE+ pathname+'.md'
@@ -140,7 +145,7 @@ app.layout = html.Div(id = 'parent', children = [
                         html.A(className='nav-link nav-link-btn',
                             id='gh-link',
                             children=['View on GitHub'],
-                            href="https://github.com/ttportela/automatize",
+                            href="https://github.com/ttportela/automatise",
                         ),
                     ]),
                 ]),
@@ -157,7 +162,7 @@ def render_page_home():
     return html.Div(id='content-home', children=[ 
         render_markdown_file(README),
         html.Hr(),
-        html.Span('© '+str(y)+' Beta version, by '),
+        html.Span('© '+str(y)+' Alfa version, by '),
         html.A(
             children=['Tarlis Tortelli Portela'],
             href="https://tarlis.com.br",

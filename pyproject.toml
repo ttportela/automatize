@@ -1,7 +1,7 @@
 [project]
-name = "automatize"
-version = "0.1.0"
-description = "Automatize: A Multi-Aspect Trajectory Data Mining Tool Library"
+name = "automatise"
+version = "0.1.beta1"
+description = "Automatise: A Multiple Aspect Trajectory Data Mining Tool Library"
 authors = [
     {name = "Tarlis Tortelli Portela", email = "tarlis@tarlis.com.br"},
 ]
@@ -87,10 +87,10 @@ dl = [
 ]
 
 [project.urls]
-homepage = "https://github.com/ttportela/automatize"
-repository = "https://github.com/ttportela/automatize"
-documentation = "https://github.com/ttportela/automatize"
-download = "https://pypi.org/project/automatize/#files"
+homepage = "https://github.com/ttportela/automatise"
+repository = "https://github.com/ttportela/automatise"
+documentation = "https://github.com/ttportela/automatise"
+download = "https://pypi.org/project/automatise/#files"
 
 [project.license]
 file = "LICENSE"

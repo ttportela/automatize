@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 import sys, os 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as pd
 import glob2 as glob
-sys.path.insert(0, os.path.abspath(os.path.join('.')))
 
 from datetime import datetime
 import zipfile
@@ -24,12 +25,12 @@ from dash import html, callback_context, MATCH, ALL
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatize.script import gensh, trimsuffix
+from assets.app_base import app
+from assets.config import *
 
-from automatize.assets.app_base import app
-from automatize.assets.config import *
-from automatize.helper.script_inc import *
-from automatize.helper.datasets_inc import list_datasets
+from automatise.script import gensh, trimsuffix
+from automatise.helper.script_inc import *
+from automatise.helper.datasets_inc import list_datasets
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
     
@@ -54,16 +55,16 @@ all_methods = [
 all_datasets = list_datasets()
 
 all_executables = {
-    'hiper':           os.path.join('automatize', 'assets', 'method', 'HIPERMovelets.jar'), 
-    'hiper-pivots':    os.path.join('automatize', 'assets', 'method', 'HIPERMovelets.jar'), 
-    'SM':              os.path.join('automatize', 'assets', 'method', 'SUPERMovelets.jar'),
-    'MM':              os.path.join('automatize', 'assets', 'method', 'MASTERMovelets.jar'),
-    'MMp':             os.path.join('automatize', 'assets', 'method', 'MASTERMovelets.jar'),
+    'hiper':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
+    'hiper-pivots':    os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
+    'SM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'SUPERMovelets.jar'),
+    'MM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
+    'MMp':             os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
     
-    'Movelets':        os.path.join('automatize', 'assets', 'method', 'Movelets.jar'),
-    'Dodge':           os.path.join('automatize', 'assets', 'method', 'Dodge.jar'),
-    'Xiao':            os.path.join('automatize', 'assets', 'method', 'Xiao.jar'),
-    'Zheng':           os.path.join('automatize', 'assets', 'method', 'Zheng.jar'),
+    'Movelets':        os.path.join(PACKAGE_NAME, 'assets', 'method', 'Movelets.jar'),
+    'Dodge':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Dodge.jar'),
+    'Xiao':            os.path.join(PACKAGE_NAME, 'assets', 'method', 'Xiao.jar'),
+    'Zheng':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Zheng.jar'),
 }
 # ------------------------------------------------------------
 
@@ -617,7 +618,7 @@ def download(value, basedir, folderpref, isDs, datapath, isTC, TC, TCD, datasets
     f.close()
     
 #     try:
-    return prepare_zip(shdir, params, base, isExe, TO_GEN), 'Files generated to "automatize_scripts.zip"'
+    return prepare_zip(shdir, params, base, isExe, TO_GEN), 'Files generated to "automatise_scripts.zip"'
 #     except BaseException as e:
 #         print(e)
 #         return dash.no_update, 'Sorry, an error ocurred. We are going to revised it.'
@@ -651,7 +652,7 @@ def prepare_zip(shdir, params, base, isExe, TO_GEN):
         for GM in TO_GEN:
             if trimsuffix(GM[0]) in all_executables.keys():
                 ff = all_executables[trimsuffix(GM[0])]
-                ft = ff.replace(os.path.join('automatize', 'assets', 'method'), 
+                ft = ff.replace(os.path.join(PACKAGE_NAME, 'assets', 'method'), 
                                 os.path.join(base, 'programs'))
                 if ft not in zf.namelist():
                     zf.write(ff, ft)
@@ -662,4 +663,4 @@ def prepare_zip(shdir, params, base, isExe, TO_GEN):
     close_tmp_file(shdir)
 #     close_tmp_file(zf_tf)
     
-    return dcc.send_file(zf_tf.name, filename="automatize_scripts.zip")
+    return dcc.send_file(zf_tf.name, filename="automatise_scripts.zip")

@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-# def importer(key=['S'], this=None):
-#     import sys 
-#     if sys.version_info >= (3,9):
-#         importer39(key, this)
-#     else:
-#         importer(key, this)
+# import sys, os 
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# import os
+# PACKAGE_NAME = 'automatise.'
+# PACKAGE_SCRIPTS = os.path.join('automatise', 'scripts')
+PACKAGE_NAME = 'automatise.'
 
 def importer(key=['S'], this=None):
     import importlib
-    automatize_name = 'automatize'
     
     mdic = {}
     # Progress Bar:
@@ -240,7 +240,7 @@ def importer(key=['S'], this=None):
             mdic.update( {'LabelEncoder': getattr(module, 'LabelEncoder'), 'OneHotEncoder': getattr(module, 'OneHotEncoder')} )
 
         if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash', 'geohash']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.utils')
             if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash']):
                 mdic.update( {'bin_geohash': getattr(module, 'bin_geohash')} )
             if set(key) & set(['*', 'preprocessing', 'geohash']):
@@ -254,44 +254,44 @@ def importer(key=['S'], this=None):
     if set(key) & set(['*', 'ensembles', 'TEC', 'TEC2', 'ClassifierEnsemble', 'ClassifierEnsemble2', 'poifreq', 
                        'TEC.MLP', 'TEC.NN', 'TEC.MARC', 'TEC.POIS', 'TEC.RF', 'TEC.RFHP', 'TEC.utils']):
         if set(key) & set(['*', 'ensembles', 'TEC', 'TEC2', 'ClassifierEnsemble', 'ClassifierEnsemble2']):
-            module = importlib.import_module(automatize_name+'.ensemble.tec')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.tec')
             if set(key) & set(['*', 'ensembles', 'TEC', 'ClassifierEnsemble']):
                 mdic.update( {'ClassifierEnsemble': getattr(module, 'ClassifierEnsemble')} )
             if set(key) & set(['*', 'ensembles', 'TEC2', 'ClassifierEnsemble2']):
                 mdic.update( {'ClassifierEnsemble2': getattr(module, 'ClassifierEnsemble2')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC', 'poifreq']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.poifreq')
             mdic.update( {'poifreq': getattr(module, 'poifreq')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC.MLP']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.movelets')
             mdic.update( {'model_movelets_mlp': getattr(module, 'model_movelets_mlp')} )
         if set(key) & set(['*', 'ensembles', 'TEC.NN']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.movelets')
             mdic.update( {'model_movelets_nn': getattr(module, 'model_movelets_nn')} )
         if set(key) & set(['*', 'ensembles', 'TEC.MARC']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.marc')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.marc')
             mdic.update( {'model_marc': getattr(module, 'model_marc')} )
         if set(key) & set(['*', 'ensembles', 'TEC.POIS']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.poifreq')
             mdic.update( {'model_poifreq': getattr(module, 'model_poifreq')} )
         if set(key) & set(['*', 'ensembles', 'TEC.RF']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.randomforrest')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.randomforrest')
             mdic.update( {'model_rf': getattr(module, 'model_rf')} )
         if set(key) & set(['*', 'ensembles', 'TEC.RFHP']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.randomforresthp')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.randomforresthp')
             mdic.update( {'model_rfhp': getattr(module, 'model_rfhp')} )
 
         if set(key) & set(['*', 'TEC.utils']):
-            module = importlib.import_module(automatize_name+'.ensemble.models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'ensemble.models.utils')
             for att in dir(module):
                 if not att.startswith('_'):
                     mdic.update( {att: getattr(module, att)} )
                 
     if set(key) & set(['*', 'classifiers', 'A1', 'Approach1', 'A2', 'Approach2', 'ARF', 'ApproachRF', 'ARFHP', 'ApproachRFHP', 
                        'ASVC', 'ApproachSVC', 'ADT', 'ApproachDT', 'AMLP', 'ApproachMLP']):
-        module = importlib.import_module(automatize_name+'.classifiers')
+        module = importlib.import_module(PACKAGE_NAME+'classifiers')
         if set(key) & set(['*', 'classifiers', 'A1', 'Approach1']):
             mdic.update( {'Approach1': getattr(module, 'Approach1')} )
         if set(key) & set(['*', 'classifiers', 'A2', 'Approach2']):
@@ -308,7 +308,7 @@ def importer(key=['S'], this=None):
             mdic.update( {'ApproachMLP': getattr(module, 'ApproachMLP')} )  
             
     if set(key) & set(['*', 'report', 'TEC.report', 'f1', 'classification_report_csv', 'calculateAccTop5']):
-        module = importlib.import_module(automatize_name+'.classifiers')
+        module = importlib.import_module(PACKAGE_NAME+'classifiers')
         if set(key) & set(['*', 'report', 'TEC.report', 'classification_report_csv']):
             mdic.update( {'classification_report_csv': getattr(module, 'classification_report_csv')} )
         if set(key) & set(['*', 'report', 'calculateAccTop5']):
@@ -320,7 +320,7 @@ def importer(key=['S'], this=None):
     if set(key) & set(['*', 'results', 'STATS', 'printLatex', 'results2df', 'check_run'
                        'containErrors', 'containWarnings', 'containTimeout', 'get_stats',
                        'format_stats', 'format_hour']):
-        module = importlib.import_module(automatize_name+'.results')
+        module = importlib.import_module(PACKAGE_NAME+'results')
         if set(key) & set(['*', 'results', 'STATS']):
             mdic.update( {'STATS': getattr(module, 'STATS')} )
         if set(key) & set(['*', 'results', 'printLatex']):
@@ -340,13 +340,13 @@ def importer(key=['S'], this=None):
             
             
     if set(key) & set(['*', 'analysis', 'loadData']):
-        module = importlib.import_module(automatize_name+'.analysis')
+        module = importlib.import_module(PACKAGE_NAME+'analysis')
         if set(key) & set(['*', 'analysis', 'loadData']):
             mdic.update( {'loadData': getattr(module, 'loadData')} )
             
             
     if set(key) & set(['*', 'run', 'methods', 'mergeDatasets']):
-        module = importlib.import_module(automatize_name+'.run')
+        module = importlib.import_module(PACKAGE_NAME+'run')
         if set(key) & set(['*', 'run', 'mergeDatasets']):
             mdic.update( {'mergeDatasets': getattr(module, 'mergeDatasets')} )
         if set(key) & set(['*', 'run', 'methods']): #MARC, POIFREQ, Ensemble
@@ -372,11 +372,11 @@ def importer(key=['S'], this=None):
     
     if set(key) & set(['*', 'io', 'ts_io', 'load_from_tsfile_to_dataframe', 'readDataset']):
         if set(key) & set(['*', 'io', 'readDataset']):
-            module = importlib.import_module(automatize_name+'.preprocessing')
+            module = importlib.import_module(PACKAGE_NAME+'preprocessing')
             mdic.update( {'readDataset': getattr(module, 'readDataset')} )
     
         if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
-            module = importlib.import_module(automatize_name+'.io.ts_io')
+            module = importlib.import_module(PACKAGE_NAME+'helper.io.ts_io')
             mdic.update( {'load_from_tsfile_to_dataframe': getattr(module, 'load_from_tsfile_to_dataframe')} )
         
     if this is not None:
@@ -410,6 +410,24 @@ def display(df):
             from IPython.display import display as dy
             dy(df)
 
+def pyshel(py, prg_path='.', pyname='python3'):
+    SCRIPTS = {
+             'MoveDatasets' : 'MAT-MoveDatasets.py',
+            'MergeDatasets' : 'MAT-MergeDatasets.py',
+        'Classifier-MLP_RF' : 'MAT-Classifier-MLP_RF.py',
+        
+                     'MARC' : 'MARC.py',
+        
+                     'POIS' : 'POIS.py',
+          'POIS-Classifier' : 'POIS-Classifier.py',
+        
+                      'TEC' : 'TEC.py',
+    }
+    
+    return SCRIPTS[py]
+#     import os
+#     return pyname + ' ' + os.path.join(prg_path, 'automatise', 'scripts', SCRIPTS[py])
+    
 def isConsole():
     try:
         __IPYTHON__

@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 import sys, os 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as pd
 import glob2 as glob
 import numpy as np
-sys.path.insert(0, os.path.abspath(os.path.join('.')))
 
 import io
 import base64
@@ -25,12 +26,12 @@ from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatize.helper.CDDiagram import draw_cd_diagram 
-from automatize.results import format_hour, format_float
+from automatise.results import format_hour, format_float
 
-from automatize.assets.app_base import app, gess, sess
-from automatize.assets.config import *
-from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from assets.app_base import app, gess, sess
+from assets.config import *
+from helper.CDDiagram import draw_cd_diagram 
+from helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
 
@@ -91,7 +92,7 @@ def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers
                 sess('DATA', DATA)
                 return render_experiments(None, None, None)
             else:
-                return [dbc.Alert("File format invalid (use CSV exported with 'automatize.results.history').", color="danger", style = {'margin':10})] + \
+                return [dbc.Alert("File format invalid (use CSV exported with 'automatise.results.history').", color="danger", style = {'margin':10})] + \
                     render_experiments(None, None, None)
         except Exception as e:
 #             raise e
@@ -102,8 +103,8 @@ def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers
     return render_experiments(sel_datasets, sel_methods, sel_classifiers)
 
 def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
-    #     hsf = os.path.join('automatize', 'assets', 'experiments_history.csv')
-#     from automatize.results import history
+    #     hsf = os.path.join('automatise', 'assets', 'experiments_history.csv')
+#     from .results import history
 #     df = history(path)
 #     df.to_csv(hsf)
 #     global DATA
@@ -227,7 +228,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
 )
 def download_results_csv(n_clicks, sel_datasets=None, sel_methods=None, sel_classifiers=None):
     df, *x = filter_results(sel_datasets, sel_methods, sel_classifiers, RESULTS_FILE)
-    return dcc.send_data_frame(df.to_csv, "automatize_experimental_history.csv")
+    return dcc.send_data_frame(df.to_csv, "automatise_experimental_history.csv")
 
 def render_experiments_panels(df):
     return dcc.Tabs(id="results-tabs", value='tab-1', children=[

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
@@ -14,7 +15,7 @@ from .main import importer #, display
 importer(['S'], globals())
 
 # --------------------------------------------------------------------------------
-# from automatize.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
+# from PACKAGE_NAME.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
 # --------------------------------------------------------------------------------
 def ACC4All(res_path, prefix, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
                    data_path=''):
@@ -112,7 +113,7 @@ def SVM(res_path, prefix, dir_path, save_results = True, modelfolder='model'):
 # ----------------------------------------------------------------------------------
 def Classifier_EC(dir_path, data_path, ensembles=None, save_results = True, modelfolder='model'):
 #     import os
-#     from automatize.ensemble import ClassifierEnsemble
+#     from PACKAGE_NAME.ensemble import ClassifierEnsemble
 #     from ..main import importer
     importer(['os', 'TEC'], globals())
     # --------------------------------------------------------------------------------
@@ -128,7 +129,7 @@ def Classifier_EC(dir_path, data_path, ensembles=None, save_results = True, mode
 def Classifier_MLP(dir_path, save_results = True, modelfolder='model', X_train = None, y_train = None, X_test = None, y_test = None):
 #     from datetime import datetime
 #     # --------------------------------------------------------------------------------
-#     from automatize.Methods import Approach2
+#     from PACKAGE_NAME.Methods import Approach2
 #     from ..main import importer
     importer(['datetime', 'A2'], globals())
     # --------------------------------------------------------------------------------
@@ -159,7 +160,7 @@ def Classifier_MLP(dir_path, save_results = True, modelfolder='model', X_train =
 def Classifier_RF(dir_path, save_results = True, modelfolder='model', X_train = None, y_train = None, X_test = None, y_test = None):
 #     from datetime import datetime
 #     # --------------------------------------------------------------------------------
-#     from automatize.Methods import ApproachRF
+#     from PACKAGE_NAME.Methods import ApproachRF
 #     from ..main import importer
     importer(['datetime', 'ARF'], globals())
     # --------------------------------------------------------------------------------
@@ -187,7 +188,7 @@ def Classifier_RF(dir_path, save_results = True, modelfolder='model', X_train = 
 def Classifier_SVM(dir_path, save_results = True, modelfolder='model', X_train = None, y_train = None, X_test = None, y_test = None):
 #     from datetime import datetime
 #     # --------------------------------------------------------------------------------
-#     from automatize.Methods import ApproachSVC
+#     from PACKAGE_NAME.Methods import ApproachSVC
 #     from ..main import importer
     importer(['datetime', 'ASVC'], globals())
     # --------------------------------------------------------------------------------

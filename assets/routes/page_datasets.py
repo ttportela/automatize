@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 '''
-Automatize: Multi-Aspect Trajectory Data Mining Tool Library
-The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
 Created on Dec, 2021
-License GPL v.3 or superior
+Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
 import sys, os 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as pd
 import glob2 as glob
-sys.path.insert(0, os.path.abspath(os.path.join('.')))
 
 import base64
 import datetime
@@ -24,12 +25,12 @@ from dash import html, ALL
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatize.results import format_hour
+from assets.app_base import app
+from assets.config import *
 
-from automatize.assets.app_base import app
-from automatize.assets.config import *
-from automatize.helper.datasets_inc import *
-from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from automatise.results import format_hour
+from automatise.helper.datasets_inc import *
+from automatise.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # DATA_PATH='../../datasets'
 
@@ -269,7 +270,7 @@ def render_related_publications(dataset):
     ls = [METHODS_NAMES[x].split('-')[0] if x in METHODS_NAMES.keys() else x for x in df['method'].unique()]
 #     ls = list(df['method'].unique())
     for method in set(ls):
-        file = os.path.join('automatize', 'assets', 'method', method+'.md')
+        file = os.path.join(PACKAGE_NAME, 'assets', 'method', method+'.md')
         if os.path.exists(file):
             with open(file, 'r') as f:
                 line = f.read().splitlines()
