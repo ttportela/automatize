@@ -13,6 +13,12 @@ The present application offers a tool, called AutoMATise, to support the user in
 
 To use Automatise as a python library, find examples in this sample Jupyter Notebbok: [Automatise_Sample_Code.ipynb](./assets/examples/Automatise_Sample_Code.ipynb)
 
+### Install:
+
+    pip install automatise
+
 ### Reference:
 
 Portela, Tarlis Tortelli; Bogorny, Vania; Bernasconi, Anna; Renso, Chiara. **AutoMATitse: Multiple Aspect Trajectory Data Mining Tool Library.** 2022. 23rd IEEE International Conference on Mobile Data Management (MDM), 2022, pp. xxx-xxx, doi: xxx.
+
+[GitHub](https://github.com/ttportela/automatise) [PyPi](https://pypi.org/project/automatise/)
