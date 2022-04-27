@@ -15,7 +15,7 @@ import glob2 as glob
 
 # from main import importer
 # importer(['S', 'mergeDatasets'], globals())
-from automatise.run import moveResults
+from automatize.run import moveResults
 
 if len(sys.argv) < 1:
     print('Please run as:')

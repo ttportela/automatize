@@ -1,1 +1,1 @@
-name = 'automatise'
+name = 'automatize'

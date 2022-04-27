@@ -9,19 +9,24 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
+# Server Config
+HOST = '0.0.0.0'
+PORT = 8050
+DEBUG = True
+
 import sys, os 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import dash
 import dash_bootstrap_components as dbc
 
 from flask import Flask, session
-from automatise.assets.config import page_title, PACKAGE_NAME
+from automatize.assets.config import page_title, PACKAGE_NAME
 
-# Server Config
-HOST = '0.0.0.0'
-PORT = 8050
-DEBUG = True
-
+# from flask_caching import Cache
+# cache = Cache(app.server, config={
+#     'CACHE_TYPE': 'filesystem',
+#     'CACHE_DIR': 'app/cache'
+# })
 
 # Boostrap CSS.
 external_stylesheets=[
@@ -33,9 +38,9 @@ external_stylesheets=[
 #                 title=page_title, suppress_callback_exceptions=True)
 # server = app.server
 
-server = Flask('automatise')
+server = Flask(str(PACKAGE_NAME))
 
-app = dash.Dash('automatise', server=server,external_stylesheets=external_stylesheets)
+app = dash.Dash(str(PACKAGE_NAME), server=server,external_stylesheets=external_stylesheets)
 app.config.suppress_callback_exceptions = True
 app.title = page_title
 app._favicon = 'favicon.ico'

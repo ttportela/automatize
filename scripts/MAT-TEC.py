@@ -15,7 +15,7 @@ from datetime import datetime
 
 # from main import importer
 # importer(['S', 'datetime', 'ClassifierEnsemble'], globals())
-from automatise.ensemble.tec import ClassifierEnsemble
+from automatize.methods.tec.tec import TEC
 
 if len(sys.argv) < 4:
     print('Please run as:')
@@ -35,7 +35,7 @@ if len(sys.argv) >= 5:
     
 time = datetime.now()
 
-ClassifierEnsemble(data_path, results_path, ensembles, dataset, save_results=True, modelfolder=modelfolder)
+TEC(data_path, results_path, ensembles, dataset, save_results=True, modelfolder=modelfolder)
 
 time_ext = (datetime.now()-time).total_seconds() * 1000
 

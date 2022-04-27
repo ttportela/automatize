@@ -9,14 +9,14 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
+import pandas as pd
 import sys, os 
 sys.path.insert(0, os.path.abspath('.'))
-import pandas as pd
-
-from automatise.main import display
 # from main import importer, display
 # importer(['S', 'results2df'], globals())
-from automatise.results import results2df
+
+from automatize.main import display
+from automatize.results import results2df
 
 # print(len(sys.argv))
 if len(sys.argv) < 2:

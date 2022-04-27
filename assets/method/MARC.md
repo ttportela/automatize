@@ -1,6 +1,6 @@
 ### MARC
 
-\[ *Runnable is included in Automatise Library* \]
+\[ *Runnable is included in Library* \]
 
 It will give you the classification results in the results.csv file (as the example). As you need the running time, you can add code in the python script to calculate the time.
 

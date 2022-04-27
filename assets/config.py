@@ -9,14 +9,17 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-PACKAGE_NAME = 'automatise'
+VERSION = "1.0.b1"
+
+PACKAGE_NAME = 'automatize'
 DATA_PATH = '../../datasets'
 EXP_PATH  = '../../results'
 README    = PACKAGE_NAME+'/README.md'
 
-PAGES_ROUTE =  PACKAGE_NAME+'/assets'
+PAGES_ROUTE  = PACKAGE_NAME+'/'
+ASSETS_ROUTE = PAGES_ROUTE + 'assets/'
 
-RESULTS_FILE    = PACKAGE_NAME+'/assets/experimental_history.csv'
+RESULTS_FILE    = ASSETS_ROUTE+'experimental_history.csv'
 
 # page_title = 'Tarlis\'s Multiple Aspect Trajectory Analysis'
 page_title = PACKAGE_NAME.capitalize()
@@ -35,6 +38,7 @@ def alert(msg, mtype="info"):
 def render_markdown_file(file, div=False):
     from dash import html
     from dash import dcc
+    import os
     f = open(file, "r")
     if div:
         return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'}, className='markdown')

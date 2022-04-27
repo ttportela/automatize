@@ -441,4 +441,4 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
 #         from ..main import importer
         importer(['ClassifierEnsemble'], globals())
         
-        return ClassifierEnsemble(data_path, results_path, ensembles, dataset, save_results, modelfolder)
+        return TEC(data_path, results_path, ensembles, dataset, save_results, modelfolder)

@@ -11,7 +11,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import sys, os 
 sys.path.insert(0, os.path.abspath('.'))
-from automatise.results import check_run
+from automatize.results import check_run
 
 if len(sys.argv) < 1:
     print('Please run as:')

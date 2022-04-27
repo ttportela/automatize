@@ -2,6 +2,7 @@
 
 \[ [Runnable](/assets/method/HIPERMovelets.jar) \]
 
+
 **HIPERMovelets: high-performance movelet extraction for trajectory classification** is a new method for movelets discovery, developed as an optimization for MASTERMovelets.
 
 You can run the feature extractor with the following command:

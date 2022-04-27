@@ -26,12 +26,12 @@ from dash import html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatise.results import format_hour, format_float
-
 from assets.app_base import app, gess, sess
 from assets.config import *
 from helper.CDDiagram import draw_cd_diagram 
 from helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+
+from automatize.results import format_hour, format_float
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
 
@@ -52,7 +52,7 @@ def render_page_results(pathname):
         
     return html.Div(children=[
 #         html.H3('Experimental Evaluations', style={'margin':10}),
-        render_markdown_file(PAGES_ROUTE+'/pages/results.md', div=True),
+        render_markdown_file(PAGES_ROUTE+'assets/pages/results.md', div=True),
         html.Div(id='output-results', children=content)
     ])
 

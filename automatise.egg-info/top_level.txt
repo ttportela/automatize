@@ -1,6 +1,0 @@
-assets
-ensemble
-helper
-marc
-pois
-scripts

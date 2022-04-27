@@ -29,7 +29,7 @@ import dash_cytoscape as cyto
 import pandas as pd
 import networkx as nx
 
-from automatise.movelets import *
+from automatize.movelets import *
 
 # ------------------------------------------------------------
 # attributes = ['None']

@@ -28,9 +28,9 @@ from dash.dependencies import Output, Input, State
 from assets.app_base import app
 from assets.config import *
 
-from automatise.results import format_hour
-from automatise.helper.datasets_inc import *
-from automatise.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from automatize.results import format_hour
+from automatize.helper.datasets_inc import *
+from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # DATA_PATH='../../datasets'
 
@@ -38,7 +38,7 @@ def render_page_datasets(pathname):
     if pathname == '/datasets':
         return html.Div(style = {'margin':10}, children=[
 #             html.H3('Datasets'), 
-            render_markdown_file(PAGES_ROUTE+'/pages/datasets.md'),
+            render_markdown_file(PAGES_ROUTE+'assets/pages/datasets.md'),
             html.Div(children=render_datasets()),
         ])
     else:

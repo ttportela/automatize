@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('.'))
 import pandas as pd
 import glob2 as glob
 
-from automatise.results import containErrors, containWarnings
+from automatize.results import containErrors, containWarnings
 
 # from main import importer
 # importer(['S', 'glob', 'containErrors', 'containWarnings'], globals())

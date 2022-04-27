@@ -424,11 +424,11 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
             test_aux  = pd.concat([test_aux,   ktest[y]])
             
         
-        print("Writing files ... " + str(x+1) +'/'+str(k))
+#         print("Writing files ... " + str(x+1) +'/'+str(k), end='')
         # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
         for outType in outformats:
             writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
-                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, outType, mat_columns, opSuff=str(x+1))
+                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, outType, opSuff=str(x+1))
 #         df2zip(data_path, train_aux, os.path.join(path, fileprefix+'train'), tid_col, class_col, select_cols=columns_order_zip,\
 #               opLabel='Writing TRAIN - ZIP|' + str(x+1))
 #         df2zip(data_path, test_aux, os.path.join(path,  fileprefix+'test'), tid_col, class_col, select_cols=columns_order_zip,\
@@ -440,13 +440,13 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
 #         print('Writing TRAIN / TEST - CSV|' + str(x+1))
 #         train_aux[columns_order_csv].to_csv(os.path.join(data_path, path, fileprefix+"train.csv"), index = False)
 #         test_aux[columns_order_csv].to_csv(os.path.join(data_path, path,  fileprefix+"test.csv"), index = False)
-        print(path + '; ', end='')
+#         print(path + '; ')
     print(" Done.")
     print(" --------------------------------------------------------------------------------")
     
     return ktrain, ktest
         
-def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat=['zip'], opSuff=''):
+def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
     if outformat == 'zip':
         # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
         df2zip(data_path, train, file+'train', tid_col, class_col, select_cols=columns_order,\
@@ -492,36 +492,39 @@ def splitframe(data, name='tid'):
 #-------------------------------------------------------------------------->>    
 
 #-------------------------------------------------------------------------->>
-def joinTrainAndTest(dir_path, cols, train_file="train.csv", test_file="test.csv", tid_col='tid', class_col = 'label'):
+def joinTrainAndTest(dir_path, train_file="train.csv", test_file="test.csv", tid_col='tid', class_col = 'label', to_file=False):
 #     from ..main import importer
 #     importer(['S'], locals())
     
     print("Joining train and test data from... " + dir_path)
     
     # Read datasets
-    if '.csv' in train_file:
-        print("Reading train file...")
-        dataset_train = pd.read_csv(os.path.join(dir_path, train_file))
-    else:
-        print("Converting train file...")
-        dataset_train = zip2csv(dir_path, train_file, cols, class_col)
-    print("Done.")
-        
-    if '.csv' in test_file:
-        print("Reading test file...")
-        dataset_test  = pd.read_csv(os.path.join(dir_path, test_file))
-    else:
-        print("Converting test file...")
-        dataset_test = zip2csv(dir_path, test_file, cols, class_col)
-    print("Done.")
-        
-    print("Saving joined dataset as: " + os.path.join(dir_path, 'joined.csv'))
-    dataset = pd.concat([dataset_train, dataset_test])
-
-    dataset.sort_values([class_col, tid_col])
+    dataset_train = readDataset(dir_path, None, train_file)
+    dataset_test  = readDataset(dir_path, None, test_file)
     
-    dataset.to_csv(os.path.join(dir_path, 'joined.csv'), index=False)
+    dataset = pd.concat([dataset_train, dataset_test])
+#     if '.csv' in train_file:
+#         print("Reading train file...")
+#         dataset_train = pd.read_csv(os.path.join(dir_path, train_file))
+#     else:
+#         print("Converting train file...")
+#         dataset_train = zip2csv(dir_path, train_file, cols, class_col)
+#     print("Done.")
+        
+#     if '.csv' in test_file:
+#         print("Reading test file...")
+#         dataset_test  = pd.read_csv(os.path.join(dir_path, test_file))
+#     else:
+#         print("Converting test file...")
+#         dataset_test = zip2csv(dir_path, test_file, cols, class_col)
+    dataset.sort_values([class_col, tid_col])
     print("Done.")
+    
+    if to_file:
+        print("Saving joined dataset as: " + os.path.join(dir_path, 'joined.csv'))
+
+        dataset.to_csv(os.path.join(dir_path, 'joined.csv'), index=False)
+        print("Done.")
     print(" --------------------------------------------------------------------------------")
     
     return dataset

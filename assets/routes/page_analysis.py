@@ -27,12 +27,13 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input, State
 
-from automatise.preprocessing import readDataset, organizeFrame
-
 from assets.routes.subpage_trajectories import *
 from assets.routes.subpage_models import *
 
 from assets.app_base import app, sess, gess
+from assets.config import PACKAGE_NAME
+
+from automatize.preprocessing import readDataset, organizeFrame
 # ------------------------------------------------------------
 # from_trajs = 0
 # to_trajs = 100

@@ -235,7 +235,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 #     import os, sys
 #     from run import Movelets, MARC, POIFREQ, Ensemble#k_MARC, k_Ensemble
     importer(['methods'], globals())
-#     package_scripts = 'automatise/scripts'
+#     package_scripts = PACKAGE_NAME+'/scripts'
         
     if 'k' in params and params['k']:
         k = params['k']
@@ -324,7 +324,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         if method == 'MARC':
             train_file = dsvar+"_train.csv" if '_ts' not in data else dsvar+"_TRAIN.ts"
             test_file  = dsvar+"_test.csv"  if '_ts' not in data else dsvar+"_TEST.ts"
-            MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=os.path.join(prog_path, PACKAGE_NAME,'marc'), 
+            MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=prog_path, #os.path.join(prog_path, PACKAGE_NAME,'marc'), 
                  pyname=pyname, extra_params=GIG+' '+THREADS, train=train_file, test=test_file)
 
 

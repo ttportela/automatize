@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # from main import importer
 # importer(['S', 'mergeDatasets'], globals())
-from automatise.run import mergeDatasets
+from automatize.run import mergeDatasets
 
 if len(sys.argv) < 1:
     print('Please run as:')

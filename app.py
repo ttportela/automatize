@@ -47,7 +47,7 @@ def display_page(pathname):
     elif pathname == '/analysis':
         return render_page_analysis()
     elif pathname == '/methods':
-        return render_markdown_file(PAGES_ROUTE+'/pages/methods.md', div=True)
+        return render_markdown_file(PAGES_ROUTE+'assets/pages/methods.md', div=True)
     elif '/datasets' in pathname:
         return render_page_datasets(pathname)
     elif pathname == '/experiments':
@@ -55,15 +55,15 @@ def display_page(pathname):
     elif pathname == '/results':
         return render_page_results(pathname) #render_markdown_file('./assets/experiments.md')
     elif pathname == '/publications':
-        return render_markdown_file(PAGES_ROUTE+'/pages/publications.md', div=True)
+        return render_markdown_file(PAGES_ROUTE+'assets/pages/publications.md', div=True)
     elif pathname == '/tutorial':
         return html.Div(id='content-home', children=[html.Iframe(
-            src="assets/examples/Automatise_Sample_Code.html", width="100%", height="100vh",
+            src="assets/examples/Automatize_Sample_Code.html", width="100%", height="100vh",
             style={"height": "100vh", "width": "100%"},
         )])
     else:
-        file = PAGES_ROUTE+ pathname+'.md'
-#         print(pathname, file)
+        file = ASSETS_ROUTE + pathname+'.md'
+        print(os.path.abspath(file))
         if os.path.exists(file):
             return render_markdown_file(file, div=True)
         else:
@@ -145,7 +145,7 @@ app.layout = html.Div(id = 'parent', children = [
                         html.A(className='nav-link nav-link-btn',
                             id='gh-link',
                             children=['View on GitHub'],
-                            href="https://github.com/ttportela/automatise",
+                            href="https://github.com/ttportela/automatize",
                         ),
                     ]),
                 ]),
@@ -160,15 +160,16 @@ def render_page_home():
     y = datetime.datetime.now().date().year
 #     return render_markdown_file(README)
     return html.Div(id='content-home', children=[ 
-        render_markdown_file(README),
+        render_markdown_file(README, div=True),
         html.Hr(),
-        html.Span('© '+str(y)+' Alfa version, by '),
+        html.Span('© '+str(y)+' '+VERSION+' version, by '),
         html.A(
             children=['Tarlis Tortelli Portela'],
             href="https://tarlis.com.br",
         ),
         html.Span('.'),
-    ], style={'margin': '20px'})
+#     ], style={'margin': '20px'})
+    ])
 
 if __name__ == '__main__':
 #     sess.init_app(app)

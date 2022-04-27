@@ -53,6 +53,10 @@ blockquote {
     background-color: #f6f8fa;
 }
 
+.markdown img[alt=Method-Badge] {
+    float: right;
+}
+
 .movelet-box { 
     padding: 16px;
 /*     overflow: auto;

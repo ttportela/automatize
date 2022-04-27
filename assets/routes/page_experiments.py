@@ -28,9 +28,9 @@ from dash.dependencies import Output, Input, State
 from assets.app_base import app
 from assets.config import *
 
-from automatise.script import gensh, trimsuffix
-from automatise.helper.script_inc import *
-from automatise.helper.datasets_inc import list_datasets
+from automatize.script import gensh, trimsuffix
+from automatize.helper.script_inc import *
+from automatize.helper.datasets_inc import list_datasets
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
     
@@ -78,7 +78,7 @@ def render_page_experiments(pathname):
         
     return html.Div(children=[
 #         html.H3('Experimental Evaluations'),
-        render_markdown_file(PAGES_ROUTE+'/pages/experiments.md'),
+        render_markdown_file(PAGES_ROUTE+'assets/pages/experiments.md'),
         
         html.Div([
             html.Div(children=[

@@ -12,9 +12,9 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 import sys, os 
 sys.path.insert(0, os.path.abspath('.'))
 
-from automatise.main import display
-from automatise.analysis import ACC4All
-from automatise.results import results2df
+from automatize.main import display
+from automatize.analysis import ACC4All
+from automatize.results import results2df
 
 # def_random_seed(random_num=1, seed_num=1)
 

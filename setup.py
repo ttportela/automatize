@@ -9,33 +9,35 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 import setuptools
+from asstes.config import VERSION, PACKAGE_NAME
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
     
 setuptools.setup(
-    name="automatise",
-    version="1.0.beta1",
-    author="tarlis",
+    name=PACKAGE_NAME,
+    version=VERSION,
+    author="Tarlis Tortelli Portela",
     author_email="tarlis@tarlis.com.br",
-    description="Automatise: Multiple Aspect Trajectory Data Mining Tool Library",
+    description="Automatize: Multiple Aspect Trajectory Data Mining Tool Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ttportela/automatise",
+    url="https://github.com/ttportela/automatize",
     packages=setuptools.find_packages(),
     scripts=[
-        'scripts/MAT-CheckRun.py',
         'scripts/MAT-Classifier-All.py',
         'scripts/MAT-Classifier-MLP.py',
         'scripts/MAT-Classifier-MLP_RF.py',
+        'scripts/MAT-CheckRun.py',
         'scripts/MAT-ExportResults.py',
         'scripts/MAT-MergeDatasets.py',
-        'scripts/MAT-PrintResults.py',
-        'scripts/MAT-ResultsCheck.py',
+#         'scripts/MAT-PrintResults.py',
+#         'scripts/MAT-ResultsCheck.py',
         'scripts/MAT-ResultsTo.py',
-        'marc/MARC.py',
-        'pois/POIS.py',
-        'pois/POIS-Classifier.py',
+        'methods/marc/MARC.py',
+        'methods/pois/POIS.py',
+        'methods/pois/POIS-Classifier.py',
+        'scripts/MAT-TEC.py',
     ],
     classifiers=(
         "Programming Language :: Python :: 3",
@@ -46,4 +48,6 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Visualization",
     ),
+    keywords='data mining, python, trajectory classification, trajectory analysis, movelets',
+    license='GPL Version 3 or superior (see LICENSE file)',
 )

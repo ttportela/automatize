@@ -27,7 +27,7 @@ from dash.dependencies import Output, Input, State
 
 import pandas as pd
 
-from automatise.movelets import *
+from automatize.movelets import *
 
 # ------------------------------------------------------------
 # attributes = ['None']

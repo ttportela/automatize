@@ -1,0 +1,474 @@
+2019-02-06 00:39:46.831494: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+==================================== PARAMS ====================================
+TRAIN_FILE = ../../data/brightkite/train.csv
+TEST_FILE = ../../data/brightkite/test.csv
+EMBEDDINGS_FILE = model/tulvae_brightkite.model
+METRICS_FILE = results_brightkite.csv
+DATASET = Brightkite 
+
+WARNING: File 'results_brightkite.csv' not found!
+================================== EMBEDDINGS ==================================
+EMBEDDING_SIZE = 250
+WINDOW_SIZE = 5 
+
+Embeddings loaded from file 'model/tulvae_brightkite.model'
+Embedding matrix shape: (4913, 250)
+==================================== TULVAE ====================================
+hidden_cells = 512
+cls_hidden_units = 300
+output_size = 300
+keep_prob = 0.5
+LEARNING_RATE = 0.001
+EARLY_STOPPING_PATIENCE = 30
+BASELINE_METRIC = classifier_acc
+BASELINE_VALUE = 0.5
+BATCH_SIZE = 64
+EPOCHS = 1000 
+
+===== Training Epoch 1 =====
+TRAIN		acc: 0.523603	acc_top5: 0.706095	f1_macro: 0.358344	prec_macro: 0.385258	rec_macro: 0.393935
+TEST		acc: 0.499580	acc_top5: 0.673804	f1_macro: 0.341694	prec_macro: 0.363647	rec_macro: 0.373022
+===== Training Epoch 2 =====
+TRAIN		acc: 0.704106	acc_top5: 0.837945	f1_macro: 0.624275	prec_macro: 0.659054	rec_macro: 0.644318
+TEST		acc: 0.667926	acc_top5: 0.802687	f1_macro: 0.586563	prec_macro: 0.620415	rec_macro: 0.601424
+===== Training Epoch 3 =====
+TRAIN		acc: 0.739555	acc_top5: 0.872671	f1_macro: 0.683577	prec_macro: 0.718161	rec_macro: 0.693675
+TEST		acc: 0.706129	acc_top5: 0.830814	f1_macro: 0.639057	prec_macro: 0.674442	rec_macro: 0.650343
+===== Training Epoch 4 =====
+TRAIN		acc: 0.788208	acc_top5: 0.898354	f1_macro: 0.754285	prec_macro: 0.800647	rec_macro: 0.755898
+TEST		acc: 0.745592	acc_top5: 0.855584	f1_macro: 0.700704	prec_macro: 0.744836	rec_macro: 0.706497
+===== Training Epoch 5 =====
+TRAIN		acc: 0.802315	acc_top5: 0.899801	f1_macro: 0.765140	prec_macro: 0.806360	rec_macro: 0.766685
+TEST		acc: 0.762385	acc_top5: 0.859362	f1_macro: 0.710867	prec_macro: 0.744861	rec_macro: 0.717819
+===== Training Epoch 6 =====
+TRAIN		acc: 0.824923	acc_top5: 0.926750	f1_macro: 0.790014	prec_macro: 0.818966	rec_macro: 0.794381
+TEST		acc: 0.787154	acc_top5: 0.876574	f1_macro: 0.737196	prec_macro: 0.767876	rec_macro: 0.746932
+===== Training Epoch 7 =====
+TRAIN		acc: 0.823657	acc_top5: 0.926026	f1_macro: 0.797256	prec_macro: 0.829938	rec_macro: 0.799554
+TEST		acc: 0.788413	acc_top5: 0.879513	f1_macro: 0.746755	prec_macro: 0.776332	rec_macro: 0.752012
+===== Training Epoch 8 =====
+TRAIN		acc: 0.832158	acc_top5: 0.931814	f1_macro: 0.798608	prec_macro: 0.834515	rec_macro: 0.799525
+TEST		acc: 0.792191	acc_top5: 0.892107	f1_macro: 0.744236	prec_macro: 0.778449	rec_macro: 0.747406
+===== Training Epoch 9 =====
+TRAIN		acc: 0.850425	acc_top5: 0.939230	f1_macro: 0.829525	prec_macro: 0.867892	rec_macro: 0.826772
+TEST		acc: 0.807305	acc_top5: 0.890428	f1_macro: 0.770310	prec_macro: 0.805832	rec_macro: 0.770989
+===== Training Epoch 10 =====
+TRAIN		acc: 0.867245	acc_top5: 0.952071	f1_macro: 0.841420	prec_macro: 0.870514	rec_macro: 0.840942
+TEST		acc: 0.824097	acc_top5: 0.906381	f1_macro: 0.785108	prec_macro: 0.814659	rec_macro: 0.784165
+===== Training Epoch 11 =====
+TRAIN		acc: 0.863266	acc_top5: 0.954603	f1_macro: 0.844082	prec_macro: 0.878160	rec_macro: 0.841725
+TEST		acc: 0.817800	acc_top5: 0.913098	f1_macro: 0.779336	prec_macro: 0.814621	rec_macro: 0.780680
+===== Training Epoch 12 =====
+TRAIN		acc: 0.875927	acc_top5: 0.950262	f1_macro: 0.851120	prec_macro: 0.883916	rec_macro: 0.853332
+TEST		acc: 0.827876	acc_top5: 0.911419	f1_macro: 0.786217	prec_macro: 0.813896	rec_macro: 0.789643
+===== Training Epoch 13 =====
+TRAIN		acc: 0.860553	acc_top5: 0.947911	f1_macro: 0.824745	prec_macro: 0.850692	rec_macro: 0.830228
+TEST		acc: 0.816541	acc_top5: 0.904282	f1_macro: 0.762833	prec_macro: 0.785806	rec_macro: 0.769159
+===== Training Epoch 14 =====
+TRAIN		acc: 0.887864	acc_top5: 0.961838	f1_macro: 0.863782	prec_macro: 0.887717	rec_macro: 0.865673
+TEST		acc: 0.832914	acc_top5: 0.912259	f1_macro: 0.789732	prec_macro: 0.819413	rec_macro: 0.792677
+===== Training Epoch 15 =====
+TRAIN		acc: 0.878821	acc_top5: 0.959305	f1_macro: 0.860437	prec_macro: 0.892123	rec_macro: 0.856901
+TEST		acc: 0.830395	acc_top5: 0.907221	f1_macro: 0.792742	prec_macro: 0.827235	rec_macro: 0.792531
+===== Training Epoch 16 =====
+TRAIN		acc: 0.872671	acc_top5: 0.959848	f1_macro: 0.855371	prec_macro: 0.890680	rec_macro: 0.851623
+TEST		acc: 0.821159	acc_top5: 0.907641	f1_macro: 0.782422	prec_macro: 0.814799	rec_macro: 0.784197
+===== Training Epoch 17 =====
+TRAIN		acc: 0.891300	acc_top5: 0.964731	f1_macro: 0.865207	prec_macro: 0.889483	rec_macro: 0.867380
+TEST		acc: 0.840890	acc_top5: 0.913938	f1_macro: 0.795616	prec_macro: 0.831530	rec_macro: 0.797778
+===== Training Epoch 18 =====
+TRAIN		acc: 0.902876	acc_top5: 0.966540	f1_macro: 0.876825	prec_macro: 0.897371	rec_macro: 0.877022
+TEST		acc: 0.849706	acc_top5: 0.915617	f1_macro: 0.800887	prec_macro: 0.824631	rec_macro: 0.801785
+===== Training Epoch 19 =====
+TRAIN		acc: 0.894737	acc_top5: 0.961838	f1_macro: 0.876067	prec_macro: 0.894552	rec_macro: 0.875616
+TEST		acc: 0.842149	acc_top5: 0.909740	f1_macro: 0.805357	prec_macro: 0.832009	rec_macro: 0.804292
+===== Training Epoch 20 =====
+TRAIN		acc: 0.896545	acc_top5: 0.967625	f1_macro: 0.878508	prec_macro: 0.896607	rec_macro: 0.878416
+TEST		acc: 0.840470	acc_top5: 0.913518	f1_macro: 0.800313	prec_macro: 0.827794	rec_macro: 0.801327
+===== Training Epoch 21 =====
+TRAIN		acc: 0.908302	acc_top5: 0.967083	f1_macro: 0.893111	prec_macro: 0.911243	rec_macro: 0.891042
+TEST		acc: 0.852645	acc_top5: 0.912259	f1_macro: 0.817055	prec_macro: 0.850427	rec_macro: 0.813909
+===== Training Epoch 22 =====
+TRAIN		acc: 0.906312	acc_top5: 0.972509	f1_macro: 0.887751	prec_macro: 0.904982	rec_macro: 0.889437
+TEST		acc: 0.850546	acc_top5: 0.919395	f1_macro: 0.808874	prec_macro: 0.824864	rec_macro: 0.813506
+===== Training Epoch 23 =====
+TRAIN		acc: 0.905227	acc_top5: 0.968710	f1_macro: 0.881902	prec_macro: 0.900195	rec_macro: 0.880907
+TEST		acc: 0.843829	acc_top5: 0.916037	f1_macro: 0.802898	prec_macro: 0.827110	rec_macro: 0.805216
+===== Training Epoch 24 =====
+TRAIN		acc: 0.907940	acc_top5: 0.967083	f1_macro: 0.888016	prec_macro: 0.908553	rec_macro: 0.886631
+TEST		acc: 0.849706	acc_top5: 0.913098	f1_macro: 0.806797	prec_macro: 0.832999	rec_macro: 0.807211
+===== Training Epoch 25 =====
+TRAIN		acc: 0.913547	acc_top5: 0.969976	f1_macro: 0.896141	prec_macro: 0.914350	rec_macro: 0.894443
+TEST		acc: 0.853904	acc_top5: 0.916877	f1_macro: 0.817143	prec_macro: 0.847798	rec_macro: 0.815883
+===== Training Epoch 26 =====
+TRAIN		acc: 0.914089	acc_top5: 0.975222	f1_macro: 0.897062	prec_macro: 0.918260	rec_macro: 0.896211
+TEST		acc: 0.850126	acc_top5: 0.918136	f1_macro: 0.813547	prec_macro: 0.837196	rec_macro: 0.810851
+===== Training Epoch 27 =====
+TRAIN		acc: 0.911376	acc_top5: 0.970881	f1_macro: 0.892214	prec_macro: 0.915202	rec_macro: 0.891335
+TEST		acc: 0.852225	acc_top5: 0.920235	f1_macro: 0.808321	prec_macro: 0.836135	rec_macro: 0.810280
+===== Training Epoch 28 =====
+TRAIN		acc: 0.919877	acc_top5: 0.971062	f1_macro: 0.901701	prec_macro: 0.922178	rec_macro: 0.899630
+TEST		acc: 0.855584	acc_top5: 0.914777	f1_macro: 0.815399	prec_macro: 0.845335	rec_macro: 0.814145
+===== Training Epoch 29 =====
+TRAIN		acc: 0.925122	acc_top5: 0.975583	f1_macro: 0.905941	prec_macro: 0.917188	rec_macro: 0.907495
+TEST		acc: 0.864400	acc_top5: 0.918136	f1_macro: 0.818824	prec_macro: 0.839687	rec_macro: 0.820324
+===== Training Epoch 30 =====
+TRAIN		acc: 0.918068	acc_top5: 0.975041	f1_macro: 0.897749	prec_macro: 0.916678	rec_macro: 0.897003
+TEST		acc: 0.858942	acc_top5: 0.915617	f1_macro: 0.813146	prec_macro: 0.837167	rec_macro: 0.814217
+===== Training Epoch 31 =====
+TRAIN		acc: 0.913547	acc_top5: 0.975041	f1_macro: 0.897669	prec_macro: 0.911498	rec_macro: 0.900204
+TEST		acc: 0.848447	acc_top5: 0.916037	f1_macro: 0.810934	prec_macro: 0.830906	rec_macro: 0.812519
+===== Training Epoch 32 =====
+TRAIN		acc: 0.926388	acc_top5: 0.975945	f1_macro: 0.908033	prec_macro: 0.921856	rec_macro: 0.907439
+TEST		acc: 0.861881	acc_top5: 0.918976	f1_macro: 0.820937	prec_macro: 0.844260	rec_macro: 0.820478
+===== Training Epoch 33 =====
+TRAIN		acc: 0.929282	acc_top5: 0.978658	f1_macro: 0.914448	prec_macro: 0.925896	rec_macro: 0.914905
+TEST		acc: 0.861461	acc_top5: 0.916457	f1_macro: 0.825423	prec_macro: 0.845020	rec_macro: 0.827187
+===== Training Epoch 34 =====
+TRAIN		acc: 0.929282	acc_top5: 0.975583	f1_macro: 0.910057	prec_macro: 0.925731	rec_macro: 0.910823
+TEST		acc: 0.864819	acc_top5: 0.920655	f1_macro: 0.825352	prec_macro: 0.851542	rec_macro: 0.823179
+===== Training Epoch 35 =====
+TRAIN		acc: 0.925484	acc_top5: 0.977392	f1_macro: 0.904737	prec_macro: 0.919970	rec_macro: 0.904361
+TEST		acc: 0.857683	acc_top5: 0.918136	f1_macro: 0.815103	prec_macro: 0.839839	rec_macro: 0.814155
+===== Training Epoch 36 =====
+TRAIN		acc: 0.931814	acc_top5: 0.977754	f1_macro: 0.911964	prec_macro: 0.926401	rec_macro: 0.912975
+TEST		acc: 0.866079	acc_top5: 0.918136	f1_macro: 0.824700	prec_macro: 0.842129	rec_macro: 0.824292
+===== Training Epoch 37 =====
+TRAIN		acc: 0.938687	acc_top5: 0.980286	f1_macro: 0.920054	prec_macro: 0.929853	rec_macro: 0.921280
+TEST		acc: 0.869857	acc_top5: 0.918976	f1_macro: 0.829174	prec_macro: 0.849199	rec_macro: 0.830946
+===== Training Epoch 38 =====
+TRAIN		acc: 0.937421	acc_top5: 0.981733	f1_macro: 0.917249	prec_macro: 0.922820	rec_macro: 0.920339
+TEST		acc: 0.864819	acc_top5: 0.921075	f1_macro: 0.820074	prec_macro: 0.835351	rec_macro: 0.824754
+===== Training Epoch 39 =====
+TRAIN		acc: 0.926750	acc_top5: 0.979562	f1_macro: 0.909948	prec_macro: 0.919489	rec_macro: 0.913362
+TEST		acc: 0.853065	acc_top5: 0.919395	f1_macro: 0.816466	prec_macro: 0.838734	rec_macro: 0.815091
+===== Training Epoch 40 =====
+TRAIN		acc: 0.940857	acc_top5: 0.981552	f1_macro: 0.925353	prec_macro: 0.935576	rec_macro: 0.926190
+TEST		acc: 0.870277	acc_top5: 0.922334	f1_macro: 0.834354	prec_macro: 0.858550	rec_macro: 0.833877
+===== Training Epoch 41 =====
+TRAIN		acc: 0.938144	acc_top5: 0.978296	f1_macro: 0.919452	prec_macro: 0.928833	rec_macro: 0.920570
+TEST		acc: 0.864819	acc_top5: 0.919815	f1_macro: 0.819625	prec_macro: 0.839886	rec_macro: 0.823865
+===== Training Epoch 42 =====
+TRAIN		acc: 0.931091	acc_top5: 0.979020	f1_macro: 0.912623	prec_macro: 0.923010	rec_macro: 0.916150
+TEST		acc: 0.867338	acc_top5: 0.919395	f1_macro: 0.825109	prec_macro: 0.850959	rec_macro: 0.828584
+===== Training Epoch 43 =====
+TRAIN		acc: 0.941581	acc_top5: 0.981552	f1_macro: 0.921600	prec_macro: 0.932188	rec_macro: 0.922775
+TEST		acc: 0.872376	acc_top5: 0.919395	f1_macro: 0.829062	prec_macro: 0.852465	rec_macro: 0.829362
+===== Training Epoch 44 =====
+TRAIN		acc: 0.940315	acc_top5: 0.982275	f1_macro: 0.922096	prec_macro: 0.932044	rec_macro: 0.922671
+TEST		acc: 0.869437	acc_top5: 0.920235	f1_macro: 0.827490	prec_macro: 0.844212	rec_macro: 0.829539
+===== Training Epoch 45 =====
+TRAIN		acc: 0.930548	acc_top5: 0.982999	f1_macro: 0.915406	prec_macro: 0.927728	rec_macro: 0.919537
+TEST		acc: 0.860621	acc_top5: 0.921495	f1_macro: 0.821073	prec_macro: 0.845152	rec_macro: 0.822929
+===== Training Epoch 46 =====
+TRAIN		acc: 0.936697	acc_top5: 0.982999	f1_macro: 0.919900	prec_macro: 0.930475	rec_macro: 0.923116
+TEST		acc: 0.861041	acc_top5: 0.921495	f1_macro: 0.819872	prec_macro: 0.843021	rec_macro: 0.824376
+===== Training Epoch 47 =====
+TRAIN		acc: 0.951167	acc_top5: 0.985531	f1_macro: 0.932976	prec_macro: 0.936719	rec_macro: 0.934962
+TEST		acc: 0.874895	acc_top5: 0.923174	f1_macro: 0.831042	prec_macro: 0.843138	rec_macro: 0.835340
+===== Training Epoch 48 =====
+TRAIN		acc: 0.943932	acc_top5: 0.982275	f1_macro: 0.924193	prec_macro: 0.935082	rec_macro: 0.924426
+TEST		acc: 0.875315	acc_top5: 0.919815	f1_macro: 0.827685	prec_macro: 0.844833	rec_macro: 0.830114
+===== Training Epoch 49 =====
+TRAIN		acc: 0.942485	acc_top5: 0.981552	f1_macro: 0.924407	prec_macro: 0.934907	rec_macro: 0.925148
+TEST		acc: 0.875735	acc_top5: 0.924433	f1_macro: 0.832215	prec_macro: 0.851315	rec_macro: 0.834453
+===== Training Epoch 50 =====
+TRAIN		acc: 0.944836	acc_top5: 0.981552	f1_macro: 0.925028	prec_macro: 0.934271	rec_macro: 0.926489
+TEST		acc: 0.867338	acc_top5: 0.918976	f1_macro: 0.822980	prec_macro: 0.839517	rec_macro: 0.824728
+===== Training Epoch 51 =====
+TRAIN		acc: 0.933623	acc_top5: 0.984807	f1_macro: 0.919325	prec_macro: 0.930625	rec_macro: 0.920652
+TEST		acc: 0.860621	acc_top5: 0.919815	f1_macro: 0.819417	prec_macro: 0.843768	rec_macro: 0.823497
+===== Training Epoch 52 =====
+TRAIN		acc: 0.946464	acc_top5: 0.983541	f1_macro: 0.927237	prec_macro: 0.935190	rec_macro: 0.929725
+TEST		acc: 0.874475	acc_top5: 0.920235	f1_macro: 0.833530	prec_macro: 0.852580	rec_macro: 0.834186
+===== Training Epoch 53 =====
+TRAIN		acc: 0.943028	acc_top5: 0.984807	f1_macro: 0.928980	prec_macro: 0.938715	rec_macro: 0.928890
+TEST		acc: 0.865239	acc_top5: 0.921075	f1_macro: 0.824134	prec_macro: 0.839351	rec_macro: 0.828097
+===== Training Epoch 54 =====
+TRAIN		acc: 0.949539	acc_top5: 0.984084	f1_macro: 0.929293	prec_macro: 0.936185	rec_macro: 0.929192
+TEST		acc: 0.879093	acc_top5: 0.919395	f1_macro: 0.837700	prec_macro: 0.855550	rec_macro: 0.837586
+===== Training Epoch 55 =====
+TRAIN		acc: 0.948634	acc_top5: 0.984265	f1_macro: 0.930268	prec_macro: 0.941607	rec_macro: 0.930371
+TEST		acc: 0.870697	acc_top5: 0.922334	f1_macro: 0.828371	prec_macro: 0.850012	rec_macro: 0.830650
+===== Training Epoch 56 =====
+TRAIN		acc: 0.929644	acc_top5: 0.977211	f1_macro: 0.911166	prec_macro: 0.925586	rec_macro: 0.910993
+TEST		acc: 0.853065	acc_top5: 0.919815	f1_macro: 0.811238	prec_macro: 0.842622	rec_macro: 0.809716
+===== Training Epoch 57 =====
+TRAIN		acc: 0.944836	acc_top5: 0.981914	f1_macro: 0.920328	prec_macro: 0.927683	rec_macro: 0.922716
+TEST		acc: 0.861881	acc_top5: 0.916457	f1_macro: 0.810296	prec_macro: 0.825080	rec_macro: 0.817327
+===== Training Epoch 58 =====
+TRAIN		acc: 0.950443	acc_top5: 0.984084	f1_macro: 0.930846	prec_macro: 0.938395	rec_macro: 0.932553
+TEST		acc: 0.871537	acc_top5: 0.916877	f1_macro: 0.827130	prec_macro: 0.846278	rec_macro: 0.826556
+===== Training Epoch 59 =====
+TRAIN		acc: 0.952071	acc_top5: 0.984265	f1_macro: 0.929714	prec_macro: 0.935081	rec_macro: 0.932565
+TEST		acc: 0.876994	acc_top5: 0.920655	f1_macro: 0.827000	prec_macro: 0.841209	rec_macro: 0.830431
+===== Training Epoch 60 =====
+TRAIN		acc: 0.949177	acc_top5: 0.986073	f1_macro: 0.929764	prec_macro: 0.936325	rec_macro: 0.932817
+TEST		acc: 0.870277	acc_top5: 0.923174	f1_macro: 0.824295	prec_macro: 0.838313	rec_macro: 0.829312
+===== Training Epoch 61 =====
+TRAIN		acc: 0.943751	acc_top5: 0.986616	f1_macro: 0.930239	prec_macro: 0.939784	rec_macro: 0.932497
+TEST		acc: 0.864400	acc_top5: 0.920655	f1_macro: 0.822102	prec_macro: 0.841285	rec_macro: 0.825467
+===== Training Epoch 62 =====
+TRAIN		acc: 0.955507	acc_top5: 0.985169	f1_macro: 0.937498	prec_macro: 0.945193	rec_macro: 0.937490
+TEST		acc: 0.876154	acc_top5: 0.921075	f1_macro: 0.831697	prec_macro: 0.850254	rec_macro: 0.833691
+===== Training Epoch 63 =====
+TRAIN		acc: 0.960210	acc_top5: 0.985712	f1_macro: 0.941085	prec_macro: 0.944370	rec_macro: 0.943357
+TEST		acc: 0.880772	acc_top5: 0.920655	f1_macro: 0.836058	prec_macro: 0.853209	rec_macro: 0.837694
+===== Training Epoch 64 =====
+TRAIN		acc: 0.956773	acc_top5: 0.985531	f1_macro: 0.938746	prec_macro: 0.943225	rec_macro: 0.941420
+TEST		acc: 0.880772	acc_top5: 0.921495	f1_macro: 0.837850	prec_macro: 0.855970	rec_macro: 0.840667
+===== Training Epoch 65 =====
+TRAIN		acc: 0.959125	acc_top5: 0.986616	f1_macro: 0.942506	prec_macro: 0.946067	rec_macro: 0.943974
+TEST		acc: 0.878673	acc_top5: 0.923594	f1_macro: 0.836138	prec_macro: 0.853198	rec_macro: 0.835869
+===== Training Epoch 66 =====
+TRAIN		acc: 0.953337	acc_top5: 0.986616	f1_macro: 0.936841	prec_macro: 0.940860	rec_macro: 0.938605
+TEST		acc: 0.874475	acc_top5: 0.922754	f1_macro: 0.828006	prec_macro: 0.846559	rec_macro: 0.829676
+===== Training Epoch 67 =====
+TRAIN		acc: 0.957316	acc_top5: 0.986073	f1_macro: 0.938973	prec_macro: 0.945275	rec_macro: 0.940840
+TEST		acc: 0.874895	acc_top5: 0.921075	f1_macro: 0.831110	prec_macro: 0.848991	rec_macro: 0.831856
+===== Training Epoch 68 =====
+TRAIN		acc: 0.951347	acc_top5: 0.986616	f1_macro: 0.933630	prec_macro: 0.938664	rec_macro: 0.937539
+TEST		acc: 0.871537	acc_top5: 0.919815	f1_macro: 0.828250	prec_macro: 0.848051	rec_macro: 0.831457
+===== Training Epoch 69 =====
+TRAIN		acc: 0.933984	acc_top5: 0.981733	f1_macro: 0.919715	prec_macro: 0.931393	rec_macro: 0.923316
+TEST		acc: 0.861461	acc_top5: 0.919815	f1_macro: 0.828351	prec_macro: 0.851401	rec_macro: 0.830320
+===== Training Epoch 70 =====
+TRAIN		acc: 0.954603	acc_top5: 0.986978	f1_macro: 0.936151	prec_macro: 0.943023	rec_macro: 0.938831
+TEST		acc: 0.876574	acc_top5: 0.922334	f1_macro: 0.832506	prec_macro: 0.846166	rec_macro: 0.835247
+===== Training Epoch 71 =====
+TRAIN		acc: 0.961838	acc_top5: 0.986435	f1_macro: 0.944279	prec_macro: 0.947226	rec_macro: 0.946391
+TEST		acc: 0.881612	acc_top5: 0.921914	f1_macro: 0.837495	prec_macro: 0.851657	rec_macro: 0.838495
+===== Training Epoch 72 =====
+TRAIN		acc: 0.955869	acc_top5: 0.987520	f1_macro: 0.941033	prec_macro: 0.945336	rec_macro: 0.943515
+TEST		acc: 0.871117	acc_top5: 0.921495	f1_macro: 0.828898	prec_macro: 0.847760	rec_macro: 0.829819
+===== Training Epoch 73 =====
+TRAIN		acc: 0.959848	acc_top5: 0.985712	f1_macro: 0.943551	prec_macro: 0.947689	rec_macro: 0.944636
+TEST		acc: 0.874055	acc_top5: 0.920235	f1_macro: 0.828398	prec_macro: 0.844777	rec_macro: 0.829275
+===== Training Epoch 74 =====
+TRAIN		acc: 0.958944	acc_top5: 0.987520	f1_macro: 0.946112	prec_macro: 0.951028	rec_macro: 0.948728
+TEST		acc: 0.874475	acc_top5: 0.922754	f1_macro: 0.833373	prec_macro: 0.849862	rec_macro: 0.836277
+===== Training Epoch 75 =====
+TRAIN		acc: 0.961657	acc_top5: 0.986254	f1_macro: 0.944133	prec_macro: 0.946172	rec_macro: 0.947161
+TEST		acc: 0.877834	acc_top5: 0.922334	f1_macro: 0.829699	prec_macro: 0.840514	rec_macro: 0.835416
+===== Training Epoch 76 =====
+TRAIN		acc: 0.956412	acc_top5: 0.987339	f1_macro: 0.939629	prec_macro: 0.944792	rec_macro: 0.942126
+TEST		acc: 0.871537	acc_top5: 0.919395	f1_macro: 0.825684	prec_macro: 0.846981	rec_macro: 0.827502
+===== Training Epoch 77 =====
+TRAIN		acc: 0.960933	acc_top5: 0.986435	f1_macro: 0.943516	prec_macro: 0.947280	rec_macro: 0.946164
+TEST		acc: 0.876994	acc_top5: 0.922334	f1_macro: 0.831829	prec_macro: 0.847844	rec_macro: 0.835936
+===== Training Epoch 78 =====
+TRAIN		acc: 0.961657	acc_top5: 0.986978	f1_macro: 0.942002	prec_macro: 0.944647	rec_macro: 0.944632
+TEST		acc: 0.874055	acc_top5: 0.920655	f1_macro: 0.827295	prec_macro: 0.844106	rec_macro: 0.829733
+===== Training Epoch 79 =====
+TRAIN		acc: 0.958582	acc_top5: 0.987339	f1_macro: 0.938783	prec_macro: 0.942546	rec_macro: 0.941460
+TEST		acc: 0.877414	acc_top5: 0.921914	f1_macro: 0.832595	prec_macro: 0.850243	rec_macro: 0.833005
+===== Training Epoch 80 =====
+TRAIN		acc: 0.962923	acc_top5: 0.987701	f1_macro: 0.947327	prec_macro: 0.950540	rec_macro: 0.949796
+TEST		acc: 0.878673	acc_top5: 0.923594	f1_macro: 0.835817	prec_macro: 0.847384	rec_macro: 0.837874
+===== Training Epoch 81 =====
+TRAIN		acc: 0.958401	acc_top5: 0.986797	f1_macro: 0.944290	prec_macro: 0.948248	rec_macro: 0.945952
+TEST		acc: 0.876994	acc_top5: 0.921075	f1_macro: 0.831819	prec_macro: 0.846342	rec_macro: 0.835606
+===== Training Epoch 82 =====
+TRAIN		acc: 0.965093	acc_top5: 0.987701	f1_macro: 0.946728	prec_macro: 0.949224	rec_macro: 0.948738
+TEST		acc: 0.882032	acc_top5: 0.921495	f1_macro: 0.834514	prec_macro: 0.850804	rec_macro: 0.838098
+===== Training Epoch 83 =====
+TRAIN		acc: 0.962561	acc_top5: 0.986435	f1_macro: 0.944918	prec_macro: 0.950204	rec_macro: 0.948000
+TEST		acc: 0.875735	acc_top5: 0.922754	f1_macro: 0.829628	prec_macro: 0.846980	rec_macro: 0.832089
+===== Training Epoch 84 =====
+TRAIN		acc: 0.958582	acc_top5: 0.985531	f1_macro: 0.936387	prec_macro: 0.942704	rec_macro: 0.937836
+TEST		acc: 0.876994	acc_top5: 0.920655	f1_macro: 0.828783	prec_macro: 0.844007	rec_macro: 0.832089
+===== Training Epoch 85 =====
+TRAIN		acc: 0.964370	acc_top5: 0.987159	f1_macro: 0.948760	prec_macro: 0.954222	rec_macro: 0.950289
+TEST		acc: 0.880772	acc_top5: 0.924013	f1_macro: 0.834255	prec_macro: 0.848575	rec_macro: 0.837236
+===== Training Epoch 86 =====
+TRAIN		acc: 0.962018	acc_top5: 0.987701	f1_macro: 0.944180	prec_macro: 0.950935	rec_macro: 0.946168
+TEST		acc: 0.876994	acc_top5: 0.920655	f1_macro: 0.830497	prec_macro: 0.849532	rec_macro: 0.832100
+===== Training Epoch 87 =====
+TRAIN		acc: 0.964912	acc_top5: 0.987159	f1_macro: 0.948179	prec_macro: 0.951377	rec_macro: 0.949103
+TEST		acc: 0.882872	acc_top5: 0.921495	f1_macro: 0.834554	prec_macro: 0.849402	rec_macro: 0.835590
+===== Training Epoch 88 =====
+TRAIN		acc: 0.959125	acc_top5: 0.987159	f1_macro: 0.941282	prec_macro: 0.948582	rec_macro: 0.943070
+TEST		acc: 0.874475	acc_top5: 0.921075	f1_macro: 0.828980	prec_macro: 0.851387	rec_macro: 0.829562
+===== Training Epoch 89 =====
+TRAIN		acc: 0.963104	acc_top5: 0.986616	f1_macro: 0.947282	prec_macro: 0.951622	rec_macro: 0.949332
+TEST		acc: 0.872376	acc_top5: 0.921495	f1_macro: 0.828016	prec_macro: 0.842842	rec_macro: 0.829629
+===== Training Epoch 90 =====
+TRAIN		acc: 0.962199	acc_top5: 0.987159	f1_macro: 0.942201	prec_macro: 0.946543	rec_macro: 0.943458
+TEST		acc: 0.873636	acc_top5: 0.920655	f1_macro: 0.825863	prec_macro: 0.845030	rec_macro: 0.825821
+===== Training Epoch 91 =====
+TRAIN		acc: 0.964008	acc_top5: 0.987159	f1_macro: 0.946360	prec_macro: 0.949523	rec_macro: 0.947788
+TEST		acc: 0.877414	acc_top5: 0.919395	f1_macro: 0.831516	prec_macro: 0.848669	rec_macro: 0.832502
+===== Training Epoch 92 =====
+TRAIN		acc: 0.965274	acc_top5: 0.987701	f1_macro: 0.947047	prec_macro: 0.949111	rec_macro: 0.949220
+TEST		acc: 0.875315	acc_top5: 0.921914	f1_macro: 0.828802	prec_macro: 0.844740	rec_macro: 0.829328
+===== Training Epoch 93 =====
+TRAIN		acc: 0.959486	acc_top5: 0.987520	f1_macro: 0.939998	prec_macro: 0.942484	rec_macro: 0.943353
+TEST		acc: 0.873636	acc_top5: 0.921075	f1_macro: 0.824279	prec_macro: 0.841874	rec_macro: 0.826662
+===== Training Epoch 94 =====
+TRAIN		acc: 0.958582	acc_top5: 0.987159	f1_macro: 0.940231	prec_macro: 0.943786	rec_macro: 0.943257
+TEST		acc: 0.871537	acc_top5: 0.919815	f1_macro: 0.828393	prec_macro: 0.847590	rec_macro: 0.826740
+===== Training Epoch 95 =====
+TRAIN		acc: 0.960391	acc_top5: 0.987159	f1_macro: 0.945500	prec_macro: 0.950620	rec_macro: 0.946532
+TEST		acc: 0.874475	acc_top5: 0.924853	f1_macro: 0.832273	prec_macro: 0.850354	rec_macro: 0.833430
+===== Training Epoch 96 =====
+TRAIN		acc: 0.963465	acc_top5: 0.987520	f1_macro: 0.948767	prec_macro: 0.952724	rec_macro: 0.950769
+TEST		acc: 0.879933	acc_top5: 0.921075	f1_macro: 0.833401	prec_macro: 0.852338	rec_macro: 0.835850
+===== Training Epoch 97 =====
+TRAIN		acc: 0.965636	acc_top5: 0.987520	f1_macro: 0.948633	prec_macro: 0.952949	rec_macro: 0.950725
+TEST		acc: 0.878254	acc_top5: 0.921914	f1_macro: 0.829913	prec_macro: 0.847882	rec_macro: 0.832046
+===== Training Epoch 98 =====
+TRAIN		acc: 0.967083	acc_top5: 0.987520	f1_macro: 0.949788	prec_macro: 0.951721	rec_macro: 0.951989
+TEST		acc: 0.875735	acc_top5: 0.922334	f1_macro: 0.828118	prec_macro: 0.842346	rec_macro: 0.831168
+===== Training Epoch 99 =====
+TRAIN		acc: 0.962923	acc_top5: 0.987701	f1_macro: 0.946167	prec_macro: 0.948779	rec_macro: 0.949858
+TEST		acc: 0.879933	acc_top5: 0.922754	f1_macro: 0.839349	prec_macro: 0.856795	rec_macro: 0.840435
+===== Training Epoch 100 =====
+TRAIN		acc: 0.964551	acc_top5: 0.987701	f1_macro: 0.949637	prec_macro: 0.952227	rec_macro: 0.952739
+TEST		acc: 0.877834	acc_top5: 0.922334	f1_macro: 0.835644	prec_macro: 0.855845	rec_macro: 0.835381
+===== Training Epoch 101 =====
+TRAIN		acc: 0.962199	acc_top5: 0.986978	f1_macro: 0.945649	prec_macro: 0.949869	rec_macro: 0.948066
+TEST		acc: 0.876994	acc_top5: 0.922754	f1_macro: 0.830838	prec_macro: 0.848754	rec_macro: 0.832415
+===== Training Epoch 102 =====
+TRAIN		acc: 0.965817	acc_top5: 0.987520	f1_macro: 0.949232	prec_macro: 0.951467	rec_macro: 0.951083
+TEST		acc: 0.878673	acc_top5: 0.922334	f1_macro: 0.830891	prec_macro: 0.845324	rec_macro: 0.832969
+===== Training Epoch 103 =====
+TRAIN		acc: 0.966540	acc_top5: 0.986435	f1_macro: 0.950913	prec_macro: 0.953185	rec_macro: 0.952778
+TEST		acc: 0.882032	acc_top5: 0.925693	f1_macro: 0.838954	prec_macro: 0.852823	rec_macro: 0.840094
+===== Training Epoch 104 =====
+TRAIN		acc: 0.961114	acc_top5: 0.987159	f1_macro: 0.947096	prec_macro: 0.952467	rec_macro: 0.949858
+TEST		acc: 0.874475	acc_top5: 0.924853	f1_macro: 0.828621	prec_macro: 0.841980	rec_macro: 0.832755
+===== Training Epoch 105 =====
+TRAIN		acc: 0.964731	acc_top5: 0.987701	f1_macro: 0.947695	prec_macro: 0.950151	rec_macro: 0.950169
+TEST		acc: 0.879093	acc_top5: 0.922334	f1_macro: 0.830653	prec_macro: 0.847017	rec_macro: 0.835226
+===== Training Epoch 106 =====
+TRAIN		acc: 0.962199	acc_top5: 0.987520	f1_macro: 0.942942	prec_macro: 0.947092	rec_macro: 0.944591
+TEST		acc: 0.875315	acc_top5: 0.922754	f1_macro: 0.830011	prec_macro: 0.849838	rec_macro: 0.831149
+===== Training Epoch 107 =====
+TRAIN		acc: 0.963465	acc_top5: 0.987701	f1_macro: 0.950149	prec_macro: 0.953839	rec_macro: 0.953136
+TEST		acc: 0.872376	acc_top5: 0.918556	f1_macro: 0.830811	prec_macro: 0.848440	rec_macro: 0.831243
+===== Training Epoch 108 =====
+TRAIN		acc: 0.964912	acc_top5: 0.987520	f1_macro: 0.948886	prec_macro: 0.952567	rec_macro: 0.950534
+TEST		acc: 0.874055	acc_top5: 0.923594	f1_macro: 0.833311	prec_macro: 0.848902	rec_macro: 0.833105
+===== Training Epoch 109 =====
+TRAIN		acc: 0.965636	acc_top5: 0.986978	f1_macro: 0.953168	prec_macro: 0.956479	rec_macro: 0.955482
+TEST		acc: 0.875735	acc_top5: 0.923174	f1_macro: 0.832491	prec_macro: 0.849745	rec_macro: 0.834333
+===== Training Epoch 110 =====
+TRAIN		acc: 0.964370	acc_top5: 0.986797	f1_macro: 0.949858	prec_macro: 0.955302	rec_macro: 0.951008
+TEST		acc: 0.878254	acc_top5: 0.925273	f1_macro: 0.834727	prec_macro: 0.854142	rec_macro: 0.836200
+===== Training Epoch 111 =====
+TRAIN		acc: 0.963646	acc_top5: 0.987701	f1_macro: 0.945546	prec_macro: 0.949397	rec_macro: 0.948834
+TEST		acc: 0.876994	acc_top5: 0.921495	f1_macro: 0.830844	prec_macro: 0.843180	rec_macro: 0.833804
+===== Training Epoch 112 =====
+TRAIN		acc: 0.965997	acc_top5: 0.987701	f1_macro: 0.949689	prec_macro: 0.951994	rec_macro: 0.951780
+TEST		acc: 0.874895	acc_top5: 0.921075	f1_macro: 0.832045	prec_macro: 0.850121	rec_macro: 0.833074
+===== Training Epoch 113 =====
+TRAIN		acc: 0.966902	acc_top5: 0.987701	f1_macro: 0.952728	prec_macro: 0.956904	rec_macro: 0.954821
+TEST		acc: 0.875315	acc_top5: 0.922334	f1_macro: 0.832840	prec_macro: 0.851772	rec_macro: 0.833157
+===== Training Epoch 114 =====
+TRAIN		acc: 0.963465	acc_top5: 0.986797	f1_macro: 0.949008	prec_macro: 0.950833	rec_macro: 0.951695
+TEST		acc: 0.872376	acc_top5: 0.922754	f1_macro: 0.827154	prec_macro: 0.843090	rec_macro: 0.830367
+===== Training Epoch 115 =====
+TRAIN		acc: 0.965817	acc_top5: 0.986978	f1_macro: 0.951401	prec_macro: 0.953515	rec_macro: 0.953330
+TEST		acc: 0.877834	acc_top5: 0.924853	f1_macro: 0.833585	prec_macro: 0.849553	rec_macro: 0.834987
+===== Training Epoch 116 =====
+TRAIN		acc: 0.969434	acc_top5: 0.987520	f1_macro: 0.952102	prec_macro: 0.953842	rec_macro: 0.954159
+TEST		acc: 0.884131	acc_top5: 0.921495	f1_macro: 0.836267	prec_macro: 0.849960	rec_macro: 0.838615
+===== Training Epoch 117 =====
+TRAIN		acc: 0.966178	acc_top5: 0.987701	f1_macro: 0.949967	prec_macro: 0.951865	rec_macro: 0.952066
+TEST		acc: 0.878254	acc_top5: 0.921075	f1_macro: 0.830157	prec_macro: 0.846473	rec_macro: 0.831745
+===== Training Epoch 118 =====
+TRAIN		acc: 0.963465	acc_top5: 0.987339	f1_macro: 0.950307	prec_macro: 0.954285	rec_macro: 0.952025
+TEST		acc: 0.876154	acc_top5: 0.922754	f1_macro: 0.829569	prec_macro: 0.844389	rec_macro: 0.831449
+===== Training Epoch 119 =====
+TRAIN		acc: 0.966721	acc_top5: 0.987520	f1_macro: 0.953800	prec_macro: 0.956939	rec_macro: 0.955962
+TEST		acc: 0.871537	acc_top5: 0.923594	f1_macro: 0.829905	prec_macro: 0.846591	rec_macro: 0.829660
+===== Training Epoch 120 =====
+TRAIN		acc: 0.967987	acc_top5: 0.987701	f1_macro: 0.951728	prec_macro: 0.954491	rec_macro: 0.952860
+TEST		acc: 0.874895	acc_top5: 0.920235	f1_macro: 0.829828	prec_macro: 0.847476	rec_macro: 0.829140
+===== Training Epoch 121 =====
+TRAIN		acc: 0.963465	acc_top5: 0.987701	f1_macro: 0.947931	prec_macro: 0.954725	rec_macro: 0.950159
+TEST		acc: 0.871956	acc_top5: 0.921914	f1_macro: 0.827109	prec_macro: 0.846357	rec_macro: 0.826068
+===== Training Epoch 122 =====
+TRAIN		acc: 0.965636	acc_top5: 0.987701	f1_macro: 0.953945	prec_macro: 0.957606	rec_macro: 0.956299
+TEST		acc: 0.869857	acc_top5: 0.921495	f1_macro: 0.830816	prec_macro: 0.851385	rec_macro: 0.829869
+===== Training Epoch 123 =====
+TRAIN		acc: 0.966540	acc_top5: 0.987339	f1_macro: 0.950287	prec_macro: 0.954212	rec_macro: 0.952009
+TEST		acc: 0.877414	acc_top5: 0.922334	f1_macro: 0.829569	prec_macro: 0.847910	rec_macro: 0.831288
+===== Training Epoch 124 =====
+TRAIN		acc: 0.965093	acc_top5: 0.987339	f1_macro: 0.948282	prec_macro: 0.952713	rec_macro: 0.950012
+TEST		acc: 0.876574	acc_top5: 0.922334	f1_macro: 0.830975	prec_macro: 0.849835	rec_macro: 0.832770
+===== Training Epoch 125 =====
+TRAIN		acc: 0.965817	acc_top5: 0.987701	f1_macro: 0.950464	prec_macro: 0.953093	rec_macro: 0.952265
+TEST		acc: 0.875315	acc_top5: 0.922754	f1_macro: 0.829274	prec_macro: 0.843881	rec_macro: 0.834067
+===== Training Epoch 126 =====
+TRAIN		acc: 0.961657	acc_top5: 0.987339	f1_macro: 0.947253	prec_macro: 0.952271	rec_macro: 0.948724
+TEST		acc: 0.873636	acc_top5: 0.920235	f1_macro: 0.829835	prec_macro: 0.849507	rec_macro: 0.831545
+===== Training Epoch 127 =====
+TRAIN		acc: 0.967264	acc_top5: 0.987339	f1_macro: 0.952350	prec_macro: 0.955359	rec_macro: 0.954473
+TEST		acc: 0.876574	acc_top5: 0.920655	f1_macro: 0.830131	prec_macro: 0.845394	rec_macro: 0.833639
+===== Training Epoch 128 =====
+TRAIN		acc: 0.965636	acc_top5: 0.987701	f1_macro: 0.949766	prec_macro: 0.952576	rec_macro: 0.952243
+TEST		acc: 0.877414	acc_top5: 0.921914	f1_macro: 0.830618	prec_macro: 0.848417	rec_macro: 0.834522
+===== Training Epoch 129 =====
+TRAIN		acc: 0.965455	acc_top5: 0.987339	f1_macro: 0.953539	prec_macro: 0.957454	rec_macro: 0.955638
+TEST		acc: 0.873216	acc_top5: 0.921075	f1_macro: 0.834517	prec_macro: 0.856823	rec_macro: 0.831627
+===== Training Epoch 130 =====
+TRAIN		acc: 0.962018	acc_top5: 0.987520	f1_macro: 0.946590	prec_macro: 0.949912	rec_macro: 0.948020
+TEST		acc: 0.871956	acc_top5: 0.919395	f1_macro: 0.827158	prec_macro: 0.845573	rec_macro: 0.827350
+===== Training Epoch 131 =====
+TRAIN		acc: 0.967806	acc_top5: 0.985893	f1_macro: 0.951299	prec_macro: 0.954549	rec_macro: 0.952302
+TEST		acc: 0.877414	acc_top5: 0.923594	f1_macro: 0.830959	prec_macro: 0.844440	rec_macro: 0.833137
+===== Training Epoch 132 =====
+TRAIN		acc: 0.967444	acc_top5: 0.987339	f1_macro: 0.952837	prec_macro: 0.955349	rec_macro: 0.954249
+TEST		acc: 0.879093	acc_top5: 0.922334	f1_macro: 0.833623	prec_macro: 0.850493	rec_macro: 0.836011
+===== Training Epoch 133 =====
+TRAIN		acc: 0.967625	acc_top5: 0.986978	f1_macro: 0.951634	prec_macro: 0.954720	rec_macro: 0.952753
+TEST		acc: 0.876574	acc_top5: 0.921495	f1_macro: 0.828788	prec_macro: 0.843915	rec_macro: 0.830384
+===== Training Epoch 134 =====
+TRAIN		acc: 0.969976	acc_top5: 0.987339	f1_macro: 0.953124	prec_macro: 0.954250	rec_macro: 0.955385
+TEST		acc: 0.878673	acc_top5: 0.920655	f1_macro: 0.832722	prec_macro: 0.846097	rec_macro: 0.834732
+===== Training Epoch 135 =====
+TRAIN		acc: 0.969796	acc_top5: 0.987339	f1_macro: 0.954463	prec_macro: 0.956125	rec_macro: 0.956216
+TEST		acc: 0.877834	acc_top5: 0.922334	f1_macro: 0.830551	prec_macro: 0.842821	rec_macro: 0.832846
+===== Training Epoch 136 =====
+TRAIN		acc: 0.967083	acc_top5: 0.987701	f1_macro: 0.952459	prec_macro: 0.954137	rec_macro: 0.954701
+TEST		acc: 0.878673	acc_top5: 0.919815	f1_macro: 0.833416	prec_macro: 0.850152	rec_macro: 0.835062
+===== Training Epoch 137 =====
+TRAIN		acc: 0.968891	acc_top5: 0.987159	f1_macro: 0.951624	prec_macro: 0.955564	rec_macro: 0.952685
+TEST		acc: 0.881612	acc_top5: 0.924853	f1_macro: 0.834748	prec_macro: 0.848729	rec_macro: 0.835291
+===== Training Epoch 138 =====
+TRAIN		acc: 0.967083	acc_top5: 0.987520	f1_macro: 0.953274	prec_macro: 0.955281	rec_macro: 0.954812
+TEST		acc: 0.873216	acc_top5: 0.922754	f1_macro: 0.830956	prec_macro: 0.846110	rec_macro: 0.831165
+===== Training Epoch 139 =====
+TRAIN		acc: 0.960029	acc_top5: 0.987701	f1_macro: 0.949507	prec_macro: 0.953119	rec_macro: 0.952982
+TEST		acc: 0.867338	acc_top5: 0.920235	f1_macro: 0.825997	prec_macro: 0.843819	rec_macro: 0.828923
+===== Training Epoch 140 =====
+TRAIN		acc: 0.968530	acc_top5: 0.987701	f1_macro: 0.955004	prec_macro: 0.958018	rec_macro: 0.957341
+TEST		acc: 0.878673	acc_top5: 0.922754	f1_macro: 0.833411	prec_macro: 0.850173	rec_macro: 0.838393
+===== Training Epoch 141 =====
+TRAIN		acc: 0.968168	acc_top5: 0.987701	f1_macro: 0.953769	prec_macro: 0.955889	rec_macro: 0.955224Using TensorFlow backend.
+/home/lucaspetry/anaconda3/envs/trajectory_embeddings/lib/python3.6/site-packages/sklearn/preprocessing/_encoders.py:368: FutureWarning: The handling of integer data will change in version 0.22. Currently, the categories are determined based on the range [0, max(values)], while in the future they will be determined based on the unique values.
+If you want the future behaviour and silence this warning, you can specify "categories='auto'".
+In case you used a LabelEncoder before this OneHotEncoder to convert the categories to integers, then you can now use the OneHotEncoder directly.
+  warnings.warn(msg, FutureWarning)
+/home/lucaspetry/anaconda3/envs/trajectory_embeddings/lib/python3.6/site-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+/home/lucaspetry/anaconda3/envs/trajectory_embeddings/lib/python3.6/site-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+
+TEST		acc: 0.880353	acc_top5: 0.921914	f1_macro: 0.835848	prec_macro: 0.850116	rec_macro: 0.837411
+===== Training Epoch 142 =====
+TRAIN		acc: 0.966902	acc_top5: 0.987159	f1_macro: 0.950685	prec_macro: 0.955081	rec_macro: 0.952035
+TEST		acc: 0.875315	acc_top5: 0.921075	f1_macro: 0.831048	prec_macro: 0.851167	rec_macro: 0.828343
+===== Training Epoch 143 =====
+TRAIN		acc: 0.963465	acc_top5: 0.987701	f1_macro: 0.949128	prec_macro: 0.953470	rec_macro: 0.951843
+TEST		acc: 0.870277	acc_top5: 0.924853	f1_macro: 0.824576	prec_macro: 0.843187	rec_macro: 0.825242
+===== Training Epoch 144 =====
+TRAIN		acc: 0.966359	acc_top5: 0.987339	f1_macro: 0.953781	prec_macro: 0.957076	rec_macro: 0.955839
+TEST		acc: 0.874895	acc_top5: 0.923594	f1_macro: 0.830593	prec_macro: 0.849329	rec_macro: 0.831586
+===== Training Epoch 145 =====
+TRAIN		acc: 0.967625	acc_top5: 0.987701	f1_macro: 0.954016	prec_macro: 0.956253	rec_macro: 0.956844
+TEST		acc: 0.875315	acc_top5: 0.921075	f1_macro: 0.832682	prec_macro: 0.848487	rec_macro: 0.834817
+===== Training Epoch 146 =====
+TRAIN		acc: 0.964008	acc_top5: 0.987701	f1_macro: 0.952912	prec_macro: 0.956244	rec_macro: 0.956021
+TEST		acc: 0.870277	acc_top5: 0.921075	f1_macro: 0.831644	prec_macro: 0.850327	rec_macro: 0.830638
