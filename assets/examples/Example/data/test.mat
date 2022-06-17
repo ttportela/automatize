@@ -1,0 +1,119 @@
+# Dataset: data (comment description)
+@problemName data
+@missing False
+@aspects 5
+@aspectNames space,hour,poi,weather,day
+@aspectDescriptor tid:numeric,space:nominal,hour:numeric,poi:nominal,weather:nominal,day:nominal,label:nominal,lat:nominal,lon:nominal
+@data
+@trajectory 
+15,User_1
+@trajectoryPoints
+97 59,8,Home,Clear,Monday
+47 46,9,University,Clouds,Monday
+95 2,12,Restaurant A,Clear,Monday
+8 72,13,University,Clear,Monday
+41 11,17,Restaurant A,Rain,Monday
+@trajectory 
+16,User_1
+@trajectoryPoints
+8 39,9,Home,Clear,Tuesday
+50 67,10,University,Clear,Tuesday
+44 66,13,Restaurant A,Clouds,Tuesday
+29 74,14,University,Clear,Tuesday
+31 96,18,Restaurant A,Clear,Tuesday
+@trajectory 
+17,User_1
+@trajectoryPoints
+39 13,8,Home,Clear,Wednesday
+87 61,9,University,Rain,Wednesday
+25 1,12,Restaurant A,Clear,Wednesday
+86 53,13,University,Clouds,Wednesday
+17 95,17,Restaurant A,Clear,Wednesday
+@trajectory 
+18,User_1
+@trajectoryPoints
+100 38,17,Home,Clear,Sunday
+43 90,18,Restaurant A,Clear,Sunday
+13 44,19,Shopping,Clear,Sunday
+96 87,20,Shopping,Clear,Sunday
+100 17,21,Bar A,Clear,Sunday
+@trajectory 
+19,User_1
+@trajectoryPoints
+50 31,17,Home,Clear,Sunday
+67 15,18,Restaurant A,Clear,Sunday
+48 78,19,Shopping,Clear,Sunday
+36 76,20,Shopping,Clear,Sunday
+75 3,21,Bar A,Clear,Sunday
+@trajectory 
+20,User_1
+@trajectoryPoints
+65 21,17,Home,Rain,Sunday
+99 81,18,Home,Rain,Sunday
+64 25,19,Cinema,Rain,Sunday
+63 87,20,Bar A,Rain,Sunday
+6 82,21,Bar B,Rain,Sunday
+@trajectory 
+21,User_1
+@trajectoryPoints
+21 4,17,Home,Clear,Sunday
+70 50,18,Restaurant A,Clear,Sunday
+60 95,19,Shopping A,Clear,Sunday
+78 44,20,Shopping B,Clear,Sunday
+57 23,21,Bar,Clear,Sunday
+@trajectory 
+22,User_2
+@trajectoryPoints
+97 59,8,Home,Clear,Monday
+95 2,12,Restaurant B,Clear,Monday
+47 46,9,University,Clouds,Monday
+41 11,17,Restaurant B,Rain,Monday
+8 72,13,University,Clear,Monday
+@trajectory 
+23,User_2
+@trajectoryPoints
+8 39,9,Home,Clear,Tuesday
+44 66,13,Restaurant B,Clouds,Tuesday
+50 67,10,University,Clear,Tuesday
+31 96,18,Restaurant B,Clear,Tuesday
+29 74,14,University,Clear,Tuesday
+@trajectory 
+24,User_2
+@trajectoryPoints
+39 13,8,Home,Clear,Wednesday
+25 1,12,Restaurant B,Clear,Wednesday
+87 61,9,University,Rain,Wednesday
+17 95,17,Restaurant B,Clear,Wednesday
+86 53,13,University,Clouds,Wednesday
+@trajectory 
+25,User_2
+@trajectoryPoints
+100 38,17,Home,Clear,Sunday
+43 90,20,Restaurant A,Clear,Sunday
+13 44,21,Shopping B,Clear,Sunday
+96 87,22,Shopping C,Clear,Sunday
+100 17,23,Bar A,Clear,Sunday
+@trajectory 
+26,User_2
+@trajectoryPoints
+50 31,17,Home,Clear,Sunday
+67 15,20,Restaurant A,Clear,Sunday
+48 78,21,Shopping B,Clear,Sunday
+36 76,22,Shopping C,Clear,Sunday
+75 3,23,Bar A,Clear,Sunday
+@trajectory 
+27,User_2
+@trajectoryPoints
+65 21,17,Home,Rain,Sunday
+99 81,18,Home,Rain,Sunday
+64 25,19,Cinema,Rain,Sunday
+63 87,20,Bar A,Rain,Sunday
+6 82,21,Bar B,Rain,Sunday
+@trajectory 
+28,User_2
+@trajectoryPoints
+21 4,17,Home,Clear,Sunday
+70 50,20,Restaurant A,Clear,Sunday
+60 95,21,Shopping A,Clear,Sunday
+78 44,22,Shopping B,Clear,Sunday
+57 23,23,Bar,Clear,Sunday

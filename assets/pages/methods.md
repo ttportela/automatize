@@ -71,15 +71,16 @@ Auxiliary command tools for method results:
 
 Auxiliary command tools for running common classifiers:
 
-- `MAT-Classifier-All.py`:
-- `MAT-Classifier-MLP.py`:
-- `MAT-Classifier-MLP_RF.py`:
+- `MAT-Classifier-All.py`: run all classifiers (MLP, RF and SVM);
+- `MAT-Classifier-MLP.py`: run MLP (Multi-layer Perceptron) classifier;
+- `MAT-Classifier-MLP_RF.py`: run MLP (Multi-layer Perceptron) and RF (Random Forrest) classifiers;
 
-- `POIS-Classifier.py`:
-- `MAT-TEC.py`:
+- `POIS-Classifier.py`: run MLP classifier for `poi`, `npoi` or `wnpoi` output results;
+- `MAT-TEC.py`: run TEC (Trajectory Ensemble Classifier);
 
 
 Command tools for running incorporated methods:
 
-- `MARC.py`:
-- `POIS.py`:
+- `MARC.py`: run MARC method;
+- `POIS.py`: run POI-F and POIS method (`poi`, `npoi` or `wnpoi`);
+

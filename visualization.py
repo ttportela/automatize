@@ -49,12 +49,24 @@ class Trajectory:
         assert isinstance(point, dict)
         px = {}
         for k, v in point.items():
-            if k == 'lat_lon' or k == 'space':
-                v = v.split(' ')
-                px['lat'] = v[0]
-                px['lon'] = v[1]
+            if isinstance(v, dict):
+                if k == 'lat_lon' or k == 'space':
+                    px['lat'] = v['x']
+                    px['lon'] = v['y']
+                else:
+                    px[k] = v['value']
             else:
-                px[k] = v
+                if k == 'lat_lon' or k == 'space':
+                    v = v.split(' ')
+                    px['lat'] = v[0]
+                    px['lon'] = v[1]
+                elif k == 'space3d':
+                    v = v.split(' ')
+                    px['x'] = v[0]
+                    px['y'] = v[1]
+                    px['z'] = v[2]
+                else:
+                    px[k] = v
                 
         self.points.append(px)
         
@@ -125,13 +137,23 @@ class Movelet:
         px = {}
         for k, v in point.items():
             if isinstance(v, dict):
-                v = list(v.values())[0]
-            if k == 'lat_lon' or k == 'space':
-                v = v.split(' ')
-                px['lat'] = v[0]
-                px['lon'] = v[1]
+                if k == 'lat_lon' or k == 'space':
+                    px['lat'] = v['x']
+                    px['lon'] = v['y']
+                else:
+                    px[k] = v['value']
             else:
-                px[k] = v
+                if k == 'lat_lon' or k == 'space':
+                    v = v.split(' ')
+                    px['lat'] = v[0]
+                    px['lon'] = v[1]
+                elif k == 'space3d':
+                    v = v.split(' ')
+                    px['x'] = v[0]
+                    px['y'] = v[1]
+                    px['z'] = v[2]
+                else:
+                    px[k] = v
                 
         self.data.append(px)
         
@@ -226,7 +248,7 @@ def parse_movelets(file, name='movelets', count=0):
 # ------------------------------------------------------------------------------------------------------------
 # MOVELETS TREE
 # ------------------------------------------------------------------------------------------------------------
-class Tree:
+class MoveletTree:
     def __init__(self, data, children=None):
         self.data      = data
         self.parentSim = 0
@@ -241,12 +263,12 @@ class Tree:
                 
     def add(self, mov):
         assert isinstance(mov, Movelet)
-        node = Tree(mov)
+        node = MoveletTree(mov)
         self.add_child(node)
         return node
                 
     def add_child(self, node):
-        assert isinstance(node, Tree)
+        assert isinstance(node, MoveletTree)
         self.children.append(node)
         
     def findSimilar(self, movelet, similarityFunction):
@@ -292,7 +314,7 @@ def similarity(mov1, mov2):
 def createTree(movelets):
     movelets.sort(key=lambda x: x.quality, reverse=True)
     
-    tree = Tree(movelets.pop(0))
+    tree = MoveletTree(movelets.pop(0))
     while len(movelets) > 0:
         mov = movelets.pop(0)
 #         print(mov.toString())
@@ -346,6 +368,12 @@ def convert2anytree(tree, parent=None, parentNode=None):
         convert2anytree(child, tree, root)
         
     return root
+
+def resder_anytree(tree):
+    from anytree import RenderTree
+    root_node = convert2anytree(tree)
+    root_node = RenderTree(root_node)
+    return root_node
 
 def convert2digraph(tree, dot=None):
 #     from graphviz import Digraph

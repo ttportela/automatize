@@ -2,33 +2,28 @@
    "readsDesc": [
 	{
           "order": 1,
-          "type": "space",
+          "type": "space2D",
           "text": "lat_lon"
         },
 	{
           "order": 2,
           "type": "numeric",
-          "text": "time"
+          "text": "hour"
         },
 	{
           "order": 3,
-          "type": "numeric",
-          "text": "price"
-        },
-	{
-          "order": 4,
           "type": "nominal",
           "text": "poi"
         },
 	{
-          "order": 5,
+          "order": 4,
           "type": "nominal",
           "text": "weather"
         },
 	{
-          "order": 6,
-          "type": "numeric",
-          "text": "precip"
+          "order": 5,
+          "type": "nominal",
+          "text": "day"
         }
       ],
     "pointFeaturesDesc": [
@@ -48,12 +43,7 @@
 			{
 			  "distance": "difference",
 			  "maxValue": -1,
-			  "text": "time"
-			},
-			{
-			  "distance": "difference",
-			  "maxValue": -1,
-			  "text": "price"
+			  "text": "hour"
 			},
 			{
 			  "distance": "equals",
@@ -66,9 +56,9 @@
 			  "text": "weather"
 			},
 			{
-			  "distance": "difference",
+			  "distance": "equals",
 			  "maxValue": -1,
-			  "text": "precip"
+			  "text": "day"
 			}
 		]
     },

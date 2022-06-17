@@ -238,7 +238,7 @@ def importer(key=['S'], this=None):
             mdic.update( {'LabelEncoder': getattr(module, 'LabelEncoder'), 'OneHotEncoder': getattr(module, 'OneHotEncoder')} )
 
         if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash', 'geohash']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.utils')
             if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash']):
                 mdic.update( {'bin_geohash': getattr(module, 'bin_geohash')} )
             if set(key) & set(['*', 'preprocessing', 'geohash']):
@@ -259,30 +259,30 @@ def importer(key=['S'], this=None):
                 mdic.update( {'TEC2': getattr(module, 'TEC2')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC', 'poifreq']):
-            module = importlib.import_module(PACKAGE_NAME+'methods.tec.models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.poifreq')
             mdic.update( {'poifreq': getattr(module, 'poifreq')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC.MLP']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.movelets')
             mdic.update( {'model_movelets_mlp': getattr(module, 'model_movelets_mlp')} )
         if set(key) & set(['*', 'ensembles', 'TEC.NN']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.movelets')
             mdic.update( {'model_movelets_nn': getattr(module, 'model_movelets_nn')} )
         if set(key) & set(['*', 'ensembles', 'TEC.MARC']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.marc')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.marc')
             mdic.update( {'model_marc': getattr(module, 'model_marc')} )
         if set(key) & set(['*', 'ensembles', 'TEC.POIS']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.poifreq')
             mdic.update( {'model_poifreq': getattr(module, 'model_poifreq')} )
         if set(key) & set(['*', 'ensembles', 'TEC.RF']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.randomforrest')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.randomforrest')
             mdic.update( {'model_rf': getattr(module, 'model_rf')} )
         if set(key) & set(['*', 'ensembles', 'TEC.RFHP']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.randomforresthp')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.randomforresthp')
             mdic.update( {'model_rfhp': getattr(module, 'model_rfhp')} )
 
         if set(key) & set(['*', 'TEC.utils']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._models.utils')
             for att in dir(module):
                 if not att.startswith('_'):
                     mdic.update( {att: getattr(module, att)} )
@@ -419,7 +419,7 @@ def pyshel(py, prg_path='.', pyname='python3', use_install=False):
                      'POIS' : 'POIS.py',
           'POIS-Classifier' : 'POIS-Classifier.py',
         
-                      'TEC' : 'TEC.py',
+                      'TEC' : 'MAT-TEC.py',
     }
     
     if use_install:

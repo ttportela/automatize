@@ -308,14 +308,14 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                     methods = ['movelets_nn', 'marc']
 
                 pois = ('_'.join(params['features']))+'_'+('_'.join([str(n) for n in params['sequences']]))
-                poif_line     = os.path.join('${FOLDER}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois)
+                poif_line     = os.path.join('${DIR}', pois_method.upper()+'-'+pois+'-'+var, pois_method+'_'+pois)
                 # IF DIFFERENT METHOD, CHANGE modelfolder NAME!!
-                movelets_line = os.path.join('${FOLDER}', movelets_method+'-'+var) 
+                movelets_line = os.path.join('${DIR}', movelets_method+'-'+var) 
 
                 metsuff = movelets_method+ (pois_method if method != 'TEC2' else '')
                 
                 Ensemble(data, results, prefix, MNAME, methods=methods, \
-                     modelfolder='model_'+metsuff, save_results=True, print_only=print_only, pyname=pyname, \
+                     modelfolder='model_'+metsuff, save_results=True, print_only=print_only, pyname=pyname, prg_path=prog_path, \
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset=dsvar, num_runs=1,\
                      movelets_line=movelets_line, poif_line=poif_line)
     else:
@@ -329,7 +329,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 
 
         elif 'poi' in method: #method == 'npoi' or method == 'poi' or method == 'wnpoi':
-            POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, or_methodsuffix=dsvar if '_ts' not in data else 'specific', or_folder_alias=MNAME)
+            POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, prg_path=prog_path, or_methodsuffix=dsvar if '_ts' not in data else 'specific', or_folder_alias=MNAME)
 
 
     #     elif 'super' in method:                    
@@ -370,7 +370,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 
 
         else: #if 'hiper' in method or 'ultra' in method or 'random' in method or 'indexed' in method or method == 'pivots':
-            desc = json+'_hp' if 'use.mat' in params and not params['use.mat'] else None
+            desc = None if 'use.mat' in params and params['use.mat'] else json+'_hp'
             Movelets(data, results, prefix, MNAME, desc, version=trimsuffix(method), \
                      Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, print_only=print_only, \
                      jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
@@ -460,3 +460,81 @@ def fileReplace(dict_strs, file_from, file_to):
     # Write the file out again        
     with open(file_to, 'w') as f:
         f.write(filedata)
+        
+# --------------------------------------------------------------------------------------        
+def avgRuntimeMethods(df):
+    df['key'] = df['dataset'] + '-' + df['subsubset'] + '-' + df['method']
+    def getPair(df, key):
+        return [key, df['total_time'].mean()]
+        
+    dtt = dict( map(lambda k: getPair(df[df['key'] == k], k) , df['key'].unique()) )
+    return dtt
+
+def howLong(params, datasets, methods, varParam=None, avg_runtimes=dict(), deftime=None):
+    
+    totalTime = 0
+    counter   = 0
+    
+#    def discripts(prefix, params, datasets, methods, run_prefix='', varParam=None):
+    if not deftime and len(avg_runtimes) > 1:
+        deftime = sum(avg_runtimes.values()) / len(avg_runtimes.values())
+        print('Average Runtime Set:', deftime)
+    elif not deftime:
+        deftime = 36000000
+        
+    def runtime(dsName, dsFeat, method, params):
+        time = 0
+        runs = 0
+        if method.startswith('TEC') and 'ensemble_methods' in params.keys():
+            for movelets_method in params['ensemble_methods'][0]:
+                for pois_method in params['ensemble_methods'][1]:
+                    mname = movelets_method+ (pois_method if method != 'TEC2' else '')
+                    time += getRuntime(dsName, dsFeat, mname, params)
+                    runs += 1
+        elif 'poi' in method:
+            for sequence in params['sequences']:
+                for feature in params['features']:
+                    mname = method.upper() +'_'+ str(sequence)
+                    dsFeat = feature+'_'+str(sequence)
+                    time += getRuntime(dsName, dsFeat, mname, params)
+                    runs += 1
+                    
+            mname = method.upper() +'_'+ ('_'.join(map(str, params['sequences'])))
+            dsFeat = ('_'.join(params['features'])) +'_'+ ('_'.join(map(str, params['sequences'])))
+            time += getRuntime(dsName, dsFeat, mname, params)
+            runs += 1
+            #params['sequences'], params['features']
+        else:
+            mname = configMethod(method, params)[2]
+            time = getRuntime(dsName, dsFeat, mname, params)
+            runs += 1
+        return time, runs if not varParam else runs*len(varParam[1])
+    
+    def getRuntime(dsName, dsFeat, method, params):
+        key = dsName+'-'+dsFeat+'-'+method
+        if key in avg_runtimes.keys():
+            return avg_runtimes[key]
+        else:
+            #print('Default runtime for', key)
+            return deftime
+        
+    for dsType, ds in datasets.items():
+        for dsn in ds:
+            dsFeat = 'generic' if '?' in dsn else 'specific'
+            dsName = dsn.replace('?', '')
+            for method in methods:
+                key = dsName+'-'+dsFeat+'-'+method
+                time, runs = runtime(dsName, dsFeat, method, params)
+                totalTime += time
+                counter += runs
+    
+    if params['k']:
+        k = params['k'] if isinstance(params['k'], int) else len(params['k'])
+        totalTime = k*totalTime
+        counter   = k*counter
+    
+    from datetime import timedelta
+    delta = timedelta(milliseconds=totalTime)
+    print('Estimated Runtime:', delta)
+    print('Number of Runs   :', counter)
+    return totalTime

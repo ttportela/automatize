@@ -11,7 +11,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import sys, os 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from main import importer
+from automatize.main import importer
 importer(['S'], globals())
 
 # --------------------------------------------------------------------------------

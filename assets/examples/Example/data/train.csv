@@ -1,31 +1,71 @@
-tid,lat_lon,time,price,poi,weather,precip,label
-1,0.0 6.2,345,-1,Home,Clear,10,Classs_False
-1,0.8 6.2,717,3,Restaurant,Clouds,20,Classs_False
-1,3.1 11,1032,2,Shopping,Clear,10,Classs_False
-1,4.3 16.9,1179,2,University,Clear,0,Classs_False
-1,6 13.1,1344,1,Restaurant,Clear,0,Classs_False
-2,0.4 6.7,375,-1,Home,Clear,15,Classs_True
-2,2.5 10.5,610,1,Shopping,Clouds,15,Classs_True
-2,3 13.5,740,3,Restaurant,Clouds,20,Classs_True
-2,5.8 16.5,840,2,University,Clouds,15,Classs_True
-2,6.3 13,1283,1,Restaurant,Clear,10,Classs_True
-3,1 6.8,360,-1,Home,Clear,10,Classs_False
-3,4 14.5,635,2,Shopping,Clouds,15,Classs_False
-3,4.3 17.9,855,2,University,Clouds,15,Classs_False
-3,6.3 13,1080,1,Restaurant,Clear,10,Classs_False
-3,6.4 11,1335,2,Restaurant,Clear,10,Classs_False
-4,1 6.8,360,-1,Home,Clear,10,Classs_True
-4,4 14.5,635,2,Shopping,Clouds,15,Classs_True
-4,4.3 16.9,1179,2,University,Clear,0,Classs_True
-4,6.3 13,1080,1,Restaurant,Clear,10,Classs_True
-4,6.4 11,1335,2,Restaurant,Clear,10,Classs_True
-5,0.0 6.2,345,-1,Home,Clear,10,Classs_False
-5,0.8 6.2,717,3,Restaurant,Clouds,20,Classs_False
-5,3.1 11,1032,2,Shopping,Clear,10,Classs_False
-5,4.3 16.9,1179,2,University,Clear,0,Classs_False
-5,6 13.1,1344,1,Restaurant,Clear,0,Classs_False
-6,0.4 6.7,375,-1,Home,Clear,15,Classs_True
-6,2.5 10.5,610,1,Shopping,Clouds,15,Classs_True
-6,3 13.5,740,3,Restaurant,Clouds,20,Classs_True
-6,5.8 16.5,840,2,University,Clouds,15,Classs_True
-6,6.3 13,1283,1,Restaurant,Clear,10,Classs_True
+tid,lat_lon,hour,poi,weather,day,label
+1,97 59,8,Home,Clear,Monday,User_1
+1,47 46,9,University,Clouds,Monday,User_1
+1,95 2,12,Restaurant A,Clear,Monday,User_1
+1,8 72,13,University,Clear,Monday,User_1
+1,41 11,17,Restaurant A,Rain,Monday,User_1
+2,8 39,9,Home,Clear,Tuesday,User_1
+2,50 67,10,University,Clear,Tuesday,User_1
+2,44 66,13,Restaurant A,Clouds,Tuesday,User_1
+2,29 74,14,University,Clear,Tuesday,User_1
+2,31 96,18,Restaurant A,Clear,Tuesday,User_1
+3,39 13,8,Home,Clear,Wednesday,User_1
+3,87 61,9,University,Rain,Wednesday,User_1
+3,25 1,12,Restaurant A,Clear,Wednesday,User_1
+3,86 53,13,University,Clouds,Wednesday,User_1
+3,17 95,17,Restaurant A,Clear,Wednesday,User_1
+4,100 38,17,Home,Clear,Sunday,User_1
+4,43 90,18,Restaurant A,Clear,Sunday,User_1
+4,13 44,19,Shopping,Clear,Sunday,User_1
+4,96 87,20,Shopping,Clear,Sunday,User_1
+4,100 17,21,Bar A,Clear,Sunday,User_1
+5,50 31,17,Home,Clear,Sunday,User_1
+5,67 15,18,Restaurant A,Clear,Sunday,User_1
+5,48 78,19,Shopping,Clear,Sunday,User_1
+5,36 76,20,Shopping,Clear,Sunday,User_1
+5,75 3,21,Bar A,Clear,Sunday,User_1
+6,65 21,17,Home,Rain,Sunday,User_1
+6,99 81,18,Home,Rain,Sunday,User_1
+6,64 25,19,Cinema,Rain,Sunday,User_1
+6,63 87,20,Bar A,Rain,Sunday,User_1
+6,6 82,21,Bar B,Rain,Sunday,User_1
+7,21 4,17,Home,Clear,Sunday,User_1
+7,70 50,18,Restaurant A,Clear,Sunday,User_1
+7,60 95,19,Shopping A,Clear,Sunday,User_1
+7,78 44,20,Shopping B,Clear,Sunday,User_1
+7,57 23,21,Bar,Clear,Sunday,User_1
+8,97 59,8,Home,Clear,Monday,User_2
+8,95 2,12,Restaurant B,Clear,Monday,User_2
+8,47 46,9,University,Clouds,Monday,User_2
+8,41 11,17,Restaurant B,Rain,Monday,User_2
+8,8 72,13,University,Clear,Monday,User_2
+9,8 39,9,Home,Clear,Tuesday,User_2
+9,44 66,13,Restaurant B,Clouds,Tuesday,User_2
+9,50 67,10,University,Clear,Tuesday,User_2
+9,31 96,18,Restaurant B,Clear,Tuesday,User_2
+9,29 74,14,University,Clear,Tuesday,User_2
+10,39 13,8,Home,Clear,Wednesday,User_2
+10,25 1,12,Restaurant B,Clear,Wednesday,User_2
+10,87 61,9,University,Rain,Wednesday,User_2
+10,17 95,17,Restaurant B,Clear,Wednesday,User_2
+10,86 53,13,University,Clouds,Wednesday,User_2
+11,100 38,17,Home,Clear,Sunday,User_2
+11,43 90,20,Restaurant A,Clear,Sunday,User_2
+11,13 44,21,Shopping B,Clear,Sunday,User_2
+11,96 87,22,Shopping C,Clear,Sunday,User_2
+11,100 17,23,Bar A,Clear,Sunday,User_2
+12,50 31,17,Home,Clear,Sunday,User_2
+12,67 15,20,Restaurant A,Clear,Sunday,User_2
+12,48 78,21,Shopping B,Clear,Sunday,User_2
+12,36 76,22,Shopping C,Clear,Sunday,User_2
+12,75 3,23,Bar A,Clear,Sunday,User_2
+13,65 21,17,Home,Rain,Sunday,User_2
+13,99 81,18,Home,Rain,Sunday,User_2
+13,64 25,19,Cinema,Rain,Sunday,User_2
+13,63 87,20,Bar A,Rain,Sunday,User_2
+13,6 82,21,Bar B,Rain,Sunday,User_2
+14,21 4,17,Home,Clear,Sunday,User_2
+14,70 50,20,Restaurant A,Clear,Sunday,User_2
+14,60 95,21,Shopping A,Clear,Sunday,User_2
+14,78 44,22,Shopping B,Clear,Sunday,User_2
+14,57 23,23,Bar,Clear,Sunday,User_2

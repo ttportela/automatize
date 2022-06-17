@@ -11,7 +11,7 @@
           "text": "tid"
     },
    "labelFeature": {
-          "order": 8,
+          "order": 7,
           "type": "nominal",
           "text": "label"
     },
@@ -27,21 +27,13 @@
 	    {
 	          "order": 3,
 	          "type": "numeric",
-	          "text": "time",
+	          "text": "hour",
 	          "comparator": {
 	            "distance": "difference"
 	          }
 	    },
 	    {
 	          "order": 4,
-	          "type": "numeric",
-	          "text": "price",
-	          "comparator": {
-	            "distance": "difference"
-	          }
-	    },
-	    {
-	          "order": 5,
 	          "type": "nominal",
 	          "text": "poi",
 	          "comparator": {
@@ -49,7 +41,7 @@
 	          }
 	    },
 	    {
-	          "order": 6,
+	          "order": 5,
 	          "type": "nominal",
 	          "text": "weather",
 	          "comparator": {
@@ -57,11 +49,11 @@
 	          }
 	    },
 	    {
-	          "order": 7,
-	          "type": "numeric",
-	          "text": "precip",
+	          "order": 6,
+	          "type": "nominal",
+	          "text": "day",
 	          "comparator": {
-	            "distance": "difference"
+	            "distance": "equals"
 	          }
 	    },
 	]

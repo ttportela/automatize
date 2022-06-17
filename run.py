@@ -12,8 +12,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 from .main import importer, pyshel #, display
 importer(['S'], globals())
 # package_scripts = os.path.join(PACKAGE_NAME, 'scripts')
-# --------------------------------------------------------------------------------
-
+# --------------------------------------------------------------------------------------
 def k_Movelets(k, data_folder, res_path, prefix, folder, descriptor, version=None, ms = False, Ms = False, extra=False, 
         java_opts='', jar_name='HIPERMovelets', n_threads=1, prg_path='./', print_only=False, keep_folder=2, 
         pyname='python3', timeout=None, impl=3):
@@ -110,99 +109,6 @@ def Movelets(data_folder, res_path, prefix, folder, descriptor, version=None, ms
 #     print()
     
 # --------------------------------------------------------------------------------------
-def execute(cmd, print_only=False):
-    if print_only:
-        print(cmd)
-        print()
-    else:
-        print(os.popen(cmd).read())
-#         os.system(cmd)
-    
-def mkdir(folder, print_only=False):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    cmd = 'md' if os.name == 'nt' else 'mkdir -p'
-    if not os.path.exists(folder):
-        if print_only:
-            execute(cmd+' "' + folder + '"', print_only)
-        else:
-            os.makedirs(folder)
-
-def move(ffrom, fto, print_only=False):
-    execute('mv "'+ffrom+'" "'+fto+'"', print_only)
-    
-def getResultPath(mydir):
-    for dirpath, dirnames, filenames in os.walk(mydir):
-        if not dirnames:
-            dirpath = os.path.abspath(os.path.join(dirpath,".."))
-            return dirpath
-    
-def moveResults(dir_from, dir_to, print_only=False):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    csvfile = os.path.join(dir_from, "train.csv")
-    move(csvfile, dir_to, print_only)
-    csvfile = os.path.join(dir_from, "test.csv")
-    move(csvfile, dir_to, print_only)
-    
-def mergeClasses(res_folder, prg_path='./', print_only=False, pyname='python3'):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    dir_from = getResultPath(res_folder)
-    
-    if print_only:
-        dir_from = res_folder
-
-#     prg = os.path.join(prg_path, PACKAGE_SCRIPTS, 'MergeDatasets.py')
-    execute(pyshel('MergeDatasets', prg_path, pyname)+' "'+res_folder+'"', print_only)
-#     execute('python3 "'+prg+'" "'+res_folder+'" "test.csv"', print_only)
-
-    return dir_from
-    
-def mergeAndMove(res_folder, folder, prg_path='./', print_only=False, pyname='python3'):
-    dir_from = mergeClasses(res_folder, prg_path, print_only, pyname)
-    
-    if not print_only and not dir_from:
-        print("Nothing to Merge. Abort.")
-        return
-
-# --------------------------------------------------------------------------------------
-def mergeDatasets(dir_path, file='train.csv'):
-#     from ..main import importer
-    importer(['S', 'glob'], globals())
-    
-    files = [i for i in glob.glob(os.path.join(dir_path, '*', '**', file))]
-
-    print("Loading files - " + file)
-    # combine all files in the list
-    combined_csv = pd.concat([pd.read_csv(f).drop('class', axis=1) for f in files[:len(files)-1]], axis=1)
-    combined_csv = pd.concat([combined_csv, pd.read_csv(files[len(files)-1])], axis=1)
-    #export to csv
-    print("Writing "+file+" file")
-    combined_csv.to_csv(os.path.join(dir_path, file), index=False)
-    
-    print("Done.")
-
-# --------------------------------------------------------------------------------------
-def countMovelets(dir_path):
-#     from ..main import importer
-#     importer(['S'], locals())
-    
-    ncol = 0
-    print(os.path.join(dir_path, "**", "train.csv"))
-    for filenames in glob.glob(os.path.join(dir_path, "**", "train.csv"), recursive = True):
-#         print(filenames)
-        with open(filenames, 'r') as csv:
-            first_line = csv.readline()
-
-        ncol += first_line.count(',')# + 1 
-    return ncol
-
-# --------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------
 def k_MARC(k, data_folder, res_path, prefix, folder, train="train.csv", test="test.csv",
             EMBEDDING_SIZE=100, MERGE_TYPE="concatenate", RNN_CELL="lstm",
             prg_path='./', print_only=False, pyname='python3', extra_params=None):
@@ -277,8 +183,9 @@ def MARC(data_folder, res_path, prefix, folder, train="train.csv", test="test.cs
         print("Done. " + str(time) + " milliseconds")
     print("# ---------------------------------------------------------------------------------")
     
+# --------------------------------------------------------------------------------------
 def k_POIFREQ(k, data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', \
-              print_only=False, doclass=True):
+              prg_path='./', print_only=False, doclass=True):
 #     from ..main import importer
 #     importer(['S'], locals())
         
@@ -289,9 +196,9 @@ def k_POIFREQ(k, data_folder, res_path, prefix, dataset, sequences, features, me
         subpath_data = os.path.join(data_folder, 'run'+str(x))
         subpath_rslt = os.path.join(res_path,    prefix, 'run'+str(x))
 #         print(subpath_data, subpath_rslt, None, dataset, sequences, features, py_name, print_only, doclass)
-        POIFREQ(subpath_data, subpath_rslt, None, dataset, sequences, features, method, pyname, print_only, doclass)
+        POIFREQ(subpath_data, subpath_rslt, None, dataset, sequences, features, method, pyname, prg_path, print_only, doclass)
         
-def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', print_only=False, doclass=True, or_methodsuffix=None, or_folder_alias=None):
+def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method='npoi', pyname='python3', prg_path='./', print_only=False, doclass=True, or_methodsuffix=None, or_folder_alias=None):
 #     from ..main import importer
 #     importer(['S'], locals())
         
@@ -321,7 +228,7 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         outfile = os.path.join(res_folder, folder+'.txt')
     
         # RUN:
-        CMD = pyshel('POIS', pyname=pyname)+" "
+        CMD = pyshel('POIS', prg_path, pyname)+" "
         CMD = CMD + "\""+method+"\" "
         CMD = CMD + "\""+(','.join([str(n) for n in sequences]))+"\" "
         CMD = CMD + "\""+(','.join(features))+"\" "
@@ -342,10 +249,10 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         if doclass:
             for s in sequences:
                 pois = ('_'.join(features))+'_'+str(s)
-                print(pyshel('POIS-Classifier', pyname=pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+                print(pyshel('POIS-Classifier', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
                 
             pois = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))
-            print(pyshel('POIS-Classifier', pyname=pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+            print(pyshel('POIS-Classifier', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
         
         return result_file
     else:
@@ -355,8 +262,9 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
 #         from PACKAGE_NAME.ensemble_models.poifreq import poifreq
         return poifreq(sequences, dataset, features, data_folder, res_folder, method=method, doclass=doclass)
 
+# --------------------------------------------------------------------------------------
 def k_Ensemble(k, data_path, results_path, prefix, ename, methods=['movelets','poifreq'], \
-             modelfolder='model', save_results=True, print_only=False, pyname='python3', \
+             modelfolder='model', save_results=True, print_only=False, pyname='python3', prg_path='./', \
              descriptor='', sequences=[1,2,3], features=['poi'], dataset='specific', num_runs=1,\
              movelets_line=None, poif_line=None, movelets_classifier='nn'):
 #     from ..main import importer
@@ -370,12 +278,12 @@ def k_Ensemble(k, data_path, results_path, prefix, ename, methods=['movelets','p
         subpath_rslt = os.path.join(results_path, prefix, 'run'+str(x))
         
         Ensemble(subpath_data, subpath_rslt, prefix, ename, methods, \
-             modelfolder, save_results, print_only, pyname, \
+             modelfolder, save_results, print_only, pyname, prg_path, \
              descriptor, sequences, features, dataset, num_runs,\
              movelets_line.replace('&N&', str(x)), poif_line.replace('&N&', str(x)), movelets_classifier)
     
 def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','marc'], \
-             modelfolder='model', save_results=True, print_only=False, pyname='python3', \
+             modelfolder='model', save_results=True, print_only=False, pyname='python3', prg_path='./', \
              descriptor='', sequences=[1,2,3], features=['poi'], dataset='specific', num_runs=1,\
              movelets_line=None, poif_line=None, movelets_classifier='nn'):
     
@@ -414,7 +322,7 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
                      
     if print_only:
         if num_runs == 1:
-            CMD = pyshel('TEC', pyname=pyname)+" "
+            CMD = pyshel('TEC', prg_path, pyname)+" "
             CMD = CMD + "\""+data_path+"\" "
             CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
             CMD = CMD + "\""+str(ensembles)+"\" "
@@ -427,7 +335,7 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
             for i in range(1, num_runs+1): # TODO: set a different random number in python
                 print('# Classifier TEC run-'+str(i))
 #                 print('mkdir -p "'+os.path.join(results_path, postfix, modelfolder))
-                CMD = pyshel('TEC', pyname=pyname)+" "
+                CMD = pyshel('TEC', prg_path, pyname)+" "
                 CMD = CMD + "\""+data_path+"\" "
                 CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
                 CMD = CMD + "\""+str(ensembles)+"\" "
@@ -442,3 +350,94 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
         importer(['ClassifierEnsemble'], globals())
         
         return TEC(data_path, results_path, ensembles, dataset, save_results, modelfolder)
+
+# --------------------------------------------------------------------------------------
+def execute(cmd, print_only=False):
+    if print_only:
+        print(cmd)
+        print()
+    else:
+        print(os.popen(cmd).read())
+#         os.system(cmd)
+    
+def mkdir(folder, print_only=False):
+#     from ..main import importer
+#     importer(['S'], locals())
+    
+    cmd = 'md' if os.name == 'nt' else 'mkdir -p'
+    if not os.path.exists(folder):
+        if print_only:
+            execute(cmd+' "' + folder + '"', print_only)
+        else:
+            os.makedirs(folder)
+
+def move(ffrom, fto, print_only=False):
+    execute('mv "'+ffrom+'" "'+fto+'"', print_only)
+    
+def getResultPath(mydir):
+    for dirpath, dirnames, filenames in os.walk(mydir):
+        if not dirnames:
+            dirpath = os.path.abspath(os.path.join(dirpath,".."))
+            return dirpath
+    
+def moveResults(dir_from, dir_to, print_only=False):
+#     from ..main import importer
+#     importer(['S'], locals())
+    
+    csvfile = os.path.join(dir_from, "train.csv")
+    move(csvfile, dir_to, print_only)
+    csvfile = os.path.join(dir_from, "test.csv")
+    move(csvfile, dir_to, print_only)
+    
+def mergeClasses(res_folder, prg_path='./', print_only=False, pyname='python3'):
+#     from ..main import importer
+#     importer(['S'], locals())
+    
+    dir_from = getResultPath(res_folder)
+    
+    if print_only:
+        dir_from = res_folder
+
+#     prg = os.path.join(prg_path, PACKAGE_SCRIPTS, 'MergeDatasets.py')
+    execute(pyshel('MergeDatasets', prg_path, pyname)+' "'+res_folder+'"', print_only)
+#     execute('python3 "'+prg+'" "'+res_folder+'" "test.csv"', print_only)
+
+    return dir_from
+    
+def mergeAndMove(res_folder, folder, prg_path='./', print_only=False, pyname='python3'):
+    dir_from = mergeClasses(res_folder, prg_path, print_only, pyname)
+    
+    if not print_only and not dir_from:
+        print("Nothing to Merge. Abort.")
+        return
+
+def mergeDatasets(dir_path, file='train.csv'):
+#     from ..main import importer
+    importer(['S', 'glob'], globals())
+    
+    files = [i for i in glob.glob(os.path.join(dir_path, '*', '**', file))]
+
+    print("Loading files - " + file)
+    # combine all files in the list
+    combined_csv = pd.concat([pd.read_csv(f).drop('class', axis=1) for f in files[:len(files)-1]], axis=1)
+    combined_csv = pd.concat([combined_csv, pd.read_csv(files[len(files)-1])], axis=1)
+    #export to csv
+    print("Writing "+file+" file")
+    combined_csv.to_csv(os.path.join(dir_path, file), index=False)
+    
+    print("Done.")
+
+# --------------------------------------------------------------------------------------
+def countMovelets(dir_path):
+#     from ..main import importer
+#     importer(['S'], locals())
+    
+    ncol = 0
+    print(os.path.join(dir_path, "**", "train.csv"))
+    for filenames in glob.glob(os.path.join(dir_path, "**", "train.csv"), recursive = True):
+#         print(filenames)
+        with open(filenames, 'r') as csv:
+            first_line = csv.readline()
+
+        ncol += first_line.count(',')# + 1 
+    return ncol

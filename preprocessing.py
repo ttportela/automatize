@@ -30,7 +30,6 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
         url = os.path.join(data_path, file+'.csv')
     
     url = os.path.abspath(url)
-#     print(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts'))
     if '.csv' in url and os.path.exists(url):
         df = pd.read_csv(url, na_values=missing)
     elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
@@ -397,13 +396,17 @@ def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class
     return ktrain, ktest
 
 def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
-                            columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat']):
+             ktrain=None, ktest=None, organize_columns=True, mat_columns=None, outformats=['zip', 'csv', 'mat']):
 #     from ..main import importer
     importer(['S', 'KFold'], globals())
     
     print(str(k)+"-fold stratification of train and test in... " + data_path)
     
-    columns_order_zip, columns_order_csv = organizeFrame(df, columns_order, tid_col, class_col)
+    if organize_columns:
+        columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+    else:
+        columns_order_zip = list(df.columns)
+        columns_order_csv = list(df.columns)
         
     if not ktrain:
         ktrain, ktest = splitData(df, k, random_num, tid_col, class_col)
@@ -530,42 +533,52 @@ def joinTrainAndTest(dir_path, train_file="train.csv", test_file="test.csv", tid
     return dataset
 
 #--------------------------------------------------------------------------------
-def convertDataset(dir_path, k=None, cols = None, tid_col='tid', class_col='label'):
+def convertDataset(dir_path, k=None, cols = None, fileprefix='', tid_col='tid', class_col='label'):
     def convert_file(file, cols):
-        if os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')):
-            # Option 1:
-            df = pd.read_csv(os.path.join(dir_path, 'specific_'+file+'.csv'))
-        elif os.path.exists(os.path.join(dir_path, file+'.zip')):
-            df = convert_zip2csv(dir_path, file, cols, class_col)
-        else:
-#             print("File "+file+" not found, nothing to do.")
-            raise Exception("File "+file+" not found, nothing to do.")
+        df = readDataset(dir_path, fileprefix+file+'.csv')
+#        if os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')):
+#            # Option 1:
+#            df = pd.read_csv(os.path.join(dir_path, 'specific_'+file+'.csv'))
+#        elif os.path.exists(os.path.join(dir_path, file+'.zip')):
+#            df = convert_zip2csv(dir_path, file, cols, class_col)
+#        else:
+##             print("File "+file+" not found, nothing to do.")
+#            raise Exception("File "+file+" not found, nothing to do.")
             
         if not cols:
             cols = list(df.columns)
         columns_order_zip, columns_order_csv = organizeFrame(df, cols, tid_col, class_col)
         
-        if os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')) and \
-            not os.path.exists(os.path.join(dir_path, file+'.zip')):
-            print("Saving dataset as: " + os.path.join(dir_path, file+'.zip'))
-#             os.rename(os.path.join(dir_path, file+'.zip'),os.path.join(dir_path, file+'-old.zip'))
-            df2zip(dir_path, df, file, tid_col, class_col, select_cols=columns_order_zip)
-        elif os.path.exists(os.path.join(dir_path, file+'.zip')) and \
-            not os.path.exists(os.path.join(dir_path, 'specific_'+file+'.csv')):
-            print("Saving dataset as: " + os.path.join(dir_path, file+'.csv'))
-            df[columns_order_csv].to_csv(os.path.join(dir_path, 'specific_'+file+'.csv'), index = False)
+        outformats = []
+        if not os.path.exists(os.path.join(dir_path, file+'.zip')):
+            outformats.append('zip')
+#            print("Saving dataset as: " + os.path.join(dir_path, file+'.zip'))
+#            df2zip(dir_path, df, file, tid_col, class_col, select_cols=columns_order_zip)
+        if not os.path.exists(os.path.join(dir_path, fileprefix+file+'.csv')):
+            outformats.append('csv')
+#            print("Saving dataset as: " + os.path.join(dir_path, file+'.csv'))
+#            df[columns_order_csv].to_csv(os.path.join(dir_path, fileprefix+file+'.csv'), index = False)
+        if not os.path.exists(os.path.join(dir_path, fileprefix+file+'.mat')):
+            outformats.append('mat')
+#            print("Saving dataset as: " + os.path.join(dir_path, file+'.mat'))
+#            df[columns_order_csv].to_csv(os.path.join(dir_path, fileprefix+file+'.mat'), index = False)
             
-        return df, columns_order_zip, columns_order_csv
+        return df, columns_order_zip, columns_order_csv, outformats
         
-    df_test, columns_order_zip, columns_order_csv = convert_file('test', cols)
-    df_train, columns_order_zip, columns_order_csv = convert_file('train', cols)
+    df_test, columns_order_zip, columns_order_csv, outformats = convert_file('test', cols)
+    df_train, columns_order_zip, columns_order_csv, outformats = convert_file('train', cols)
+    
+    for outType in outformats:
+        writeFiles(dir_path, fileprefix, df_train, df_test, tid_col, class_col, \
+                 columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, None, outType, opSuff='')
+    
     data = pd.concat([df_train,df_test])
 
     if k and not os.path.exists(os.path.join(dir_path, 'run1')):
-        train, test = kfold_trainAndTestSplit(dir_path, k, data, fileprefix='specific_', random_num=1, tid_col=tid_col, class_col=class_col, columns_order=columns_order_csv)
+        train, test = kfold_trainAndTestSplit(dir_path, k, data, fileprefix=fileprefix, random_num=1, tid_col=tid_col, class_col=class_col, columns_order=columns_order_csv)
         for i in range(1, k+1):
             for file in ['train', 'test']:
-                os.rename(os.path.join(dir_path, 'run'+str(i), 'specific_'+file+'.zip'), 
+                os.rename(os.path.join(dir_path, 'run'+str(i), fileprefix+file+'.zip'), 
                           os.path.join(dir_path, 'run'+str(i), file+'.zip'))
 
         if 'space' in columns_order_zip:
