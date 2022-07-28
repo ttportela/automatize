@@ -19,9 +19,9 @@ from automatize.methods.tec.tec import TEC
 
 if len(sys.argv) < 4:
     print('Please run as:')
-    print('\tensemble-cls.py', 'PATH TO DATASET', 'PATH TO RESULTS_DIR', 'ENSEMBLES', 'DATASET')
+    print('\tMAT-TEC.py', 'PATH TO DATASET', 'PATH TO RESULTS_DIR', 'ENSEMBLES', 'DATASET')
     print('Example:')
-    print('\tensemble-cls.py', '"./data"', '"./results"', '"{\'movelets\': \'./movelets-res\', \'marc\': \'./data\', \'poifreq\': \'./poifreq-res\'}"', 'specific')
+    print('\tMAT-TEC.py', '"./data"', '"./results"', '"{\'movelets\': \'./movelets-res\', \'marc\': \'./data\', \'poifreq\': \'./poifreq-res\'}"', 'specific')
     exit()
 
 data_path = sys.argv[1]

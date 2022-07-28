@@ -9,7 +9,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-from .main import importer, pyshel, PACKAGE_NAME #, display
+from .main import importer, pyshel, PACKAGE_NAME, DEFAULT_MC, DEFAULT_TC #, display
 importer(['S'], globals())
 
 def gensh(method, datasets, params=None):
@@ -141,6 +141,9 @@ def configMethod(method, params):
     elif 'TEC' in method or 'MARC' in method or oneof(method, ['Movelets', 'Dodge', 'Xiao', 'Zheng']):
         mname = trimsuffix(method)
         
+    elif 'TC-' in method:   
+        mname = ''
+        runopts = ''
     else:
         mname = trimsuffix(method).capitalize() # method.replace('+Log', '')
 #         runopts = '-version ' + trimsuffix(method) + ' '
@@ -318,6 +321,20 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                      modelfolder='model_'+metsuff, save_results=True, print_only=print_only, pyname=pyname, prg_path=prog_path, \
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset=dsvar, num_runs=1,\
                      movelets_line=movelets_line, poif_line=poif_line)
+    elif 'TC-' in method:
+        #if 'samples' in params:
+        #    print('# --------------------------------------------------------------------------------------')
+        #    print('for SAMPLE in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['samples']+1)]) )
+        #    print('do')
+        #    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+MNAME+'" -c "'+method.split('-')[1]+'" -r "${SAMPLE}" "'+data+'" "'+results+'/run${FOLD}"')
+        #    print('done')
+        #    print('# --------------------------------------------------------------------------------------')
+        #    print()
+
+        #else:
+        print('# --------------------------------------------------------------------------------------')
+        print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" "'+data+'" "'+results+'"')
+        print()
     else:
         prefix = None
         
@@ -384,7 +401,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             print(pyshel('MergeDatasets', prog_path, pyname)+' "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             if doacc :
 #                 print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
-                print(pyshel('Classifier-MLP_RF', prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
+                print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'" "MLP,RF"') #MLP_RF
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
@@ -392,7 +409,7 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         elif doacc and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
             print('# --------------------------------------------------------------------------------------')
 #             print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
-            print(pyshel('Classifier-MLP_RF', prog_path, pyname)+' "'+results+'" "'+MNAME+'"') #MLP_RF
+            print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'" "'+MNAME+'" "MLP,RF"') #MLP_RF
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')

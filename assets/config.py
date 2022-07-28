@@ -12,7 +12,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 VERSION = "1.0.b1"
 
 PACKAGE_NAME = 'automatize'
-DATA_PATH = '../../datasets'
+DATA_PATH = '/Users/tarlisportela/Library/CloudStorage/OneDrive-Personal/3 - Projetos/datasets'
 EXP_PATH  = '../../results'
 README    = PACKAGE_NAME+'/README.md'
 

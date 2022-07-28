@@ -95,21 +95,21 @@ def TEC(data_path, results_path, ensembles, dataset='specific', save_results=Tru
             models[method] = KerasClassifier(model)
             model = model.predict(x_test)
             
-        if method == 'rf':
-#             from ..main import importer
-            importer(['TEC.RF'], globals())
-#             from ensemble_models.randomforrest import model_rf
-            model, x_test = model_rf(folder, dataset)
-            models[method] = model
-            model = model.predict(x_test)
-            
-        if method == 'rfhp':
-#             from ..main import importer
-            importer(['TEC.RFHP'], globals())
-#             from ensemble_models.randomforresthp import model_rfhp
-            model, x_test = model_rfhp(folder, dataset)
-            models[method] = model
-            model = model.predict(x_test)
+#        if method == 'rf': # TODO
+##             from ..main import importer
+#            importer(['TEC.RF'], globals())
+##             from ensemble_models.randomforrest import model_rf
+#            model, x_test = model_rf(folder, dataset)
+#            models[method] = model
+#            model = model.predict(x_test)
+#            
+#        if method == 'rfhp': # TODO
+##             from ..main import importer
+#            importer(['TEC.RFHP'], globals())
+##             from ensemble_models.randomforresthp import model_rfhp
+#            model, x_test = model_rfhp(folder, dataset)
+#            models[method] = model
+#            model = model.predict(x_test)
         
 #         print(method, 'ESTIMATORS:', model)
         y_pred = [np.argmax(f) for f in model]  

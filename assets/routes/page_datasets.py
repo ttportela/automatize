@@ -29,8 +29,8 @@ from assets.app_base import app
 from assets.config import *
 
 from automatize.results import format_hour
-from automatize.helper.datasets_inc import *
-from automatize.helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from automatize.inc.datasets_def import *
+from automatize.inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES
 # ------------------------------------------------------------
 # DATA_PATH='../../datasets'
 

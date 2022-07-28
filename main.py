@@ -13,13 +13,15 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # import os
 PACKAGE_NAME = 'automatize'
+DEFAULT_MC   = 'MATC-MC' 
+DEFAULT_TC   = 'MATC-TC' 
 
-def importer(key=['S'], this=None):
+def importer(key=['S'], this=None, modules={}):
     import importlib
     
     mdic = {}
     # Progress Bar:
-    if set(key) & set(['*', 'tqdm']):
+    if set(key) & set(['*', 'io', 'tqdm']):
         module = importlib.import_module('tqdm.auto')
         mdic.update( {'tqdm': getattr(module, 'tqdm')} )
             
@@ -52,13 +54,17 @@ def importer(key=['S'], this=None):
             module = importlib.import_module('shutil')
             mdic.update( {'shutil': module} )
 
-    if set(key) & set(['*', 'datetime', 'dateparser']):
+    if set(key) & set(['*', 'TCM', 'datetime', 'dateparser', 'time']):
         if set(key) & set(['*', 'datetime']):
             module = importlib.import_module('datetime')
             mdic.update( {'datetime': getattr(module, 'datetime')} )
         if set(key) & set(['*', 'dateparser']):
             module = importlib.import_module('dateutil.parser')
             mdic.update( {'dateparser': module} )
+            
+        if set(key) & set(['*', 'TCM', 'time']):
+            module = importlib.import_module('time')
+            mdic.update( {'time': module} ) 
             
     if set(key) & set(['*', 'mat']):
         module = importlib.import_module('matplotlib')
@@ -81,8 +87,8 @@ def importer(key=['S'], this=None):
         mdic.update( {'json': module} )
         
     # 3rd Party:
-    if set(key) & set(['*', 'others', 'glob', 'glob2', 'tf', 'tensorflow', 'gh']):
-        if set(key) & set(['*', 'others', 'glob', 'glob2']):
+    if set(key) & set(['*', 'others', 'TCM', 'glob', 'glob2', 'tf', 'tensorflow', 'gh']):
+        if set(key) & set(['*', 'others', 'TCM', 'glob', 'glob2']):
             module = importlib.import_module('glob2')
             mdic.update( {'glob': module} )
 
@@ -97,6 +103,14 @@ def importer(key=['S'], this=None):
         if set(key) & set(['*', 'others', 're']):
             module = importlib.import_module('re')
             mdic.update( {'re': module} )  
+            
+        if set(key) & set(['*', 'others', 'TCM', 'itertools']):
+            module = importlib.import_module('itertools')
+            mdic.update( {'itertools': module} ) 
+            
+        if set(key) & set(['*', 'others', 'TCM', 'collections']):
+            module = importlib.import_module('collections')
+            mdic.update( {'collections': module} ) 
     
     # FOR neural networks:
     if set(key) & set(['*', 'pynn', 'models', 'layers', 'initializers', 'regularizers', 'callbacks', 'optimizers', 
@@ -238,7 +252,7 @@ def importer(key=['S'], this=None):
             mdic.update( {'LabelEncoder': getattr(module, 'LabelEncoder'), 'OneHotEncoder': getattr(module, 'OneHotEncoder')} )
 
         if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash', 'geohash']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._lib.geohash')
             if set(key) & set(['*', 'preprocessing', 'encoding', 'bin_geohash']):
                 mdic.update( {'bin_geohash': getattr(module, 'bin_geohash')} )
             if set(key) & set(['*', 'preprocessing', 'geohash']):
@@ -259,37 +273,37 @@ def importer(key=['S'], this=None):
                 mdic.update( {'TEC2': getattr(module, 'TEC2')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC', 'poifreq']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.pois.poifreq')
             mdic.update( {'poifreq': getattr(module, 'poifreq')} )
 
         if set(key) & set(['*', 'ensembles', 'TEC.MLP']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.movelets')
             mdic.update( {'model_movelets_mlp': getattr(module, 'model_movelets_mlp')} )
         if set(key) & set(['*', 'ensembles', 'TEC.NN']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.movelets')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.movelets')
             mdic.update( {'model_movelets_nn': getattr(module, 'model_movelets_nn')} )
         if set(key) & set(['*', 'ensembles', 'TEC.MARC']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.marc')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.marc')
             mdic.update( {'model_marc': getattr(module, 'model_marc')} )
         if set(key) & set(['*', 'ensembles', 'TEC.POIS']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.poifreq')
             mdic.update( {'model_poifreq': getattr(module, 'model_poifreq')} )
-        if set(key) & set(['*', 'ensembles', 'TEC.RF']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.randomforrest')
-            mdic.update( {'model_rf': getattr(module, 'model_rf')} )
-        if set(key) & set(['*', 'ensembles', 'TEC.RFHP']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.randomforresthp')
-            mdic.update( {'model_rfhp': getattr(module, 'model_rfhp')} )
+#        if set(key) & set(['*', 'ensembles', 'TEC.RF']):
+#            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.randomforrest')
+#            mdic.update( {'model_rf': getattr(module, 'model_rf')} )
+#        if set(key) & set(['*', 'ensembles', 'TEC.RFHP']):
+#            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.randomforresthp')
+#            mdic.update( {'model_rfhp': getattr(module, 'model_rfhp')} )
 
         if set(key) & set(['*', 'TEC.utils']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods._models.utils')
+            module = importlib.import_module(PACKAGE_NAME+'.methods._lib.metrics')
             for att in dir(module):
                 if not att.startswith('_'):
                     mdic.update( {att: getattr(module, att)} )
                 
     if set(key) & set(['*', 'classifiers', 'A1', 'Approach1', 'A2', 'Approach2', 'ARF', 'ApproachRF', 'ARFHP', 'ApproachRFHP', 
                        'ASVC', 'ApproachSVC', 'ADT', 'ApproachDT', 'AMLP', 'ApproachMLP']):
-        module = importlib.import_module(PACKAGE_NAME+'.classifiers')
+        module = importlib.import_module(PACKAGE_NAME+'.methods.movelet.moveletml')
         if set(key) & set(['*', 'classifiers', 'A1', 'Approach1']):
             mdic.update( {'Approach1': getattr(module, 'Approach1')} )
         if set(key) & set(['*', 'classifiers', 'A2', 'Approach2']):
@@ -306,7 +320,7 @@ def importer(key=['S'], this=None):
             mdic.update( {'ApproachMLP': getattr(module, 'ApproachMLP')} )  
             
     if set(key) & set(['*', 'report', 'TEC.report', 'f1', 'classification_report_csv', 'calculateAccTop5']):
-        module = importlib.import_module(PACKAGE_NAME+'.classifiers')
+        module = importlib.import_module(PACKAGE_NAME+'.methods._lib.metrics')
         if set(key) & set(['*', 'report', 'TEC.report', 'classification_report_csv']):
             mdic.update( {'classification_report_csv': getattr(module, 'classification_report_csv')} )
         if set(key) & set(['*', 'report', 'calculateAccTop5']):
@@ -338,7 +352,7 @@ def importer(key=['S'], this=None):
             
             
     if set(key) & set(['*', 'analysis', 'loadData']):
-        module = importlib.import_module(PACKAGE_NAME+'.analysis')
+        module = importlib.import_module(PACKAGE_NAME+'.methods.movelet.classification')
         if set(key) & set(['*', 'analysis', 'loadData']):
             mdic.update( {'loadData': getattr(module, 'loadData')} )
             
@@ -368,15 +382,24 @@ def importer(key=['S'], this=None):
             module = importlib.import_module('graphviz')
             mdic.update( {'Digraph': getattr(module, 'Digraph')} )
     
-    if set(key) & set(['*', 'io', 'ts_io', 'load_from_tsfile_to_dataframe', 'readDataset']):
-        if set(key) & set(['*', 'io', 'readDataset']):
+    if set(key) & set(['*', 'io', 'ts_io', 'load_from_tsfile_to_dataframe', 'readDataset', 'organizeFrame']):
+        if set(key) & set(['*', 'io', 'readDataset', 'organizeFrame']):
             module = importlib.import_module(PACKAGE_NAME+'.preprocessing')
-            mdic.update( {'readDataset': getattr(module, 'readDataset')} )
+            if set(key) & set(['*', 'io', 'readDataset']):
+                mdic.update( {'readDataset': getattr(module, 'readDataset')} )
+            if set(key) & set(['*', 'io', 'organizeFrame']):
+                mdic.update( {'organizeFrame': getattr(module, 'organizeFrame')} )
     
         if set(key) & set(['*', 'ts_io', 'load_from_tsfile_to_dataframe']):
-            module = importlib.import_module(PACKAGE_NAME+'.helper.io.ts_io')
+            module = importlib.import_module(PACKAGE_NAME+'.inc.io.ts_io')
             mdic.update( {'load_from_tsfile_to_dataframe': getattr(module, 'load_from_tsfile_to_dataframe')} )
-        
+    
+    # For dynamic modules functions
+    for mod, fun in modules.items():
+        module = importlib.import_module(PACKAGE_NAME+'.'+mod)
+        for x in fun:
+            mdic.update( {x: getattr(module, x)} )
+    
     if this is not None:
         this.update(mdic)
         
@@ -412,14 +435,21 @@ def pyshel(py, prg_path='.', pyname='python3', use_install=False):
     SCRIPTS = {
              'MoveDatasets' : 'MAT-MoveDatasets.py',
             'MergeDatasets' : 'MAT-MergeDatasets.py',
-        'Classifier-MLP_RF' : 'MAT-Classifier-MLP_RF.py',
         
                      'MARC' : 'MARC.py',
         
                      'POIS' : 'POIS.py',
-          'POIS-Classifier' : 'POIS-Classifier.py',
-        
+                'MATC-POIS' : 'POIS-TC.py',
+
                       'TEC' : 'MAT-TEC.py',
+        
+#           'MATC-MC_MLP_RF' : 'MAT-MC_MLP_RF.py',
+#              'MATC-MC_MLP' : 'MAT-MC_MLP.py',
+#               'MATC-MC_RF' : 'MAT-MC_RF.py',
+#              'MATC-MC_SVM' : 'MAT-MC_SVM.py',
+                  'MATC-MC' : 'MAT-MC.py',
+        
+                  'MATC-TC' : 'MAT-TC.py',
     }
     
     if use_install:
@@ -427,12 +457,14 @@ def pyshel(py, prg_path='.', pyname='python3', use_install=False):
     else:
         import os
         # For Local Import:
-        if 'MARC' == py:
-            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'marc', SCRIPTS[py])
-        elif 'POIS' in py:
-            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'pois', SCRIPTS[py])
-        else:
-            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'scripts', SCRIPTS[py])
+#        if 'MARC' == py:
+#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'marc', SCRIPTS[py])
+#        elif 'POIS' in py:
+#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'pois', SCRIPTS[py])
+#        elif 'MATC-MC_' in py:
+#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'movelets', SCRIPTS[py])
+#        else:
+        return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'scripts', SCRIPTS[py])
     
 def isConsole():
     try:

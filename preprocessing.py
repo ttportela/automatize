@@ -12,8 +12,8 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 from .main import importer #, display
 importer(['S', 'glob'], globals())
 
-from .helper.io.converter import *
-from .helper.script_inc import getDescName
+from .inc.io.converter import *
+from .inc.script_def import getDescName
 #-------------------------------------------------------------------------->>
 
 def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', missing='?'):
@@ -272,17 +272,22 @@ def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_
 
 #-------------------------------------------------------------------------->>
 def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix='', \
-                      outformats=['zip', 'csv', 'mat']):
+                      outformats=['zip', 'csv', 'mat'], verbose=False):
 #     from ..main import importer
     importer(['S', 'random'], globals())
+    
+    df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
     
     train = pd.DataFrame()
     test = pd.DataFrame()
     for label in df[class_col].unique():
-        
+    
+    #def splitByLabel(label):
+    #    global train, test
+                
         tids = df.loc[df[class_col] == label][tid_col].unique()
-        print(label)
-        print(tids)
+        if verbose:
+            print('Label', label, ', TIDs = ', tids)
         
         random.seed(random_num)
         train_index = random.sample(list(tids), int(len(tids)*train_size))
@@ -291,14 +296,17 @@ def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid'
         train = pd.concat([train,df.loc[df[tid_col].isin(train_index)]])
         test  = pd.concat([test, df.loc[df[tid_col].isin(test_index)]])
 
-        print("Train samples: " + str(train.loc[train[class_col] == label][tid_col].unique()))
-        print("Test samples: " + str(test.loc[test[class_col] == label][tid_col].unique()))
+        if verbose:
+            #print('Label', label, ', TIDs = ', tids)
+            print("Train samples: " + str(train.loc[train[class_col] == label][tid_col].unique()))
+            print("Test samples: " + str(test.loc[test[class_col] == label][tid_col].unique()))
+    
+    #list(map(lambda label: splitByLabel(label), tqdm(df[class_col].unique())))
     
     # WRITE Train / Test Files
-    columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
     for outType in outformats:
         writeFiles(data_path, fileprefix, train, test, tid_col, class_col, \
-                 columns_order_zip if outType == 'zip' else columns_order_csv, outType)
+                 columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, outformat=outType)
 #     write_trainAndTest(data_path, train, test, tid_col, class_col, fileprefix)
     
     return train, test
@@ -310,7 +318,7 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
         df['space'] = df["lat"] + ' ' + df["lon"]
 
         if columns_order is not None:
-            columns_order.insert(columns_order.index('lat'), 'space')
+            columns_order.insert(columns_order.index('lon'), 'space')
             
     elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
         if 'lat_lon' in df.columns:
@@ -336,7 +344,7 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
     columns_order_zip = [x for x in columns_order if x not in ['lat', 'lon']]
     columns_order_csv = [x for x in columns_order if x not in ['space']]
     
-    return columns_order_zip, columns_order_csv
+    return df, columns_order_zip, columns_order_csv
 
 def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spliting Data'):
     ktrain = []
@@ -367,7 +375,7 @@ def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class
     
     print(str(k)+"-fold train and test split in... " + data_path)
     
-    columns_order_zip, columns_order_csv = organizeFrame(df, columns_order, tid_col, class_col)
+    df, columns_order_zip, columns_order_csv = organizeFrame(df, columns_order, tid_col, class_col)
     
     if not ktrain:
         ktrain, ktest = splitData(df, k, random_num, tid_col, class_col)
@@ -403,7 +411,7 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
     print(str(k)+"-fold stratification of train and test in... " + data_path)
     
     if organize_columns:
-        columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+        df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
     else:
         columns_order_zip = list(df.columns)
         columns_order_csv = list(df.columns)
@@ -547,7 +555,7 @@ def convertDataset(dir_path, k=None, cols = None, fileprefix='', tid_col='tid', 
             
         if not cols:
             cols = list(df.columns)
-        columns_order_zip, columns_order_csv = organizeFrame(df, cols, tid_col, class_col)
+        df, columns_order_zip, columns_order_csv = organizeFrame(df, cols, tid_col, class_col)
         
         outformats = []
         if not os.path.exists(os.path.join(dir_path, file+'.zip')):
@@ -588,5 +596,4 @@ def convertDataset(dir_path, k=None, cols = None, fileprefix='', tid_col='tid', 
                     os.remove(os.path.join(dir_path, 'run'+str(i), 'raw_'+file+'.zip'))
     
     print("All Done.")
-
-# --------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------

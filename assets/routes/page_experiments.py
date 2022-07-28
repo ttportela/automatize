@@ -29,8 +29,8 @@ from assets.app_base import app
 from assets.config import *
 
 from automatize.script import gensh, trimsuffix
-from automatize.helper.script_inc import *
-from automatize.helper.datasets_inc import list_datasets
+from automatize.inc.script_def import *
+from automatize.inc.datasets_def import list_datasets
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
     

@@ -28,8 +28,8 @@ from dash.dependencies import Output, Input, State
 
 from assets.app_base import app, gess, sess
 from assets.config import *
-from helper.CDDiagram import draw_cd_diagram 
-from helper.script_inc import METHODS_NAMES, CLASSIFIERS_NAMES
+from inc.CDDiagram import draw_cd_diagram 
+from inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES
 
 from automatize.results import format_hour, format_float
 # ------------------------------------------------------------

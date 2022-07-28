@@ -1,0 +1,125 @@
+The 0 round, start training with random seed 666
+Train epoch:0 batch:0 loss_stu_ce:5.990947 loss_tea_ce:6.464960 loss_dis:0.496995 loss_sum:17.425856 loss:31.391926
+Train epoch:0 batch:0 loss_stu_ce:5.992193 loss_tea_ce:6.183015 loss_dis:0.179086 loss_sum:13.966071 loss:31.391926
+Train epoch:0 batch:40 loss_stu_ce:4.003169 loss_tea_ce:2.843665 loss_dis:0.107011 loss_sum:7.916948 loss:21.225000
+Train epoch:0 batch:40 loss_stu_ce:1.877336 loss_tea_ce:3.957712 loss_dis:0.171076 loss_sum:7.545811 loss:21.225000
+Valid epoch:0 loss:5.909996 acc@1:0.590728 acc@5:0.719305 macro_p:0.641930 macro_r:0.558865 macro_f1:0.543608
+Validation loss decreased (inf --> 5.909996).  Saving model ...
+Train epoch:1 batch:0 loss_stu_ce:3.248826 loss_tea_ce:1.332880 loss_dis:0.132271 loss_sum:5.904419 loss:11.724001
+Train epoch:1 batch:0 loss_stu_ce:1.017209 loss_tea_ce:3.117683 loss_dis:0.168469 loss_sum:5.819581 loss:11.724001
+Train epoch:1 batch:40 loss_stu_ce:2.685402 loss_tea_ce:0.652097 loss_dis:0.137177 loss_sum:4.709268 loss:10.355943
+Train epoch:1 batch:40 loss_stu_ce:0.441807 loss_tea_ce:2.587737 loss_dis:0.157897 loss_sum:4.608515 loss:10.355943
+Valid epoch:1 loss:4.240985 acc@1:0.657853 acc@5:0.786068 macro_p:0.703103 macro_r:0.635556 macro_f1:0.641465
+Validation loss decreased (5.909996 --> 4.240985).  Saving model ...
+Train epoch:2 batch:0 loss_stu_ce:2.450649 loss_tea_ce:0.468570 loss_dis:0.128177 loss_sum:4.200992 loss:8.437752
+Train epoch:2 batch:0 loss_stu_ce:0.347800 loss_tea_ce:2.504951 loss_dis:0.138401 loss_sum:4.236760 loss:8.437752
+Train epoch:2 batch:40 loss_stu_ce:2.254126 loss_tea_ce:0.345043 loss_dis:0.126380 loss_sum:3.862972 loss:7.755652
+Train epoch:2 batch:40 loss_stu_ce:0.269527 loss_tea_ce:2.319468 loss_dis:0.131024 loss_sum:3.899233 loss:7.755652
+Valid epoch:2 loss:3.780899 acc@1:0.685742 acc@5:0.806230 macro_p:0.725855 macro_r:0.665680 macro_f1:0.674094
+Validation loss decreased (4.240985 --> 3.780899).  Saving model ...
+Train epoch:3 batch:0 loss_stu_ce:1.953312 loss_tea_ce:0.313624 loss_dis:0.116005 loss_sum:3.426981 loss:6.830073
+Train epoch:3 batch:0 loss_stu_ce:0.252844 loss_tea_ce:1.985771 loss_dis:0.116448 loss_sum:3.403092 loss:6.830073
+Train epoch:3 batch:40 loss_stu_ce:1.818238 loss_tea_ce:0.242952 loss_dis:0.116255 loss_sum:3.223737 loss:6.529167
+Train epoch:3 batch:40 loss_stu_ce:0.195605 loss_tea_ce:1.922510 loss_dis:0.114471 loss_sum:3.262829 loss:6.529167
+Valid epoch:3 loss:3.500136 acc@1:0.699143 acc@5:0.817457 macro_p:0.733234 macro_r:0.681352 macro_f1:0.687409
+Validation loss decreased (3.780899 --> 3.500136).  Saving model ...
+Train epoch:4 batch:0 loss_stu_ce:1.587078 loss_tea_ce:0.227746 loss_dis:0.104255 loss_sum:2.857372 loss:5.682794
+Train epoch:4 batch:0 loss_stu_ce:0.200878 loss_tea_ce:1.643312 loss_dis:0.098123 loss_sum:2.825422 loss:5.682794
+Train epoch:4 batch:40 loss_stu_ce:1.554046 loss_tea_ce:0.180854 loss_dis:0.106970 loss_sum:2.804598 loss:5.665455
+Train epoch:4 batch:40 loss_stu_ce:0.160655 loss_tea_ce:1.603189 loss_dis:0.103374 loss_sum:2.797582 loss:5.665455
+Valid epoch:4 loss:3.381021 acc@1:0.711578 acc@5:0.822166 macro_p:0.737682 macro_r:0.694881 macro_f1:0.699530
+Validation loss decreased (3.500136 --> 3.381021).  Saving model ...
+Train epoch:5 batch:0 loss_stu_ce:1.346270 loss_tea_ce:0.165148 loss_dis:0.099871 loss_sum:2.510127 loss:4.945159
+Train epoch:5 batch:0 loss_stu_ce:0.154984 loss_tea_ce:1.354673 loss_dis:0.092537 loss_sum:2.435032 loss:4.945159
+Train epoch:5 batch:40 loss_stu_ce:1.274997 loss_tea_ce:0.136749 loss_dis:0.099285 loss_sum:2.404594 loss:4.943442
+Train epoch:5 batch:40 loss_stu_ce:0.128367 loss_tea_ce:1.213494 loss_dis:0.090753 loss_sum:2.249389 loss:4.943442
+Valid epoch:5 loss:3.207377 acc@1:0.717252 acc@5:0.826995 macro_p:0.743530 macro_r:0.700480 macro_f1:0.706857
+Validation loss decreased (3.381021 --> 3.207377).  Saving model ...
+Train epoch:6 batch:0 loss_stu_ce:1.214805 loss_tea_ce:0.144266 loss_dis:0.092102 loss_sum:2.280091 loss:4.418929
+Train epoch:6 batch:0 loss_stu_ce:0.137892 loss_tea_ce:1.161732 loss_dis:0.083921 loss_sum:2.138838 loss:4.418929
+Train epoch:6 batch:40 loss_stu_ce:1.214577 loss_tea_ce:0.139403 loss_dis:0.097964 loss_sum:2.333618 loss:4.379847
+Train epoch:6 batch:40 loss_stu_ce:0.118946 loss_tea_ce:1.161773 loss_dis:0.089837 loss_sum:2.179088 loss:4.379847
+Valid epoch:6 loss:3.182153 acc@1:0.721719 acc@5:0.829168 macro_p:0.745581 macro_r:0.705903 macro_f1:0.710259
+Validation loss decreased (3.207377 --> 3.182153).  Saving model ...
+Train epoch:7 batch:0 loss_stu_ce:0.957234 loss_tea_ce:0.119198 loss_dis:0.087254 loss_sum:1.948970 loss:3.699554
+Train epoch:7 batch:0 loss_stu_ce:0.122118 loss_tea_ce:0.868328 loss_dis:0.076014 loss_sum:1.750584 loss:3.699554
+Train epoch:7 batch:40 loss_stu_ce:1.060138 loss_tea_ce:0.112048 loss_dis:0.095989 loss_sum:2.132077 loss:3.948862
+Train epoch:7 batch:40 loss_stu_ce:0.112526 loss_tea_ce:0.950560 loss_dis:0.080685 loss_sum:1.869941 loss:3.948862
+Valid epoch:7 loss:3.146271 acc@1:0.726186 acc@5:0.831221 macro_p:0.746640 macro_r:0.709894 macro_f1:0.713706
+Validation loss decreased (3.182153 --> 3.146271).  Saving model ...
+Train epoch:8 batch:0 loss_stu_ce:0.898024 loss_tea_ce:0.109683 loss_dis:0.087299 loss_sum:1.880694 loss:3.390155
+Train epoch:8 batch:0 loss_stu_ce:0.112735 loss_tea_ce:0.703145 loss_dis:0.069358 loss_sum:1.509461 loss:3.390155
+Train epoch:8 batch:40 loss_stu_ce:1.044805 loss_tea_ce:0.092750 loss_dis:0.094382 loss_sum:2.081372 loss:3.524183
+Train epoch:8 batch:40 loss_stu_ce:0.089900 loss_tea_ce:0.914732 loss_dis:0.082593 loss_sum:1.830564 loss:3.524183
+Valid epoch:8 loss:3.104933 acc@1:0.729084 acc@5:0.832790 macro_p:0.749224 macro_r:0.713619 macro_f1:0.717551
+Validation loss decreased (3.146271 --> 3.104933).  Saving model ...
+Train epoch:9 batch:0 loss_stu_ce:0.810829 loss_tea_ce:0.093630 loss_dis:0.084341 loss_sum:1.747868 loss:3.068287
+Train epoch:9 batch:0 loss_stu_ce:0.087061 loss_tea_ce:0.586004 loss_dis:0.064735 loss_sum:1.320419 loss:3.068287
+Train epoch:9 batch:40 loss_stu_ce:0.940767 loss_tea_ce:0.095766 loss_dis:0.091011 loss_sum:1.946647 loss:3.187814
+Train epoch:9 batch:40 loss_stu_ce:0.084843 loss_tea_ce:0.847021 loss_dis:0.076122 loss_sum:1.693081 loss:3.187814
+Valid epoch:9 loss:3.091306 acc@1:0.733188 acc@5:0.832669 macro_p:0.751394 macro_r:0.718146 macro_f1:0.721334
+Validation loss decreased (3.104933 --> 3.091306).  Saving model ...
+Train epoch:10 batch:0 loss_stu_ce:0.755206 loss_tea_ce:0.090012 loss_dis:0.082229 loss_sum:1.667512 loss:2.942502
+Train epoch:10 batch:0 loss_stu_ce:0.076899 loss_tea_ce:0.573852 loss_dis:0.062424 loss_sum:1.274990 loss:2.942502
+Train epoch:10 batch:40 loss_stu_ce:0.796961 loss_tea_ce:0.081541 loss_dis:0.083181 loss_sum:1.710308 loss:2.851921
+Train epoch:10 batch:40 loss_stu_ce:0.070268 loss_tea_ce:0.611470 loss_dis:0.066693 loss_sum:1.348669 loss:2.851921
+Valid epoch:10 loss:3.048949 acc@1:0.732464 acc@5:0.832307 macro_p:0.748398 macro_r:0.717553 macro_f1:0.720401
+Validation loss decreased (3.091306 --> 3.048949).  Saving model ...
+Train epoch:11 batch:0 loss_stu_ce:0.640076 loss_tea_ce:0.081614 loss_dis:0.074643 loss_sum:1.468118 loss:2.503824
+Train epoch:11 batch:0 loss_stu_ce:0.067904 loss_tea_ce:0.435607 loss_dis:0.053219 loss_sum:1.035706 loss:2.503824
+Train epoch:11 batch:40 loss_stu_ce:0.710347 loss_tea_ce:0.082002 loss_dis:0.079552 loss_sum:1.587874 loss:2.585661
+Train epoch:11 batch:40 loss_stu_ce:0.063442 loss_tea_ce:0.451183 loss_dis:0.055591 loss_sum:1.070538 loss:2.585661
+Valid epoch:11 loss:3.036929 acc@1:0.734396 acc@5:0.834722 macro_p:0.749746 macro_r:0.717696 macro_f1:0.721870
+Validation loss decreased (3.048949 --> 3.036929).  Saving model ...
+Train epoch:12 batch:0 loss_stu_ce:0.517675 loss_tea_ce:0.078097 loss_dis:0.070729 loss_sum:1.303066 loss:2.239934
+Train epoch:12 batch:0 loss_stu_ce:0.064483 loss_tea_ce:0.384134 loss_dis:0.048825 loss_sum:0.936867 loss:2.239934
+Train epoch:12 batch:40 loss_stu_ce:0.618024 loss_tea_ce:0.071191 loss_dis:0.074222 loss_sum:1.431437 loss:2.411055
+Train epoch:12 batch:40 loss_stu_ce:0.060690 loss_tea_ce:0.427290 loss_dis:0.051672 loss_sum:1.004703 loss:2.411055
+Valid epoch:12 loss:3.042192 acc@1:0.735362 acc@5:0.832066 macro_p:0.752379 macro_r:0.719607 macro_f1:0.723806
+EarlyStopping counter: 1 out of 3
+Train epoch:13 batch:0 loss_stu_ce:0.449243 loss_tea_ce:0.070640 loss_dis:0.066300 loss_sum:1.182885 loss:2.056319
+Train epoch:13 batch:0 loss_stu_ce:0.058868 loss_tea_ce:0.345350 loss_dis:0.046922 loss_sum:0.873433 loss:2.056319
+Train epoch:13 batch:40 loss_stu_ce:0.563766 loss_tea_ce:0.071089 loss_dis:0.071383 loss_sum:1.348682 loss:2.273016
+Train epoch:13 batch:40 loss_stu_ce:0.056242 loss_tea_ce:0.441252 loss_dis:0.051445 loss_sum:1.011949 loss:2.273016
+Valid epoch:13 loss:3.001987 acc@1:0.735724 acc@5:0.833514 macro_p:0.752183 macro_r:0.719311 macro_f1:0.723296
+Validation loss decreased (3.036929 --> 3.001987).  Saving model ...
+Train epoch:14 batch:0 loss_stu_ce:0.494640 loss_tea_ce:0.065629 loss_dis:0.070230 loss_sum:1.262568 loss:2.179446
+Train epoch:14 batch:0 loss_stu_ce:0.054011 loss_tea_ce:0.382291 loss_dis:0.048058 loss_sum:0.916878 loss:2.179446
+Train epoch:14 batch:40 loss_stu_ce:0.565523 loss_tea_ce:0.067407 loss_dis:0.070877 loss_sum:1.341704 loss:2.140342
+Train epoch:14 batch:40 loss_stu_ce:0.054513 loss_tea_ce:0.386416 loss_dis:0.047625 loss_sum:0.917177 loss:2.140342
+Valid epoch:14 loss:3.011458 acc@1:0.734637 acc@5:0.833756 macro_p:0.750375 macro_r:0.719749 macro_f1:0.722090
+EarlyStopping counter: 1 out of 3
+Train epoch:15 batch:0 loss_stu_ce:0.456912 loss_tea_ce:0.064737 loss_dis:0.064369 loss_sum:1.165337 loss:2.005478
+Train epoch:15 batch:0 loss_stu_ce:0.048387 loss_tea_ce:0.358573 loss_dis:0.043318 loss_sum:0.840140 loss:2.005478
+Train epoch:15 batch:40 loss_stu_ce:0.457662 loss_tea_ce:0.061201 loss_dis:0.064067 loss_sum:1.159528 loss:2.002649
+Train epoch:15 batch:40 loss_stu_ce:0.047201 loss_tea_ce:0.365384 loss_dis:0.044117 loss_sum:0.853755 loss:2.002649
+Valid epoch:15 loss:2.998934 acc@1:0.737897 acc@5:0.832428 macro_p:0.749533 macro_r:0.721428 macro_f1:0.724919
+Validation loss decreased (3.001987 --> 2.998934).  Saving model ...
+Train epoch:16 batch:0 loss_stu_ce:0.382055 loss_tea_ce:0.060664 loss_dis:0.062635 loss_sum:1.069068 loss:1.727024
+Train epoch:16 batch:0 loss_stu_ce:0.042540 loss_tea_ce:0.237789 loss_dis:0.037763 loss_sum:0.657955 loss:1.727024
+Train epoch:16 batch:40 loss_stu_ce:0.469177 loss_tea_ce:0.060479 loss_dis:0.064784 loss_sum:1.177496 loss:1.891738
+Train epoch:16 batch:40 loss_stu_ce:0.044084 loss_tea_ce:0.364905 loss_dis:0.042459 loss_sum:0.833576 loss:1.891738
+Valid epoch:16 loss:2.948080 acc@1:0.736086 acc@5:0.832428 macro_p:0.750135 macro_r:0.720858 macro_f1:0.723492
+Validation loss decreased (2.998934 --> 2.948080).  Saving model ...
+Train epoch:17 batch:0 loss_stu_ce:0.344011 loss_tea_ce:0.059734 loss_dis:0.058990 loss_sum:0.993642 loss:1.618389
+Train epoch:17 batch:0 loss_stu_ce:0.045956 loss_tea_ce:0.226690 loss_dis:0.035210 loss_sum:0.624747 loss:1.618389
+Train epoch:17 batch:40 loss_stu_ce:0.522532 loss_tea_ce:0.053479 loss_dis:0.066894 loss_sum:1.244950 loss:1.820442
+Train epoch:17 batch:40 loss_stu_ce:0.043027 loss_tea_ce:0.402362 loss_dis:0.043439 loss_sum:0.879783 loss:1.820442
+Valid epoch:17 loss:2.952482 acc@1:0.737535 acc@5:0.832428 macro_p:0.749631 macro_r:0.720982 macro_f1:0.724428
+EarlyStopping counter: 1 out of 3
+Train epoch:18 batch:0 loss_stu_ce:0.340503 loss_tea_ce:0.053694 loss_dis:0.056092 loss_sum:0.955117 loss:1.565753
+Train epoch:18 batch:0 loss_stu_ce:0.041545 loss_tea_ce:0.229096 loss_dis:0.034000 loss_sum:0.610637 loss:1.565753
+Train epoch:18 batch:40 loss_stu_ce:0.472056 loss_tea_ce:0.056550 loss_dis:0.064541 loss_sum:1.174020 loss:1.763036
+Train epoch:18 batch:40 loss_stu_ce:0.041233 loss_tea_ce:0.370313 loss_dis:0.041984 loss_sum:0.831382 loss:1.763036
+Valid epoch:18 loss:2.956640 acc@1:0.739225 acc@5:0.833394 macro_p:0.750556 macro_r:0.722913 macro_f1:0.725292
+EarlyStopping counter: 2 out of 3
+Train epoch:19 batch:0 loss_stu_ce:0.260350 loss_tea_ce:0.060160 loss_dis:0.054473 loss_sum:0.865238 loss:1.387736
+Train epoch:19 batch:0 loss_stu_ce:0.042288 loss_tea_ce:0.162578 loss_dis:0.031763 loss_sum:0.522498 loss:1.387736
+Train epoch:19 batch:40 loss_stu_ce:0.306495 loss_tea_ce:0.051505 loss_dis:0.054061 loss_sum:0.898607 loss:1.684609
+Train epoch:19 batch:40 loss_stu_ce:0.038646 loss_tea_ce:0.223750 loss_dis:0.033738 loss_sum:0.599778 loss:1.684609
+Valid epoch:19 loss:2.910824 acc@1:0.737173 acc@5:0.833032 macro_p:0.748571 macro_r:0.721602 macro_f1:0.723568
+Validation loss decreased (2.948080 --> 2.910824).  Saving model ...
+Test 	 loss:2.445896 acc@1:0.607864 acc@5:0.700332 macro_p:0.634138 macro_r:0.586942 macro_f1:0.592962
+Test 	 loss:2.665021 acc@1:0.577262 acc@5:0.665372 macro_p:0.586664 macro_r:0.557224 macro_f1:0.559362
+Total time elapsed: 693.9193s
+Fininsh trainning in seed 666

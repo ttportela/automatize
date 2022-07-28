@@ -10,7 +10,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 import sys, os 
-sys.path.insert(0, os.path.abspath('.'))
+#sys.path.insert(0, os.path.abspath('.'))
 import pandas as pd
 import glob2 as glob
 import shutil

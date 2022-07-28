@@ -12,7 +12,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 from .main import importer, display
 importer(['S', 'glob', 'datetime', 're'], globals())
 
-from .helper.script_inc import getSubset
+from .inc.script_def import getSubset
 # --------------------------------------------------------------------------------
 
 def STATS(name=['*']):

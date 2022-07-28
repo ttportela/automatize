@@ -9,7 +9,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-from .main import importer, pyshel #, display
+from .main import importer, pyshel, DEFAULT_MC #, display
 importer(['S'], globals())
 # package_scripts = os.path.join(PACKAGE_NAME, 'scripts')
 # --------------------------------------------------------------------------------------
@@ -249,10 +249,10 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         if doclass:
             for s in sequences:
                 pois = ('_'.join(features))+'_'+str(s)
-                print(pyshel('POIS-Classifier', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+                print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
                 
             pois = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))
-            print(pyshel('POIS-Classifier', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+            print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
         
         return result_file
     else:
@@ -347,7 +347,7 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
                 print('')
     else:
 #         from ..main import importer
-        importer(['ClassifierEnsemble'], globals())
+        importer(['TEC'], globals())
         
         return TEC(data_path, results_path, ensembles, dataset, save_results, modelfolder)
 

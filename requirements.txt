@@ -21,4 +21,9 @@ networkx
 plotly
 geohash2
 scikit-learn
-Tqdm
+tqdm
+time
+mplleaflet
+traceback
+joblib
+argparse
