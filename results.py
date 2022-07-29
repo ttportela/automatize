@@ -436,7 +436,7 @@ def getACC_time(resfile, path, label, modelfolder='model'):
     elif isMethod(resfile, 'TEC') and label in ['MLP', 'NN']:
         data = pd.read_csv(resfile, index_col=0)
         data = data.set_index('classifier')
-        acc = float(data['time']['EnsembleClassifier']) if 'time' in data.columns else 0
+        acc = float(data['time']['TEC']) if 'time' in data.columns else 0
     else:
         data = read_approach(path, 'classification_times.csv', modelfolder)
         if data is not None:

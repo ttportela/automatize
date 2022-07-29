@@ -78,4 +78,4 @@ class XGBoostClassifier(object):
         y_pred = self.model.predict(X_test) 
         print('... Generating Classification Report')
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
-        return classification_report
+        return classification_report, y_pred

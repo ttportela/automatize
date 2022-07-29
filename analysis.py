@@ -58,7 +58,7 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
 #     importer(['S'], locals())
     
     dir_path = os.path.join(res_path, dataset, dir_path)
-    times = {'SVM': [0], 'RF': [0], 'MLP': [0], 'EC': [0]}
+    times = {'SVM': [0], 'RF': [0], 'MLP': [0], 'TEC': [0]}
     
     times_file = os.path.join(dir_path, modelfolder, "classification_times.csv")
     if os.path.isfile(times_file):
@@ -66,12 +66,16 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
     
     if 'RF' in classifiers:
         times['RF']  = [MoveletClassifier_RF(dir_path, save_results, modelfolder)]
+        
     if 'MLP' in classifiers:
         times['MLP'] = [MoveletClassifier_MLP(dir_path, save_results, modelfolder)]
+        
     if 'SVM' in classifiers:
         times['SVM'] = [MoveletClassifier_SVM(dir_path, save_results, modelfolder)]
-    if 'EC' in classifiers:
-        times['EC'] = [MoveletClassifier_EC(dir_path, data_path, save_results, modelfolder)]
+        
+    if 'TEC' in classifiers:
+        times['TEC'] = [MoveletClassifier_TEC(dir_path, data_path, save_results, modelfolder)]
+        
 #     t_svm = Classifier_SVM(dir_path, save_results, modelfolder)
 #     t_rf  = Classifier_RF(dir_path, save_results, modelfolder)
 #     t_mlp = Classifier_MLP(dir_path, save_results, modelfolder)
@@ -84,7 +88,7 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
             
 # ----------------------------------------------------------------------------------
 def ClassifyByTrajectory(res_path, data_path, prefix=None,
-             save_results=True, classifiers=['MARC', 'POIS', 'TRF']):
+             save_results=True, classifiers=['MARC', 'POIS', 'TRF', 'TXGB', 'TULVAE', 'BITULER', 'DST']):
 
     prefix = prefix if prefix else 'specific'
 
@@ -96,10 +100,33 @@ def ClassifyByTrajectory(res_path, data_path, prefix=None,
         marc('OURS', train_file, test_file, \
              os.path.join(res_folder, 'MARC-'+prefix+'_results.csv'), \
              prefix, 100, "concatenate", "lstm")
+    
+    if 'POIS' in classifiers:
+        from automatize.methods.pois.poifreq import poifreq
+        sequences = [1,2,3]
+        dataset   = 'specific'
+        features  = None
+        poifreq(sequences, dataset, features, data_path, res_path, method='npoi', doclass=True)
 
     if 'TRF' in classifiers:
         from automatize.methods.rf.randomforrest import TrajectoryRF
         TrajectoryRF(data_path, res_path, prefix, save_results)
+
+    if 'TXGB' in classifiers:
+        from automatize.methods.xgboost.XGBoost import TrajectoryXGBoost
+        TrajectoryXGBoost(data_path, res_path, prefix, save_results)
+
+    if 'TULVAE' in classifiers:
+        from automatize.methods.tuler.TULVAE import TrajectoryTULVAE
+        TrajectoryTULVAE(data_path, res_path, prefix, save_results)
+
+    if 'BITULER' in classifiers:
+        from automatize.methods.tuler.BITULER import TrajectoryBITULER
+        TrajectoryBITULER(data_path, res_path, prefix, save_results)
+
+    if 'DST' in classifiers:
+        from automatize.methods.deepest.DeepestST import TrajectoryDeepestST
+        TrajectoryDeepestST(data_path, res_path, prefix, save_results)
             
 # ----------------------------------------------------------------------------------
 #def MLP(res_path, prefix, dir_path, save_results = True, modelfolder='model'):

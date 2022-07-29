@@ -111,7 +111,7 @@ class BiTulerLSTM(object):
         y_pred = y_pred.argmax(axis=1)
         print('... generating Classification Report')
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
-        return classification_report
+        return classification_report, y_pred
 
     def free(self):
         print('\n\n#######     Cleaning TULER model      #######')
@@ -226,7 +226,7 @@ class TulerStackLSTM(object):
         y_pred = y_pred.argmax(axis=1)
         print('... generating Classification Report')
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
-        return classification_report
+        return classification_report, y_pred
 
     def free(self):
         print('\n\n#######     Cleaning TULER model      #######')

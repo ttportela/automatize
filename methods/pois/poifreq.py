@@ -12,7 +12,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
     
 ## POI-F: POI Frequency
-def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None):
+def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None, tid_col='tid', class_col='label'):
 #     from ..main import importer
 #     importer(['S'], locals())
     
@@ -20,15 +20,15 @@ def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, featu
     method = 'poi'
     
     # Train
-    train_tids = df_train['tid'].unique()
+    train_tids = df_train[tid_col].unique()
     x_train = np.zeros((len(train_tids), len(possible_sequences)))
-    y_train = df_train.drop_duplicates(subset=['tid', 'label'],
+    y_train = df_train.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(train_tids):
-        traj_pois = df_train[df_train['tid'] == tid][feature].values
+        traj_pois = df_train[df_train[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -37,16 +37,16 @@ def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, featu
             x_train[i][seq2idx[aux]] += 1
 
     # Test
-    test_tids = df_test['tid'].unique()
+    test_tids = df_test[tid_col].unique()
     test_unique_features = df_test[feature].unique().tolist()
     x_test = np.zeros((len(test_tids), len(possible_sequences)))
-    y_test = df_test.drop_duplicates(subset=['tid', 'label'],
+    y_test = df_test.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(test_tids):
-        traj_pois = df_test[df_test['tid'] == tid][feature].values
+        traj_pois = df_test[df_test[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -62,7 +62,7 @@ def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, featu
     return x_train, x_test, y_train, y_test
     
 ### NPOI-F: Normalized POI Frequency
-def npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None):
+def npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None, tid_col='tid', class_col='label'):
 #     from ..main import importer
 #     importer(['S'], locals())
     
@@ -70,15 +70,15 @@ def npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feat
     method = 'npoi'
     
     # Train
-    train_tids = df_train['tid'].unique()
+    train_tids = df_train[tid_col].unique()
     x_train = np.zeros((len(train_tids), len(possible_sequences)))
-    y_train = df_train.drop_duplicates(subset=['tid', 'label'],
+    y_train = df_train.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(train_tids):
-        traj_pois = df_train[df_train['tid'] == tid][feature].values
+        traj_pois = df_train[df_train[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -88,16 +88,16 @@ def npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feat
         x_train[i] = x_train[i]/len(traj_pois)
 
     # Test
-    test_tids = df_test['tid'].unique()
+    test_tids = df_test[tid_col].unique()
     test_unique_features = df_test[feature].unique().tolist()
     x_test = np.zeros((len(test_tids), len(possible_sequences)))
-    y_test = df_test.drop_duplicates(subset=['tid', 'label'],
+    y_test = df_test.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(test_tids):
-        traj_pois = df_test[df_test['tid'] == tid][feature].values
+        traj_pois = df_test[df_test[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -114,18 +114,18 @@ def npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feat
     return x_train, x_test, y_train, y_test
     
 ### WNPOI-F: Weighted Normalized POI Frequency.
-def wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None):
+def wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None, tid_col='tid', class_col='label'):
 #     from ..main import importer
 #     importer(['S'], locals())
     
     print('Starting WNPOI...')    
     method = 'wnpoi'
     
-    train_labels = df_train['label'].unique()
+    train_labels = df_train[class_col].unique()
     weights = np.zeros(len(possible_sequences))
     for label in train_labels:
         aux_w = np.zeros(len(possible_sequences))
-        class_pois = df_train[df_train['label'] == label][feature].values
+        class_pois = df_train[df_train[class_col] == label][feature].values
         for idx in range(0, (len(class_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -137,15 +137,15 @@ def wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, fea
                 aux_w[seqidx] = 1
     weights = np.log2(len(train_labels)/weights)
     # Train
-    train_tids = df_train['tid'].unique()
+    train_tids = df_train[tid_col].unique()
     x_train = np.zeros((len(train_tids), len(possible_sequences)))
-    y_train = df_train.drop_duplicates(subset=['tid', 'label'],
+    y_train = df_train.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(train_tids):
-        traj_pois = df_train[df_train['tid'] == tid][feature].values
+        traj_pois = df_train[df_train[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -157,16 +157,16 @@ def wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, fea
             x_train[i][w] *= weights[w]
 
     # Test
-    test_tids = df_test['tid'].unique()
+    test_tids = df_test[tid_col].unique()
     test_unique_features = df_test[feature].unique().tolist()
     x_test = np.zeros((len(test_tids), len(possible_sequences)))
-    y_test = df_test.drop_duplicates(subset=['tid', 'label'],
+    y_test = df_test.drop_duplicates(subset=[tid_col, class_col],
                                        inplace=False) \
-                      .sort_values('tid', ascending=True,
-                                   inplace=False)['label'].values
+                      .sort_values(tid_col, ascending=True,
+                                   inplace=False)[class_col].values
 
     for i, tid in enumerate(test_tids):
-        traj_pois = df_test[df_test['tid'] == tid][feature].values
+        traj_pois = df_test[df_test[tid_col] == tid][feature].values
         for idx in range(0, (len(traj_pois)-(sequence - 1))):
             aux = []
             for b in range (0, sequence):
@@ -185,7 +185,7 @@ def wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, fea
     return x_train, x_test, y_train, y_test
     
 ## --------------------------------------------------------------------------------------------
-def poifreq_all(sequence, dataset, feature, folder, result_dir):
+def poifreq_all(sequence, dataset, feature, folder, result_dir, tid_col='tid', class_col='label'):
 #     from ..main import importer
 #     importer(['S'], locals())
     print('Dataset: {}, Feature: {}, Sequence: {}'.format(dataset, feature, sequence))
@@ -213,15 +213,15 @@ def poifreq_all(sequence, dataset, feature, folder, result_dir):
         
     pd.DataFrame(possible_sequences).to_csv(os.path.join(result_dir, feature+'_'+str(sequence)+'_'+dataset+'-sequences.csv'), index=False, header=None)
     
-    poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir)
-    npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir)
-    wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir)
+    poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir, tid_col, class_col)
+    npoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir, tid_col, class_col)
+    wnpoi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir, tid_col, class_col)
     
 ## By Tarlis: Run this first...
 ## --------------------------------------------------------------------------------------------
-def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', save_all=False, doclass=True):
+def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', save_all=False, doclass=True, tid_col='tid', class_col='label'):
 #     from ..main import importer
-    importer(['S', 'datetime'], globals())
+    importer(['S', 'datetime'], globals(), {'preprocessing': ['dfVariance']})
 #     print('Dataset: {}, Feature: {}, Sequence: {}'.format(dataset, feature, sequence))
 #     from datetime import datetime
 
@@ -234,6 +234,11 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
 #         df_test = pd.read_csv(os.path.join(folder, dataset+'_test.csv'))
     
     df_train, df_test = loadTrainTest(features, folder, dataset)
+    
+    if features is None:
+        df_train
+        stats = dfVariance(df[[x for x in df.columns if x not in [tid_col, class_col]]])
+        features = [stats.iloc[0].index[0]]
     
     if save_all:
         save_all = result_dir
@@ -268,13 +273,16 @@ def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', sav
 
             if method == 'poi':
                 x_train, x_test, y_train, y_test = poi(df_train, df_test, possible_sequences, \
-                                                       seq2idx, sequence, dataset, feature, result_dir=save_all)
+                                                       seq2idx, sequence, dataset, feature, result_dir=save_all, 
+                                                       tid_col=tid_col, class_col=class_col)
             elif method == 'npoi':
                 x_train, x_test, y_train, y_test = npoi(df_train, df_test, possible_sequences, \
-                                                       seq2idx, sequence, dataset, feature, result_dir=save_all)
+                                                       seq2idx, sequence, dataset, feature, result_dir=save_all, 
+                                                       tid_col=tid_col, class_col=class_col)
             else:
                 x_train, x_test, y_train, y_test = wnpoi(df_train, df_test, possible_sequences, \
-                                                       seq2idx, sequence, dataset, feature, result_dir=save_all)
+                                                       seq2idx, sequence, dataset, feature, result_dir=save_all, 
+                                                       tid_col=tid_col, class_col=class_col)
 
             # Concat columns:
             if aux_x_train is None:

@@ -10,11 +10,11 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 from .main import importer #, display
-importer(['S', 'glob', 'tqdm'], globals())
+importer(['S', 'generator', 'tqdm'], globals(), {'preprocessing': ['writeFile']})
 
-import math
-import random
-import itertools
+#import math
+#import random
+#import itertools
 
 #from .inc.io.converter import *
 #from .preprocessing import
@@ -64,6 +64,7 @@ def scalerSamplerGenerator(
     
     # Random Seed
     np.random.seed(seed=random_seed)
+    random.seed(random_seed)
     
     if base_data is None:
         base_data = os.path.join(os.path.dirname(__file__), 'assets', 'examples', 'Foursquare_Example.csv')
@@ -72,6 +73,8 @@ def scalerSamplerGenerator(
         df = df[cols_for_sampling]
     else:
         df = base_data
+    
+    pbar = tqdm(range(Ns[1] + Ms[1] + Ls[1] + Cs[1]))
     
     Ns = getScale(Ns[0], Ns[1])
     Ms = getScale(Ms[0], Ms[1])
@@ -87,8 +90,6 @@ def scalerSamplerGenerator(
     print('M ::', 'fix. value:', '\t', miM, '\tscale:\t', Ms)
     print('L ::', 'fix. value:', '\t', miL, '\tscale:\t', La)
     print('C ::', 'fix. value:', '\t', miC, '\tscale:\t', Cs)
-    
-    pbar = tqdm(range(Ns[1] + Ms[1] + Ls[1] + Cs[1]))
     
     # 1 - Scale attributes (reshape columns), fixed trajectories, points, and classes:
     cols = cols_for_sampling.copy()
@@ -132,7 +133,8 @@ def samplerGenerator(
     fileprefix='train',
     cols_for_sampling = ['space','time','day','rating','price','weather','root_type','type'],
     save_to=False,
-    base_data=None):
+    base_data=None,
+    outformats=['csv', 'mat']):
     '''
     [Function to generate trajectories based on real data.]
 
@@ -153,6 +155,8 @@ def samplerGenerator(
             Output filename prefix (default 'train')
         base_data [DataFrame]: 
             DataFrame of trajectoris to use as base for sampling data (default 'assets/examples/Foursquare_Example.csv')
+        outformats [list]:
+            Output file formats for saving (default ['csv', 'mat'])
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -160,6 +164,7 @@ def samplerGenerator(
     
     # Random Seed
     np.random.seed(seed=random_seed)
+    random.seed(random_seed)
     
     if base_data is None:
         base_data = os.path.join(os.path.dirname(__file__), 'assets', 'examples', 'Foursquare_Example.csv')
@@ -195,8 +200,11 @@ def samplerGenerator(
             os.makedirs(save_to)
             
         filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(len(cols_for_sampling)),'attrs',str(C),'labels'])
-        filename += '.csv'
-        new_df.to_csv( os.path.join(save_to, filename), index=False)
+        
+        for outType in outformats:
+            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType)
+        #filename += '.csv'
+        #new_df.to_csv( os.path.join(save_to, filename), index=False)
 
     return new_df
 
@@ -243,6 +251,9 @@ def scalerRandomGenerator(
     
     # Random Seed
     np.random.seed(seed=random_seed)
+    random.seed(random_seed)
+    
+    pbar = tqdm(range(Ns[1] + Ms[1] + Ls[1] + Cs[1]))
     
     Ns = getScale(Ns[0], Ns[1])
     Ms = getScale(Ms[0], Ms[1])
@@ -263,8 +274,6 @@ def scalerRandomGenerator(
         attr_desc = default_types()[:Ls[0]]
     
     generators = instantiate_generators(attr_desc)
-    
-    pbar = tqdm(range(Ns[1] + Ms[1] + Ls[1] + Cs[1]))
     
     # 1 - Scale attributes (reshape columns), fixed trajectories, points, and classes:
     prefix = fileprefix + '_L'
@@ -298,7 +307,8 @@ def randomGenerator(
     random_seed=1,
     fileprefix='train',
     attr_desc=None,
-    save_to=False):
+    save_to=False,
+    outformats=['csv', 'mat']):
     '''
     [Function to generate trajectories based on real data.]
 
@@ -320,6 +330,8 @@ def randomGenerator(
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
             Output filename prefix (default 'train')
+        outformats [list]:
+            Output file formats for saving (default ['csv', 'mat'])
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -327,6 +339,7 @@ def randomGenerator(
     
     # Random Seed
     np.random.seed(seed=random_seed)
+    random.seed(random_seed)
     
     if not attr_desc:
         attr_desc = default_types()
@@ -355,8 +368,11 @@ def randomGenerator(
             os.makedirs(save_to)
             
         filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(L),'attrs',str(C),'labels'])
-        filename += '.csv'
-        new_df.to_csv( os.path.join(save_to, filename), index=False)
+        
+        for outType in outformats:
+            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType)
+        #filename += '.csv'
+        #new_df.to_csv( os.path.join(save_to, filename), index=False)
 
     return new_df
     

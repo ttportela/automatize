@@ -238,7 +238,7 @@ class DeepeST(object):
         
         print('... generate classification Report')  
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
-        return classification_report
+        return classification_report, y_pred
        
 
     def summary(self):

@@ -133,7 +133,7 @@ def TEC(data_path, results_path, ensembles, dataset='specific', save_results=Tru
     print('[Ensemble]: Final results.')
     print(ensembles)
     line=get_line(y_labels, y_pred, final_pred) + [time]
-    ensembles['EnsembleClassifier'] = line
+    ensembles['TEC'] = line
     print('[Ensemble]:', line)
     
     # Correct Class names:

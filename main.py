@@ -37,7 +37,7 @@ def importer(key=['S'], this=None, modules={}):
             module = importlib.import_module('numpy')
             mdic.update( {'np': module} )
        
-    if set(key) & set(['*', 'general', 'NN', 'MLP', 'sys', 'argmax', 'zip', 'random', 'shutil']):
+    if set(key) & set(['*', 'general', 'generator', 'NN', 'MLP', 'sys', 'argmax', 'zip', 'random', 'itertools', 'math', 'shutil']):
         if set(key) & set(['*', 'sys']):
             module = importlib.import_module('sys')
             mdic.update( {'sys': module} )
@@ -47,12 +47,19 @@ def importer(key=['S'], this=None, modules={}):
         if set(key) & set(['*', 'zip']):
             module = importlib.import_module('zipfile')
             mdic.update( {'ZipFile': getattr(module, 'ZipFile')} )
-        if set(key) & set(['*', 'random']):
-            module = importlib.import_module('random')
-            mdic.update( {'random': module} )
         if set(key) & set(['*', 'shutil']):
             module = importlib.import_module('shutil')
             mdic.update( {'shutil': module} )
+            
+        if set(key) & set(['*', 'generator', 'random']):
+            module = importlib.import_module('random')
+            mdic.update( {'random': module} )
+        if set(key) & set(['*', 'generator', 'TCM', 'itertools']):
+            module = importlib.import_module('itertools')
+            mdic.update( {'itertools': module} ) 
+        if set(key) & set(['*', 'generator', 'math']):
+            module = importlib.import_module('math')
+            mdic.update( {'math': module} ) 
 
     if set(key) & set(['*', 'TCM', 'datetime', 'dateparser', 'time']):
         if set(key) & set(['*', 'datetime']):
@@ -103,10 +110,6 @@ def importer(key=['S'], this=None, modules={}):
         if set(key) & set(['*', 'others', 're']):
             module = importlib.import_module('re')
             mdic.update( {'re': module} )  
-            
-        if set(key) & set(['*', 'others', 'TCM', 'itertools']):
-            module = importlib.import_module('itertools')
-            mdic.update( {'itertools': module} ) 
             
         if set(key) & set(['*', 'others', 'TCM', 'collections']):
             module = importlib.import_module('collections')

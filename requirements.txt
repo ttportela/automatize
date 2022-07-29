@@ -27,3 +27,5 @@ mplleaflet
 traceback
 joblib
 argparse
+mplleaflet
+traceback

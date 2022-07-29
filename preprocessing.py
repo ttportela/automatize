@@ -167,6 +167,42 @@ def countClasses_df(df, tid_col = 'tid', class_col = 'label', markd=False):
         print(df2.value_counts())
         return df2.value_counts()
 
+def dfVariance(df):
+    stats=pd.DataFrame()
+    dfx = df.apply(pd.to_numeric, args=['coerce'])
+    #stats["Mean"]=dfx.mean(axis=0, skipna=True)
+    #stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
+    stats["Variance"]=dfx.var(axis=0, skipna=True)
+
+    dfx = df.fillna('?')
+    for col in df.columns:
+        if not np.issubdtype(dfx[col].dtype, np.number):
+            categories = list(dfx[col].unique())
+            dfx[col] = pd.Categorical(dfx[col], categories, ordered=True)
+            #stats["Mean"][col] = categories[int( np.median(dfx[col].cat.codes) )]
+            #stats["Std.Dev"][col] = np.std(dfx[col].cat.codes)
+            stats["Variance"][col] = np.var(dfx[col].cat.codes)
+    
+    return stats.sort_values('Variance', ascending=False)
+
+def dfStats(df):
+    stats=pd.DataFrame()
+    dfx = df.apply(pd.to_numeric, args=['coerce'])
+    stats["Mean"]=dfx.mean(axis=0, skipna=True)
+    stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
+    stats["Variance"]=dfx.var(axis=0, skipna=True)
+
+    dfx = df.fillna('?')
+    for col in df.columns:
+        if not np.issubdtype(dfx[col].dtype, np.number):
+            categories = list(dfx[col].unique())
+            dfx[col] = pd.Categorical(dfx[col], categories, ordered=True)
+            stats["Mean"][col] = categories[int( np.median(dfx[col].cat.codes) )]
+            stats["Std.Dev"][col] = np.std(dfx[col].cat.codes)
+            stats["Variance"][col] = np.var(dfx[col].cat.codes)
+    
+    return stats.sort_values('Variance', ascending=False)
+    
 def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_col = 'label', to_file=False):
 #     from ..main import importer
 #     importer(['S'], locals())
@@ -225,22 +261,23 @@ def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_
     
     md += 'Descriptive Statistics (by Variance): '
     md += addLine(1)
-    stats=pd.DataFrame()
-    dfx = df.apply(pd.to_numeric, args=['coerce'])
-    stats["Mean"]=dfx.mean(axis=0, skipna=True)
-    stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
-    stats["Variance"]=dfx.var(axis=0, skipna=True)
-
-    df.fillna('?', inplace=True)
-    for col in df.columns:
-        if not np.issubdtype(df[col].dtype, np.number):
-            categories = list(df[col].unique())
-            df[col] = pd.Categorical(df[col], categories, ordered=True)
-            stats["Mean"][col] = categories[int( np.median(df[col].cat.codes) )]
-            stats["Std.Dev"][col] = np.std(df[col].cat.codes)
-            stats["Variance"][col] = np.var(df[col].cat.codes)
+    #stats=pd.DataFrame()
+    #dfx = df.apply(pd.to_numeric, args=['coerce'])
+    #stats["Mean"]=dfx.mean(axis=0, skipna=True)
+    #stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
+    #stats["Variance"]=dfx.var(axis=0, skipna=True)
+#
+    #df.fillna('?', inplace=True)
+    #for col in df.columns:
+    #    if not np.issubdtype(df[col].dtype, np.number):
+    #        categories = list(df[col].unique())
+    #        df[col] = pd.Categorical(df[col], categories, ordered=True)
+    #        stats["Mean"][col] = categories[int( np.median(df[col].cat.codes) )]
+    #        stats["Std.Dev"][col] = np.std(df[col].cat.codes)
+    #        stats["Variance"][col] = np.var(df[col].cat.codes)
     
-    md += stats.sort_values('Variance', ascending=False).to_markdown(tablefmt="github")
+    md += dfStats(df).to_markdown(tablefmt="github")
+    #md += stats.sort_values('Variance', ascending=False).to_markdown(tablefmt="github")
     md += addLine(2)
     
     
@@ -457,26 +494,47 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
     
     return ktrain, ktest
         
-def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
+def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
     if outformat == 'zip':
-        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
-        df2zip(data_path, train, file+'train', tid_col, class_col, select_cols=columns_order,\
-               opLabel='Writing TRAIN - ZIP|' + opSuff)
-        df2zip(data_path, test,  file+'test', tid_col, class_col, select_cols=columns_order, \
-               opLabel='Writing TEST  - ZIP|' + opSuff)
+        # WRITE ZIP >> FOR MASTERMovelets:
+        df2zip(data_path, df, file, tid_col, class_col, select_cols=columns_order,\
+               opLabel='Writing - ZIP |' + opSuff)
         
     elif outformat == 'csv':
-        print('Writing TRAIN / TEST - CSV|' + opSuff)
-        train[columns_order].to_csv(os.path.join(data_path, file+"train.csv"), index = False)
-        test[ columns_order].to_csv(os.path.join(data_path, file+"test.csv"),  index = False)
+        print('Writing - CSV |' + opSuff)
+        df[columns_order].to_csv(os.path.join(data_path, file+".csv"), index = False)
         
     elif outformat == 'mat':
-        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
-        df2mat(train, data_path, file+'train', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
-               opLabel='Writing TRAIN - MAT|' + opSuff)
-        df2mat(test,  data_path, file+'test', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
-               opLabel='Writing TEST  - MAT|' + opSuff)
+        # WRITE MAT Files >> FOR HiPerMovelets:
+        df2mat(df, data_path, file, cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
+               opLabel='Writing - MAT|' + opSuff)
         
+def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
+    # WRITE Train
+    writeFile(data_path, train, file+'train', tid_col, class_col, columns_order, mat_columns, outformat, opSuff='TRAIN - '+opSuff)
+    # WRITE Test
+    writeFile(data_path, test,  file+'test',  tid_col, class_col, columns_order, mat_columns, outformat, opSuff='TEST - '+ opSuff)
+    
+#def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
+#    if outformat == 'zip':
+#        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
+#        df2zip(data_path, train, file+'train', tid_col, class_col, select_cols=columns_order,\
+#               opLabel='Writing TRAIN - ZIP|' + opSuff)
+#        df2zip(data_path, test,  file+'test', tid_col, class_col, select_cols=columns_order, \
+#               opLabel='Writing TEST  - ZIP|' + opSuff)
+#        
+#    elif outformat == 'csv':
+#        print('Writing TRAIN / TEST - CSV|' + opSuff)
+#        train[columns_order].to_csv(os.path.join(data_path, file+"train.csv"), index = False)
+#        test[ columns_order].to_csv(os.path.join(data_path, file+"test.csv"),  index = False)
+#        
+#    elif outformat == 'mat':
+#        # WRITE ZIP Train / Test Files >> FOR HiPerMovelets:
+#        df2mat(train, data_path, file+'train', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
+#               opLabel='Writing TRAIN - MAT|' + opSuff)
+#        df2mat(test,  data_path, file+'test', cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
+#               opLabel='Writing TEST  - MAT|' + opSuff)
+#        
     
 #-------------------------------------------------------------------------->>
 def splitframe(data, name='tid'):

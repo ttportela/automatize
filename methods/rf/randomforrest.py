@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+'''
+Multiple Aspect Trajectory Data Mining Tool Library
+
+The present application offers a tool, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. It integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
+
+Created on Jun, 2022
+Copyright (C) 2022, License GPL Version 3 or superior (this portion of code is subject to licensing from source project distribution)
+
+@author: Tarlis Portela (adapted)
+
+# Original source:
+# Author: Nicksson C. A. de Freitas, 
+          Ticiana L. Coelho da Silva, 
+          Jose António Fernandes de Macêdo, 
+          Leopoldo Melo Junior, 
+          Matheus Gomes Cordeiro
+# Adapted from: https://github.com/nickssonfreitas/ICAART2021
+'''
+# --------------------------------------------------------------------------------
 import sys, os 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 #sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -26,11 +46,11 @@ from main import importer
 
 def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42):
     
-    import time
-    import mplleaflet as mpl
-    import traceback
-    import gc
-    from joblib import load, dump
+    #import time
+    #import mplleaflet as mpl
+    #import traceback
+    #import gc
+    #from joblib import load, dump
     
     # TODO - replace for pymove package version when implemented
     from methods._lib.pymove.models.classification import RandomForest as rf
@@ -39,6 +59,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     
     importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
     from methods._lib.datahandler import loadTrajectories
+    from methods._lib.utils import *
 
 #    paper = 'SAC'
 #    dataset = 'brightkite' #['fousquare_nyc', 'brightkite', 'foursquare_global', gowalla,'criminal_id', 'criminal_activity']
@@ -52,7 +73,10 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     dir_evaluation = os.path.join(res_path, 'TRF-'+prefix)
 
     # Load Data - Tarlis:
-    X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', split_test_validation=True)
+    X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
+                                                                          split_test_validation=True,
+                                                                          features_encoding=True, 
+                                                                          y_one_hot_encodding=False)
     
 #    df_train = pd.read_csv(file_train)
 #    df_val = pd.read_csv(file_val)
@@ -103,9 +127,6 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     if save_results and not os.path.exists(dir_validation):
         os.makedirs(dir_validation)
     
-    pbar = tqdm(itertools.product(n_estimators, max_depth, min_samples_split, 
-                                  min_samples_leaf, max_features, bootstrap), total=total, desc="[TRF:] Model Training")
-    
     # Hiper-param data:
     data = []
     def getParamData(f):
@@ -121,6 +142,10 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
         df_['feature']= f.split(marksplit)[7].split('.csv')[0]
         data.append(df_)
     
+    pbar = tqdm(itertools.product(n_estimators, max_depth, min_samples_split, 
+                                  min_samples_leaf, max_features, bootstrap), 
+                total=total, desc="[TRF:] Model Training")
+    
     for c in pbar:
         ne=c[0]
         md=c[1]
@@ -129,7 +154,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
         mf=c[4]
         bs=c[5]
 
-        filename = os.path.join(dir_validation, 'randomforest-{}-{}-{}-{}-{}-{}-{}.csv'.format(                                                                                    ne, md, mss, msl, mf, bs, features) )
+        filename = os.path.join(dir_validation, 'randomforest-'+concat_params()+'.csv'.format(                                                                                    ne, md, mss, msl, mf, bs, features) )
 
 #            print('this directory {} does not exist'.format(dir_validation))
 #            break
@@ -139,7 +164,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
         else:
 #            print('Creating model...')
 #            print(filename)
-            pbar.set_postfix_str('ne_{}-md_{}-mss_{}-msl_{}-mf_{}-bs_{}'.format(                                                                                    ne, md, mss, msl, mf, bs))
+            pbar.set_postfix_str(print_params('ne, md, mss, msl, mf, bs', ne, md, mss, msl, mf, bs))
 
             RF = rf.RFClassifier(n_estimators=ne,
                                  max_depth=md,
@@ -158,14 +183,16 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
             if save_results:
                 validation_report.to_csv(filename, index=False)
             
-            validation_report['ne']= ne
-            validation_report['md']= md
-            validation_report['mss']= mss
-            validation_report['msl']= msl
-            validation_report['mf']= mf
-            validation_report['bs']= str(bs)
-            validation_report['feature']= str(features)
-            data.append(validation_report)
+            #validation_report['ne']= ne
+            #validation_report['md']= md
+            #validation_report['mss']= mss
+            #validation_report['msl']= msl
+            #validation_report['mf']= mf
+            #validation_report['bs']= str(bs)
+            #validation_report['feature']= str(features)
+            #data.append(validation_report)
+            data.append( update_report(validation_report, 'ne, md, mss, msl, mf, bs, features', 
+                                       ne, md, mss, msl, mf, str(bs), str(features)) )
 
             RF.free()
 
@@ -208,7 +235,8 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
 #       bs = bootstrap[0]
         
 
-    filename = os.path.join(dir_evaluation, 'eval_randomforest-{}-{}-{}-{}-{}-{}-{}.csv'.format(ne, md, mss, msl, mf, bs, features) )
+    filename = os.path.join(dir_evaluation, 'eval_randomforest-'+
+                            concat_params(ne, md, mss, msl, mf, bs, features)+'.csv')
 
     print("[TRF:] Filename: {}.".format(filename))
 
