@@ -93,3 +93,6 @@ methods/tuler/.ipynb_checkpoints/BITULER-checkpoint.py
 methods/tuler/.ipynb_checkpoints/TULVAE-checkpoint.py
 methods/xgboost/.ipynb_checkpoints/001_Create_XGBoost_model_BRIGHTKITE-checkpoint.py
 methods/xgboost/.ipynb_checkpoints/XGBoost-checkpoint.py
+.ipynb_checkpoints/README-checkpoint.md
+methods/deepest/.DS_Store
+methods/xgboost/.DS_Store
