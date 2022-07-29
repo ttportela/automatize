@@ -21,18 +21,18 @@ The present application offers a tool, called AutoMATize, to support the user in
 
 ### Available Classifiers:
 
-* **TEC**: Trajectory Ensemble Classifier
-* **MLP (Movelet)**:
-* **RF (Movelet)**:
-* **SVN (Movelet)**:
-* **NN (POI-S)**:
-* **MARC**:
-* **RF**:
-* **XGBost**:
-* **TULER**:
-* **TULVAE**:
-* **DEEPEST**:
-* **MainTUL**:
+* **TEC**: Trajectory Ensemble Classifier [REFERENCE*]
+* **MLP (Movelet)**: Multilayer-Perceptron (MLP) with movelets features. The models were implemented using the Python language, with the keras, fully-connected hidden layer of 100 units, Dropout Layer with dropout rate of 0.5, learning rate of 10−3 and softmax activation function in the Output Layer. Adam Optimization is used to avoid the categorical cross entropy loss, with 200 of batch size, and a total of 200 epochs per training. [REFERENCE*]
+* **RF (Movelet)**: Random Forest (RF) with movelets features, that consists of an ensemble of 300 decision trees. The models were implemented using the Python language, with the keras. [REFERENCE*]
+* **SVN (Movelet)**: Support Vector Machine (SVM) with movelets features. The models were implemented using the Python language, with the keras, linear kernel and default structure. Other structure details are default settings. [REFERENCE*]
+* **POI-S**: Frequency-based method to extract features of trajectory datasets (TF-IDF approach), the method runs one dimension at a time (or more if concatenated). The models were implemented using the Python language, with the keras. [REFERENCE*]
+* **MARC**: Uses word embeddings for trajectory classification. It encapsulates all trajectory dimensions: space, time and semantics, and uses them as input to a neural network classifier, and use the geoHash on the spatial dimension, combined with others. The models were implemented using the Python language, with the keras. [REFERENCE*]
+* **TRF**: Random Forest for trajectory data (TRF). Find the optimal set of hyperparameters for each model, applying the grid-search technique: varying number of trees (ne), the maximum number of features to consider at every split (mf), the maximum number of levels in a tree (md), the minimum number of samples required to split a node (mss), the minimum number of samples required at each leaf node (msl), and finally, the method of selecting samples for training each tree (bs). [REFERENCE*]
+* **XGBost**: Find the optimal set of hyperparameters for each model, applying the grid-search technique:  number of estimators (ne), the maximum depth of a tree (md), the learning rate (lr), the gamma (gm), the fraction of observations to be randomly samples for each tree (ss), the sub sample ratio of columns when constructing each tree (cst), the regularization parameters (l1) and (l2). [REFERENCE*]
+* **BITULER**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). [REFERENCE*]
+* **TULVAE**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es), the dropout (dp), and latent variable (z). [REFERENCE*]
+* **DEEPEST**: DeepeST employs a Recurrent Neural Network (RNN), both LSTM and Bidirectional LSTM (BLSTM). Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). [REFERENCE*]
+* **MainTUL**: [REFERENCE*]
 
 ### Installation
 
@@ -48,8 +48,8 @@ To use Automatize as a python library, find examples in this sample Jupyter Note
 
 By installing the package the following python scripts will be installed for use in system command line tools:
 
-* `MAT-Classifier-All.py`, `MAT-Classifier-MLP.py`, and `Classifier-MLP_RF.py`:
-* `POIS-Classifier.py`:
+* `MAT-TC.py`, and `MAT-MC.py`
+* `POIS-TC.py`:
 * `MARC.py`:
 * `MAT-TEC.py`:
 
