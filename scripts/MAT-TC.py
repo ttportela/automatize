@@ -29,7 +29,8 @@ def parse_args():
     parse.add_argument('-ds', '--dataset', type=str, default='specific', help='dataset name')
     parse.add_argument('-c', '--classifiers', type=str, default='TRF', help='classifiers methods')
     parse.add_argument('-s', '--save', type=bool, default=True, help='save results')
-    parse.add_argument('-r', '--random', type=int, default=None, help='save results')
+    parse.add_argument('-r', '--random', type=int, default=1, help='random seed')
+    parse.add_argument('-gh', '--geohash', type=int, default=True, help='use GeoHash encoding for spatial aspects')
 
     args = parse.parse_args()
     config = vars(args)
@@ -43,6 +44,8 @@ res_path  = config["results-path"]
 prefix    = config["dataset"]
 
 save_results = config["save"]
+random    = config["random"]
+geohash    = config["geohash"]
 
 classifiers  = config["classifiers"].split(',')
 

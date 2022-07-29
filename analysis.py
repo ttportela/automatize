@@ -19,7 +19,7 @@ from .methods.movelet.classification import *
 # --------------------------------------------------------------------------------
 # from PACKAGE_NAME.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
 # --------------------------------------------------------------------------------
-def ACC4All(res_path, dataset, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
+def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
                    data_path=''):
 #     import os
 # #     import sys
@@ -33,7 +33,7 @@ def ACC4All(res_path, dataset, save_results = True, modelfolder='model', classif
     filelist = []
     filesList = []
     
-    for files in glob.glob(os.path.join(res_path, dataset, "**", "*.txt")):
+    for files in glob.glob(os.path.join(res_path, res_folder, "**", "*.txt")):
         fileName, fileExtension = os.path.splitext(files)
         method = os.path.basename(fileName)#[:-4]
         path = os.path.dirname(fileName)#[:-len(method)]

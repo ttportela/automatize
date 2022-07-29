@@ -401,7 +401,8 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             print(pyshel('MergeDatasets', prog_path, pyname)+' "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             if doacc :
 #                 print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
-                print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'" "MLP,RF"') #MLP_RF
+                #print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'" "MLP,RF"') #MLP_RF
+                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
@@ -409,7 +410,8 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         elif doacc and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
             print('# --------------------------------------------------------------------------------------')
 #             print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
-            print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'" "'+MNAME+'" "MLP,RF"') #MLP_RF
+            #print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'" "'+MNAME+'" "MLP,RF"') #MLP_RF
+            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')

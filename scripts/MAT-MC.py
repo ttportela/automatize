@@ -14,35 +14,40 @@ sys.path.insert(0, os.path.abspath('.'))
 
 from automatize.main import display
 from automatize.analysis import ACC4All
-from automatize.results import results2df
+#from automatize.results import results2df
 
 # def_random_seed(random_num=1, seed_num=1)
 
-if len(sys.argv) < 2:
-    print('Please run as:')
-    print('\tpython MAT-MC.py', 'res_path', 'prefix', '[OPTIONAL:', 'classifiers_list', 'modelfolder]')
-    print('OR as:')
-    print('\tpython MAT-MC.py', 'res_path', 'prefix', '"MLP,RF,SVM"', '/modelfolder')
-    exit()
-    
-    
-res_path = sys.argv[1]
-prefix   = sys.argv[2]
-classifiers=['MLP', 'RF', 'SVM']
+import argparse
 
-save_results = True
-modelfolder='model'
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-if len(sys.argv) > 3:
-    classifiers = sys.argv[3].split(',')
-    
-if len(sys.argv) > 4:
-    modelfolder  = sys.argv[4]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='MAT Movelets Classification')
+    parse.add_argument('results-path', type=str, help='path for the results folder')
+    parse.add_argument('folder', type=str, help='dataset name')
+    parse.add_argument('-c', '--classifiers', type=str, default='MLP,RF,SVM', help='classifiers methods')
+    parse.add_argument('-s', '--save', type=bool, default=True, help='save results')
+    parse.add_argument('-r', '--random', type=int, default=1, help='random seed')
+    parse.add_argument('-m', '--modelfolder', type=int, default='model', help='model folder')
 
-print('Starting analysis in: ', res_path, prefix)
-ACC4All(res_path, prefix, save_results, modelfolder, classifiers=classifiers)
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
 
-# print('Results for: ', res_path, prefix)
+res_path  = config["results-path"]
+folder    = config["folder"]
 
-# df = results2df(res_path, '**', prefix)
-# display(df)
+save_results = config["save"]
+modelfolder  = config["modelfolder"]
+random       = config["random"] # TODO
+
+classifiers  = config["classifiers"].split(',')
+
+ACC4All(res_path, folder, save_results, modelfolder, classifiers=classifiers)

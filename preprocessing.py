@@ -87,15 +87,21 @@ def readAttributes(desc_file):
 def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', label_col='label', file=False):
     
     if isinstance(df, list):
+        cols = {x: deftype for x in df}
+    elif isinstance(df, dict):
         cols = df
     else:
-        cols = list(df.columns)
+        cols = descTypes(df)
+    
+    if 'tid' not in cols.keys() or label_col not in cols.keys():
+        aux = {'tid': 'numeric', label_col: 'nominal'}
+        cols = {**aux, **cols}
             
     if version == 1:
         s = '{\n   "readsDesc": [\n'
 
         order = 1
-        for f in cols:
+        for f, deftype in cols.items():
             s += ('	{\n          "order": '+str(order)+',\n          "type": "'+deftype+'",\n          "text": "'+f+'"\n        }')
             if len(cols) == order:
                 s += ('\n')
@@ -108,7 +114,7 @@ def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', 
         s += ('      "featureComparisonDesc": [\n')
 
         order = 1
-        for f in cols:
+        for f, deftype in cols.items():
             if f != 'tid' and f != label_col:
                 s += ('			{\n			  "distance": "'+defcomparator+'",\n			  "maxValue": -1,\n			  "text": "'+f+'"\n			}')
                 if len(cols) == order:
@@ -121,14 +127,14 @@ def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', 
         s += ('      "featureComparisonDesc": [\n			{\n			  "distance": "euclidean",\n			  "text": "points"\n')
         s += ('			}\n		]\n    }\n}')
     else:        
-        s  = '{\n   "input": {\n          "train": ["train"],\n          "test": ["test"],\n          "format": "CZIP",\n'
+        s  = '{\n   "input": {\n          "train": ["train"],\n          "test": ["test"],\n          "format": "CSV",\n'
         s += '          "loader": "interning"\n   },\n'
-        s += '   "idFeature": {\n          "order": '+str(cols.index('tid')+1)+',\n          "type": "numeric",\n          "text": "tid"\n    },\n'
-        s += '   "labelFeature": {\n          "order": '+str(cols.index(label_col)+1)+',\n          "type": "nominal",\n          "text": "label"\n    },\n'
+        s += '   "idFeature": {\n          "order": '+str(list(cols.keys()).index('tid')+1)+',\n          "type": "numeric",\n          "text": "tid"\n    },\n'
+        s += '   "labelFeature": {\n          "order": '+str(list(cols.keys()).index(label_col)+1)+',\n          "type": "nominal",\n          "text": "label"\n    },\n'
         s += '   "attributes": [\n'
         
         order = 1
-        for f in cols:
+        for f, deftype in cols.items():
             if f != 'tid' and f != label_col:
                 s += '	    {\n	          "order": '+str(order)+',\n	          "type": "'+deftype+'",\n	          "text": "'+str(f)+'",\n	          "comparator": {\n	            "distance": "'+defcomparator+'"\n	          }\n	    }'
                 if len(cols) == order:

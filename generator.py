@@ -10,7 +10,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 from .main import importer #, display
-importer(['S', 'generator', 'tqdm'], globals(), {'preprocessing': ['writeFile']})
+importer(['S', 'generator', 'tqdm'], globals(), {'preprocessing': ['writeFile', 'printFeaturesJSON']})
 
 #import math
 #import random
@@ -28,7 +28,8 @@ def scalerSamplerGenerator(
     fileprefix='scalability',
     cols_for_sampling = ['space','time','day','rating','price','weather','root_type','type'],
     save_to=None,
-    base_data=None):
+    base_data=None,
+    save_desc_files=True):
     '''
     [Function to generate trajectory datasets based on real data.]
 
@@ -56,6 +57,8 @@ def scalerSamplerGenerator(
             Output filename prefix (default 'train')
         base_data [DataFrame]: 
             DataFrame of trajectoris to use as base for sampling data (default 'assets/examples/Foursquare_Example.csv')
+        save_desc_files [bool]: 
+            True if to save the .json description files or False, if not to save (default True)
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -65,7 +68,7 @@ def scalerSamplerGenerator(
     assert Ms[0] > 0, 'M > 0'
     assert Cs[0] > 0, 'C > 0'
     assert Ls[0] > 0, 'L > 0'
-    assert Ns[0] >= C, 'N >= C'
+    assert Ns[0] >= Cs[0], 'N >= C'
     assert save_to, 'save_to param must be set.'
     
     # Random Seed
@@ -100,6 +103,10 @@ def scalerSamplerGenerator(
             
         samplerGenerator(miN, miM, miC, random_seed, prefix, cols, save_to, df)
         pbar.update(1)
+        
+        if save_to and save_desc_files:
+            printFeaturesJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ ".json"))
+            printFeaturesJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ "_hp.json"))
         
         if i < Ls[1]-1:
             df_ = df[cols].copy()
@@ -238,7 +245,8 @@ def scalerRandomGenerator(
     random_seed=1,
     fileprefix='scalability',
     attr_desc=None,
-    save_to=None):
+    save_to=None,
+    save_desc_files=True):
     '''
     [Function to generate trajectory datasets based on real data.]
 
@@ -263,6 +271,8 @@ def scalerRandomGenerator(
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
             Output filename prefix (default 'train')
+        save_desc_files [bool]: 
+            True if to save the .json description files or False, if not to save (default True)
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -272,7 +282,7 @@ def scalerRandomGenerator(
     assert Ms[0] > 0, 'M > 0'
     assert Cs[0] > 0, 'C > 0'
     assert Ls[0] > 0, 'L > 0'
-    assert Ns[0] >= C, 'N >= C'
+    assert Ns[0] >= Cs[0], 'N >= C'
     assert save_to, 'save_to param must be set.'
     
     # Random Seed
@@ -306,6 +316,10 @@ def scalerRandomGenerator(
     for i in La:        
         randomGenerator(miN, miM, i, miC, random_seed, prefix, generators, save_to)
         pbar.update(1)
+        
+        if save_to and save_desc_files:
+            printFeaturesJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ ".json"))
+            printFeaturesJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ "_hp.json"))
     
     # 2 -  Scale trajectories, fixed points, attributes, and classes
     prefix = fileprefix + '_N'
