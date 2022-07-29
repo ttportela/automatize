@@ -355,7 +355,7 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
         df['space'] = df["lat"] + ' ' + df["lon"]
 
         if columns_order is not None:
-            columns_order.insert(columns_order.index('lon'), 'space')
+            columns_order.insert(columns_order.index('lon')-1, 'space')
             
     elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
         if 'lat_lon' in df.columns:
@@ -368,8 +368,8 @@ def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
         df["lon"]= ll[1]
         
         if columns_order is not None:
-            columns_order.insert(columns_order.index('space')+1, 'lat')
-            columns_order.insert(columns_order.index('space')+2, 'lon')
+            columns_order.insert(columns_order.index('space'), 'lat')
+            columns_order.insert(columns_order.index('space')+1, 'lon')
     
     # For Columns ordering:
     if columns_order is None:
@@ -494,7 +494,7 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
     
     return ktrain, ktest
         
-def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
+def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_columns=None, desc_cols=None, outformat='zip', opSuff=''):
     if outformat == 'zip':
         # WRITE ZIP >> FOR MASTERMovelets:
         df2zip(data_path, df, file, tid_col, class_col, select_cols=columns_order,\
@@ -507,7 +507,7 @@ def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_column
     elif outformat == 'mat':
         # WRITE MAT Files >> FOR HiPerMovelets:
         df2mat(df, data_path, file, cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
-               opLabel='Writing - MAT|' + opSuff)
+               desc_cols=desc_cols, opLabel='Writing - MAT|' + opSuff)
         
 def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
     # WRITE Train

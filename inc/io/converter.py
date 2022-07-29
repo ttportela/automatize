@@ -291,7 +291,7 @@ def df2mat(df, folder, file, cols=None, mat_cols=None, desc_cols=None, label_col
         
     if not desc_cols:
         # dictionary in the format: {'aspectName': 'type', 'aspectName': 'type'}
-        desc_cols = {k: 'numeric' if np.issubdtype(df.dtypes[k], np.number) else 'nominal' for k in df.columns}    
+        desc_cols = descTypes(df)    
     f.write('@aspectDescriptor ' + (','.join(':'.join((key,val)) for (key,val) in desc_cols.items())) + '\n')
     
     if other_dsattrs:
@@ -337,5 +337,18 @@ def mat2df(folder, file, cols=None, class_col = 'label', tid_col='tid', missing=
         url = os.path.join(folder, file)
     else:
         url = os.path.join(folder, file+'.mat')
-        
+
+# --------------------------------------------------------------------------------
+def descTypes(df):
+    def getType(k, t):
+        if t == 'category':
+            return 'nominal'
+        elif t is int or t is float or np.issubdtype(t, np.number):
+            return 'numeric'
+        elif 'space' in k or 'lat_lon' in k:
+            return 'space2d'
+        else:
+            return 'nominal'
+            
+    return {k: getType(k, df.dtypes[k]) for k in df.columns}
     

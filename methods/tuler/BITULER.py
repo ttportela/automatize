@@ -229,11 +229,12 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                 
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
+            
+        end_time = time.time()
+        print('[BITULER:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
     else:
         print('[BITULER:] Model previoulsy built.')
         
     print('\n--------------------------------------\n')
-    end_time = time.time()
-    print('[BITULER:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
 
 

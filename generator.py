@@ -47,8 +47,9 @@ def scalerSamplerGenerator(
             List of 2 values: starting number, number of elements (default [2, 10])
         random_seed [int]: 
             Random Seed (default 1)
-        cols_for_sampling [list]: 
+        cols_for_sampling [list] or [dict]: 
             Columns to add in the generated dataset (default 'lat_lon,time,day,rating,price,weather,root_type,type')
+            OR if use dictionary in the format: {'aspectName': 'type', 'aspectName': 'type'} when broviding base_data and saving .MAT
         save_to [str, bool]: 
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
@@ -60,19 +61,18 @@ def scalerSamplerGenerator(
         [pandas.DataFrame] the generated dataset
     '''
     
+    assert Ns[0] > 0, 'N > 0'
+    assert Ms[0] > 0, 'M > 0'
+    assert Cs[0] > 0, 'C > 0'
+    assert Ls[0] > 0, 'L > 0'
+    assert Ns[0] >= C, 'N >= C'
     assert save_to, 'save_to param must be set.'
     
     # Random Seed
     np.random.seed(seed=random_seed)
     random.seed(random_seed)
     
-    if base_data is None:
-        base_data = os.path.join(os.path.dirname(__file__), 'assets', 'examples', 'Foursquare_Example.csv')
-        df = pd.read_csv(base_data).dropna()
-        df = df.rename(columns={"lat_lon": "space"})
-        df = df[cols_for_sampling]
-    else:
-        df = base_data
+    df, cols_for_sampling, desc_cols = getSamplingData(base_data, cols_for_sampling)
     
     pbar = tqdm(range(Ns[1] + Ms[1] + Ls[1] + Cs[1]))
     
@@ -104,7 +104,10 @@ def scalerSamplerGenerator(
         if i < Ls[1]-1:
             df_ = df[cols].copy()
             df_ = df_.add_suffix('_'+str(i+1))
+            
             cols = cols + list(df_.columns)
+            
+            
             df = pd.concat([df, df_], axis=1)
     
     # 2 -  Scale trajectories, fixed points, attributes, and classes
@@ -162,19 +165,16 @@ def samplerGenerator(
         [pandas.DataFrame] the generated dataset
     '''
     
+    assert N > 0, 'N > 0'
+    assert M > 0, 'M > 0'
+    assert C > 0, 'C > 0'
+    assert N >= C, 'N >= C'
+    
     # Random Seed
     np.random.seed(seed=random_seed)
     random.seed(random_seed)
     
-    if base_data is None:
-        base_data = os.path.join(os.path.dirname(__file__), 'assets', 'examples', 'Foursquare_Example.csv')
-        df = pd.read_csv(base_data).dropna()
-        df = df.rename(columns={"lat_lon": "space"})
-    else:
-        df = base_data
-    
-    cats = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    df['day'] = pd.Categorical(df['day'], categories=cats, ordered=True)
+    df, cols_for_sampling, desc_cols = getSamplingData(base_data, cols_for_sampling)
     
     #cols_for_sampling = ['lat_lon','time','day','price','weather','type']
     df_for_sampling = df[cols_for_sampling]
@@ -202,12 +202,33 @@ def samplerGenerator(
         filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(len(cols_for_sampling)),'attrs',str(C),'labels'])
         
         for outType in outformats:
-            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType)
+            writeFile(save_to, new_df, filename, 'tid', 'label', ['tid', 'label']+cols_for_sampling, None, desc_cols, outType)
         #filename += '.csv'
         #new_df.to_csv( os.path.join(save_to, filename), index=False)
 
     return new_df
 
+def getSamplingData(base_data, cols_for_sampling):
+    if base_data is None:
+        base_data = os.path.join(os.path.dirname(__file__), 'assets', 'examples', 'Foursquare_Example.csv')
+        df = pd.read_csv(base_data).dropna()
+        df = df.rename(columns={"lat_lon": "space"})
+    
+        cats = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        df['day'] = pd.Categorical(df['day'], categories=cats, ordered=True)
+        
+        desc_cols = {'space':'space2d', 'time':'time', 'day':'nominal', 'rating':'numeric', 'price':'numeric', 
+                     'weather':'nominal', 'root_type':'nominal', 'type':'nominal'}
+    else:
+        df = base_data
+        
+        if type(cols_for_sampling) is dict:
+            desc_cols = cols_for_sampling.copy()
+            cols_for_sampling = list(cols_for_sampling.keys())
+        else:
+            desc_cols = None
+
+    return df, cols_for_sampling, desc_cols
 
 def scalerRandomGenerator(
     Ns=[100, 10],
@@ -247,6 +268,11 @@ def scalerRandomGenerator(
         [pandas.DataFrame] the generated dataset
     '''
     
+    assert Ns[0] > 0, 'N > 0'
+    assert Ms[0] > 0, 'M > 0'
+    assert Cs[0] > 0, 'C > 0'
+    assert Ls[0] > 0, 'L > 0'
+    assert Ns[0] >= C, 'N >= C'
     assert save_to, 'save_to param must be set.'
     
     # Random Seed
@@ -323,7 +349,7 @@ def randomGenerator(
             Number of classes (default 10)
         random_seed [int]: 
             Random Seed (default 1)
-        attr_desc [list]: 
+        attr_desc [list of dict]: 
             Data type intervals to generate attributes as list of desciptive dicts (default 'default_types()')
             OR a list of instances of AttributeGenerator
         save_to [str, bool]: 
@@ -336,6 +362,12 @@ def randomGenerator(
     Returns:
         [pandas.DataFrame] the generated dataset
     '''
+    
+    assert N > 0, 'N > 0'
+    assert M > 0, 'M > 0'
+    assert L > 0, 'L > 0'
+    assert C > 0, 'C > 0'
+    assert N >= C, 'N >= C'
     
     # Random Seed
     np.random.seed(seed=random_seed)
@@ -369,8 +401,10 @@ def randomGenerator(
             
         filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(L),'attrs',str(C),'labels'])
         
+        desc_cols = {g.name: g.descType() for g in generators}
+        
         for outType in outformats:
-            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType)
+            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType, desc_cols)
         #filename += '.csv'
         #new_df.to_csv( os.path.join(save_to, filename), index=False)
 
@@ -453,6 +487,14 @@ class AttributeGenerator:
             self.generator = NumericGenerator(method, interval[0], interval[1], precision)
         elif atype in ['space']:
             self.generator = SpatialGrid2D(interval[0], interval[1], cellSize, adjacents, precision)
+    
+    def descType(self):
+        if self.atype in ['nominal', 'day', 'weather', 'poi', 'category']:
+            return 'nominal'
+        elif self.atype in ['space']:
+            return 'space2d'
+        else:
+            return self.atype
     
     def next(self):
         return self.generator.next()

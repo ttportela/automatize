@@ -98,14 +98,17 @@ Feel free to contribute in any form, such as scientific publications referencing
 - [scikit-mobility](https://github.com/scikit-mobility/scikit-mobility): Human trajectory representation and visualizations in Python;
 - [geopandas](https://geopandas.org/en/stable/): Library to help work with geospatial data in Python;
 - [movingpandas](https://anitagraser.github.io/movingpandas/): Based on `geopandas` for movement data exploration and analysis.
+- [PyMove](https://github.com/InsightLab/PyMove): a Python library for processing and visualization of trajectories and other spatial-temporal data.
 
 ### Change Log
 
 This is a more complete and second version of the previous package [Automatise](https://github.com/ttportela/automatise). 
  
+*Nov. 2022:*
  - New Classifier: **Trajectory Ensemble Classifier (TEC)** - an ensemble classifier for trajectory data based in POIS, MARC and movelets methods;
  - [POI-F](https://doi.org/10.1145/3341105.3374045) extension: **POIS** is an extension to the POI-F method capable of concatenating dimensions and sequences for trajectory classification. Available for the methods `poi`, `npoi`, and `wnpoi`.
+ - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest*
  
  *TODO*:
  - New visualization tools: 
- - New classification methods: *TULVAE, TULER, MAINTUL, DEEPEST, XGBOOST, RANDOM FORREST*
+ - New classification methods: MainTUL*

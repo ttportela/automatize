@@ -97,3 +97,5 @@ methods/xgboost/.ipynb_checkpoints/XGBoost-checkpoint.py
 methods/deepest/.DS_Store
 methods/xgboost/.DS_Store
 methods/tec/models/.ipynb_checkpoints/poifreq-checkpoint.py
+inc/io/.DS_Store
+.ipynb_checkpoints/citation-checkpoint.bib

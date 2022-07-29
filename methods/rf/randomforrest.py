@@ -275,9 +275,10 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
                 
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
+            
+        end_time = time.time()
+        print('[TRF:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
     else:
         print('[TRF:] Model previoulsy built.')
         
     print('\n--------------------------------------\n')
-    end_time = time.time()
-    print('[TRF:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
