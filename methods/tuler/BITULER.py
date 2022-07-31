@@ -47,7 +47,7 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import Tuler as tul
     from methods._lib.datahandler import loadTrajectories
-    from methods._lib.utils import *
+    from methods._lib.utils import update_report, print_params, concat_params
     
     dir_validation = os.path.join(res_path, 'BITULER-'+prefix, 'validation')
     dir_evaluation = os.path.join(res_path, 'BITULER-'+prefix)
@@ -56,7 +56,8 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
-                                                                          y_one_hot_encodding=False)
+                                                                          y_one_hot_encodding=False,
+                                                                          data_preparation=2)
     assert (len(X) > 2), "[BITULER:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
@@ -97,6 +98,7 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     def getParamData(f):
         marksplit = '-'
         df_ = pd.read_csv(f)
+        f = f[f.find('bituler-'):]
         df_['nn']=   f.split(marksplit)[1]
         df_['un']=     f.split(marksplit)[2]
         df_['st']=     f.split(marksplit)[3]
@@ -184,11 +186,11 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     lr = float(df_result.iloc[model]['lr'])
     features
 
-    filename = dir_evaluation + 'eval_bituler-'+concat_params(nn, un, st, dp, es, bs, epoch, pat, mon, lr, features)+'.csv'
+    filename = os.path.join(dir_evaluation, 'eval_bituler-'+concat_params(nn, un, st, dp, es, bs, epoch, pat, mon, lr, features)+'.csv')
 
     print("[BITULER:] Filename: {}.".format(filename))
 
-    if not path.exists(filename):
+    if not os.path.exists(filename):
         print('[BITULER:] Creating a model to test set')
         print("[BITULER:] Parameters: " + print_params('nn, un, st, dp, es, bs, epoch, pat, mon, lr, features',
                                               nn, un, st, dp, es, bs, epoch, pat, mon, lr, features) )

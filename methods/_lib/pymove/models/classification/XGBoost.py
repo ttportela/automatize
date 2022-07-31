@@ -1,11 +1,11 @@
 import pandas as pd
 import time
 import xgboost as xgb
-from pymove.models import metrics
-from tqdm import tqdm_notebook as tqdm
-from keras.preprocessing.sequence import pad_sequences
+from automatize.methods._lib.pymove.models import metrics
+from tqdm.auto import tqdm
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
-from pymove.core import video as vi
+from automatize.methods._lib.pymove.core import video as vi
 
 class XGBoostClassifier(object):
     
@@ -56,7 +56,7 @@ class XGBoostClassifier(object):
             X_val,
             y_val, 
             loss='merror', 
-            early_stopping_rounds=10, 
+            #early_stopping_rounds=10, 
             verbose=True):
         
         assert (loss == 'merror') | (loss == 'mlogloss'), "ERRO: invalid loss, set loss as mlogloss or merror"    
@@ -65,7 +65,7 @@ class XGBoostClassifier(object):
         print('... Training model...\n')
         self.model.fit(X_train, y_train, 
                       eval_set=eval_set, 
-                      early_stopping_rounds=early_stopping_rounds,
+                      #early_stopping_rounds=early_stopping_rounds,
                       eval_metric=loss, #mlogloss or merror
                       verbose=verbose) 
         

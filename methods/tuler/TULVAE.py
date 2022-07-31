@@ -46,10 +46,11 @@ from main import importer
 def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, label_poi='poi'):
     
     importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    from sklearn.preprocessing import LabelEncoder
     from methods._lib.pymove.core import utils
-    from methods._lib.pymove.models.classification import XGBoost as xg
+    from methods._lib.pymove.models.classification import Tulvae as tva
     from methods._lib.datahandler import loadTrajectories
-    from methods._lib.utils import *
+    from methods._lib.utils import update_report, print_params, concat_params
     
     dir_validation = os.path.join(res_path, 'TULVAE-'+prefix, 'validation')
     dir_evaluation = os.path.join(res_path, 'TULVAE-'+prefix)
@@ -58,7 +59,8 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
-                                                                          y_one_hot_encodding=False)
+                                                                          y_one_hot_encodding=False,
+                                                                          data_preparation=2)
     assert (len(X) > 2), "[TULVAE:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
@@ -79,10 +81,11 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
     #df_val['day'] = le.transform(df_val['day'])
     #df_test['day'] = le.transform(df_test['day'])
     
-    le = LabelEncoder()
-    X_train['day'] = le.fit_transform(X_train['day'])
-    X_val['day'] = le.fit_transform(X_val['day'])
-    X_test['day'] = le.fit_transform(X_test['day'])
+    #if 'day' in X_train.columns:
+    #    le = LabelEncoder()
+    #    X_train['day'] = le.fit_transform(X_train['day'])
+    #    X_val['day'] = le.fit_transform(X_val['day'])
+    #    X_test['day'] = le.fit_transform(X_test['day'])
 
 
     ## ## Get trajectories
@@ -100,7 +103,7 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
 
 
     # ## GRID SEARCH TO TULER
-    num_classes = dic_parameters['num_classes']
+    #num_classes = dic_parameters['num_classes']
     max_lenght = dic_parameters['max_lenght']
     vocab_size = dic_parameters['vocab_size'][label_poi] #['poi']
     rnn= ['bilstm']
@@ -130,6 +133,7 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
     def getParamData(f):
         marksplit = '-'
         df_ = pd.read_csv(f)
+        f = f[f.find('tulvae-'):]
         df_['nn']=   f.split(marksplit)[1]
         df_['un']=     f.split(marksplit)[2]
         df_['st']=     f.split(marksplit)[3]
@@ -160,7 +164,7 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
         mon=c[9]
         lr=c[10]
 
-        filename = os.path.join(dir_validation, 'tuvae-'+
+        filename = os.path.join(dir_validation, 'tulvae-'+
                                 concat_params(nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features)+'.csv')
 
         if os.path.exists(filename):
@@ -170,40 +174,40 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
 
             pbar.set_postfix_str(print_params('nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr',
                                              nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr))
-            try:
-                tulvae = tva.TulvaeClassier(max_lenght=max_lenght,    
-                            num_classes=num_classes,
-                            vocab_size=vocab_size,
-                            rnn_units=un,
-                            dropout=dp,
-                            embedding_size=es,
-                            z_values=zv,
-                            stack=st)
+            #try:
+            tulvae = tva.TulvaeClassier(max_lenght=max_lenght,    
+                        num_classes=num_classes,
+                        vocab_size=vocab_size,
+                        rnn_units=un,
+                        dropout=dp,
+                        embedding_size=es,
+                        z_values=zv,
+                        stack=st)
 
-                tulvae.fit(X_train, y_train,
-                            X_val, y_val,
-                            batch_size=bs,
-                            epochs=epoch,
-                            learning_rate=lr,
-                            save_model=False,
-                            save_best_only=False,
-                            save_weights_only=False)
+            tulvae.fit(X_train, y_train,
+                        X_val, y_val,
+                        batch_size=bs,
+                        epochs=epoch,
+                        learning_rate=lr,
+                        save_model=False,
+                        save_best_only=False,
+                        save_weights_only=False)
 
-                validation_report, y_pred = tulvae.predict(X_val, y_val)
-                
-                if save_results:
-                    validation_report.to_csv(filename, index=False)
-                    
-                
-                data.append( update_report(validation_report, 'nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features',
-                                           nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features) )
-                    
-                tulvae.free()
-            except:
-                print('[TULVAE:] Error training - '+
-                      print_params('nn, un, st, dp, es, zv, bs,epoch, pat, mon, lr',
-                                   nn, un, st, dp, es, zv, bs,epoch, pat, mon, lr))
-                pass
+            validation_report, y_pred = tulvae.predict(X_val, y_val)
+
+            if save_results:
+                validation_report.to_csv(filename, index=False)
+
+
+            data.append( update_report(validation_report, 'nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features',
+                                       nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features) )
+
+            tulvae.free()
+            #except:
+            #    print('[TULVAE:] Error training - '+
+            #          print_params('nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr',
+            #                       nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr))
+            #    #pass
 
 
     df_result = pd.concat(data)
@@ -223,11 +227,11 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
     mon = df_result.iloc[model]['mon']
     lr = float(df_result.iloc[0]['lr'])
 
-    filename = dir_evaluation + 'eval_tuvae-'+concat_params(nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features)+'.csv'
+    filename = os.path.join(dir_evaluation, 'eval_tuvae-'+concat_params(nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features)+'.csv')
 
     print("[TULVAE:] Filename: {}.".format(filename))
 
-    if not path.exists(filename):
+    if not os.path.exists(filename):
         print('[TULVAE:] Creating a model to test set')
         print("[TULVAE:] Parameters: " + print_params('nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features',
                                               nn, un, st, dp, es, zv, bs, epoch, pat, mon, lr, features) )

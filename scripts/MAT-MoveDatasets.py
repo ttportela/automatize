@@ -17,14 +17,25 @@ import glob2 as glob
 # importer(['S', 'mergeDatasets'], globals())
 from automatize.run import moveResults
 
-if len(sys.argv) < 1:
-    print('Please run as:')
-    print('\tMergeDatasets.py', 'PATH TO FOLDER')
-    print('Example:')
-    print('\tMergeDatasets.py', '"./results/HiPerMovelets"')
-    exit()
+import argparse
 
-results_path = sys.argv[1]
+def parse_args():
+    """[This is a function used to parse command line arguments]
+
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Move train.csv/test.csv from subdirecoty to the path')
+    parse.add_argument('path', type=str, help='path for the results folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["path"]
 
 dir_from = os.path.dirname(glob.glob(os.path.join(results_path, '**', 'train.csv'))[0])
 # print(os.path.dirname(glob.glob(os.path.join(results_path, '**', 'train.csv'))[0]))

@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib as plt
 import matplotlib.pyplot as plt
 
-from tqdm import tqdm_notebook as tqdm
+from tqdm.auto import tqdm
 from geojson import Feature, FeatureCollection
 from shapely.geometry import Polygon
 from geojson import Polygon as jsonPolygon
 import pickle
 
-from pymove.processing import trajutils
+from automatize.methods._lib.pymove.processing import trajutils
 
 
 """main labels """

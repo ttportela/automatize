@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from tqdm.auto import tqdm
 #from keras.preprocessing.sequence import pad_sequences
-from keras_preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from automatize.methods._lib.pymove.models import metrics
 
 class RFClassifier(object):

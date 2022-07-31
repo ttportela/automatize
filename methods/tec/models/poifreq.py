@@ -19,8 +19,11 @@ importer(['S'], globals())
 ## CLASSIFIER:
 ### Run Before: poifreq(sequences, dataset, features, folder, result_dir, method='npoi')
 ## --------------------------------------------------------------------------------------------
-def model_poifreq(dir_path):
-    importer(['S', 'POIS'], globals())
+def model_poifreq(dir_path, METHOD='npoi', METRICS_FILE=None, RESULTS_FILE=None, random_seed=1):
+    importer(['S', 'POIS', 'random'], globals())
+
+    np.random.seed(random_seed)
+    random.seed(random_seed)
 
     keep_prob = 0.5
 
@@ -31,7 +34,7 @@ def model_poifreq(dir_path):
     BASELINE_VALUE = 0.5
     BATCH_SIZE = 64
     EPOCHS = 250
-    METHOD = 'npoi'
+    #METHOD = 'npoi'
     
     (num_features, num_classes, labels,
             x_train, y_train,
@@ -41,10 +44,11 @@ def model_poifreq(dir_path):
 
     print('[POI-S:] Building Neural Network')
     
-    METRICS_FILE = os.path.join(os.path.dirname(dir_path), 'metrics', 'POIFREQ-metrics.csv')
+    if not METRICS_FILE:
+        METRICS_FILE = os.path.join(os.path.dirname(dir_path), 'POIFREQ-metrics.csv')
 
-    if not os.path.exists(os.path.join(os.path.dirname(dir_path), 'metrics')):
-            os.makedirs(os.path.join(os.path.dirname(dir_path), 'metrics'))
+    if not os.path.exists(os.path.join(os.path.dirname(METRICS_FILE))):
+        os.makedirs(os.path.join(os.path.dirname(METRICS_FILE)))
     metrics = MetricsLogger().load(METRICS_FILE)
 
     print('keep_prob =', keep_prob)
@@ -139,9 +143,12 @@ def model_poifreq(dir_path):
               callbacks=[EpochLogger(metric=BASELINE_METRIC,
                                      baseline=BASELINE_VALUE), hist])
     
-    print(METRICS_FILE)
+    #print(METRICS_FILE)
     df = pd.read_csv(METRICS_FILE)
-    f = open(os.path.join(os.path.dirname(dir_path), METHOD+'_results.txt'), 'a+')
+    
+    if not RESULTS_FILE:
+        RESULTS_FILE = os.path.join(os.path.dirname(dir_path), METHOD+'_results.txt')
+    f = open(RESULTS_FILE, 'a+')
     print('------------------------------------------------------------------------------------------------', file=f)
 #     print(f"Method: {METHOD} | Dataset: {DATASET}", file=f)
     print(f"Acc: {np.array(df['test_acc'])[-EARLY_STOPPING_PATIENCE]} ", file=f)
@@ -152,7 +159,7 @@ def model_poifreq(dir_path):
     print('------------------------------------------------------------------------------------------------', file=f)
     f.close()
     
-    print('[POI-FREQ:] OK')
+    print('[POI-S:] OK')
     
 #     print(labels)
     

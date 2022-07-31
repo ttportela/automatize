@@ -44,7 +44,7 @@ def f1_tensorflow_macro(y_true, y_pred):
 
 def precision_macro(y_true, y_pred):
     proc_y_pred = _process_pred(y_pred)
-    return precision_score(y_true, proc_y_pred, average='macro')
+    return precision_score(y_true, proc_y_pred, average='macro', zero_division=1)
 
 
 def recall_macro(y_true, y_pred):

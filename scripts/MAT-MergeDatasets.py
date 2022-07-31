@@ -16,15 +16,25 @@ sys.path.insert(0, os.path.abspath('.'))
 # importer(['S', 'mergeDatasets'], globals())
 from automatize.run import mergeDatasets
 
-if len(sys.argv) < 1:
-    print('Please run as:')
-    print('\tMergeDatasets.py', 'PATH TO FOLDER')
-    print('Example:')
-    print('\tensemble-cls.py', '"./results/HiPerMovelets"')
-    exit()
+import argparse
 
-results_path = sys.argv[1]
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Merge train.csv/test.csv class files for classifier input')
+    parse.add_argument('results-path', type=str, help='path for the results folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["results-path"]
 
 mergeDatasets(results_path, 'train.csv')
 mergeDatasets(results_path, 'test.csv')

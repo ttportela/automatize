@@ -322,43 +322,33 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset=dsvar, num_runs=1,\
                      movelets_line=movelets_line, poif_line=poif_line)
     elif 'TC-' in method:
-        #if 'samples' in params:
-        #    print('# --------------------------------------------------------------------------------------')
-        #    print('for SAMPLE in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['samples']+1)]) )
-        #    print('do')
-        #    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+MNAME+'" -c "'+method.split('-')[1]+'" -r "${SAMPLE}" "'+data+'" "'+results+'/run${FOLD}"')
-        #    print('done')
-        #    print('# --------------------------------------------------------------------------------------')
-        #    print()
+        if 'rounds' in params:
+            print('# --------------------------------------------------------------------------------------')
+            print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
+            print('do')
+            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" -r ${ROUND} "'+data+'" "'+results+'/rand${ROUND}"')
+            print('done')
+            print('# --------------------------------------------------------------------------------------')
+            print()
 
-        #else:
-        print('# --------------------------------------------------------------------------------------')
-        print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" "'+data+'" "'+results+'"')
-        print()
+        else:
+            print('# --------------------------------------------------------------------------------------')
+            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" "'+data+'" "'+results+'"')
+            print()
     else:
         prefix = None
         
         if method == 'MARC':
             train_file = dsvar+"_train.csv" if '_ts' not in data else dsvar+"_TRAIN.ts"
             test_file  = dsvar+"_test.csv"  if '_ts' not in data else dsvar+"_TEST.ts"
+            
             MARC(data, results, prefix, MNAME, print_only=print_only, prg_path=prog_path, #os.path.join(prog_path, PACKAGE_NAME,'marc'), 
-                 pyname=pyname, extra_params=GIG+' '+THREADS, train=train_file, test=test_file)
+                 pyname=pyname, train=train_file, test=test_file) # , extra_params='--no-gpu -M '+GIG+' -T '+THREADS
 
 
         elif 'poi' in method: #method == 'npoi' or method == 'poi' or method == 'wnpoi':
             POIFREQ(data, results, prefix, dsvar, params['sequences'], params['features'], method, print_only=print_only, pyname=pyname, prg_path=prog_path, or_methodsuffix=dsvar if '_ts' not in data else 'specific', or_folder_alias=MNAME)
-
-
-    #     elif 'super' in method:                    
-    #         Movelets(data, results, prefix, mname+'-'+var, json+'_hp',\
-    #                    Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, \
-    #                    print_only=print_only, jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
-
-    #     elif 'master' in method:                    
-    #         Movelets(data, results, prefix, mname+'-'+var, json+'_hp', \
-    #                    Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, \
-    #                    print_only=print_only, jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
-
+            
 
         elif 'SM' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
@@ -400,9 +390,14 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 #             print(pyname+' '+package_scripts+'/MergeDatasets.py "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             print(pyshel('MergeDatasets', prog_path, pyname)+' "'+results+'/${FOLD}/'+MNAME+'"') #MERGE
             if doacc :
-#                 print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'/${FOLD}" "'+MNAME+'"') #MLP_RF
-                #print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'/${FOLD}" "'+MNAME+'" "MLP,RF"') #MLP_RF
-                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+                if 'rounds' in params:
+                    print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
+                    print('do')
+                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                    print('done')
+                    print()
+                else:
+                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
@@ -411,7 +406,14 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             print('# --------------------------------------------------------------------------------------')
 #             print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
             #print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'" "'+MNAME+'" "MLP,RF"') #MLP_RF
-            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+            if 'rounds' in params:
+                    print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
+                    print('do')
+                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                    print('done')
+                    print()
+                else:
+                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')

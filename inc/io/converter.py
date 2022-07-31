@@ -341,7 +341,7 @@ def mat2df(folder, file, cols=None, class_col = 'label', tid_col='tid', missing=
 # --------------------------------------------------------------------------------
 def descTypes(df):
     def getType(k, t):
-        if t == 'category':
+        if t.name == 'category':
             return 'nominal'
         elif t is int or t is float or np.issubdtype(t, np.number):
             return 'numeric'

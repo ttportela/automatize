@@ -59,7 +59,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     
     importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
     from methods._lib.datahandler import loadTrajectories
-    from methods._lib.utils import *
+    from methods._lib.utils import update_report, print_params, concat_params
 
 #    paper = 'SAC'
 #    dataset = 'brightkite' #['fousquare_nyc', 'brightkite', 'foursquare_global', gowalla,'criminal_id', 'criminal_activity']
@@ -114,8 +114,8 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     max_depth = [int(x) for x in np.linspace(20, 40, num = 3)] # Maximum number of levels in tree
     min_samples_split =  [2, 5, 10] # Minimum number of samples required to split a node
     min_samples_leaf =  [1, 2, 4] # Minimum number of samples required at each leaf node
-    max_features= [None, 'sqrt', 'log2'] #['auto', 'sqrt'] # Number of features to consider at every split 
-    # Tarlis: max_features 'auto' is deprecated, replaced ['auto', 'sqrt'] with: [None, 'sqrt', 'log2'] ?
+    max_features= ['sqrt', 'log2'] #['auto', 'sqrt'] # Number of features to consider at every split 
+    # Tarlis: max_features 'auto' is deprecated, replaced ['auto', 'sqrt'] with: ['sqrt', 'log2'] ?
     bootstrap =  [True, False] # Method of selecting samples for training each tree
     
     #verbose = 1
@@ -154,7 +154,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
         mf=c[4]
         bs=c[5]
 
-        filename = os.path.join(dir_validation, 'randomforest-'+concat_params()+'.csv'.format(                                                                                    ne, md, mss, msl, mf, bs, features) )
+        filename = os.path.join(dir_validation, 'randomforest-'+concat_params(ne, md, mss, msl, mf, bs, features)+'.csv')
 
 #            print('this directory {} does not exist'.format(dir_validation))
 #            break
@@ -257,7 +257,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
                             min_samples_leaf=msl,
                             max_features=mf,
                             bootstrap=bs,
-                            random_state=e,
+                            random_state=(random_state+e),
                             verbose=verbose,
                             n_jobs=n_jobs)
 

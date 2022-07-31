@@ -18,23 +18,30 @@ sys.path.insert(0, os.path.abspath('.'))
 from automatize.main import display
 from automatize.results import results2df
 
-# print(len(sys.argv))
-if len(sys.argv) < 2:
-    print('Please run as:')
-    print('\tPrintResults.py', '"PATH TO FOLDER"', '"METHOD"', '"MODEL_FOLDER"')
-    print('Example:')
-    print('\tPrintResults.py', '"./results/method"', '"hiper*"', '"model"')
-    exit()
+import argparse
 
-results_path = sys.argv[1]
-method = "*"
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-if len(sys.argv) > 2:
-    method = sys.argv[2]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Check and print results as human readable')
+    parse.add_argument('results-path', type=str, help='path for the results folder')
     
-modelfolder = 'model'
-if len(sys.argv) > 3:
-    modelfolder = sys.argv[3]
+    parse.add_argument('-f', '--method', type=str, default='*', help='method folder')
+    parse.add_argument('-m', '--modelfolder', type=str, default='model', help='model folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["results-path"]
+method          = config["method"]
+modelfolder     = config["modelfolder"]
 
 dirr = os.path.join(results_path)
 #coringa = ""

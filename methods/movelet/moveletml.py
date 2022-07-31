@@ -10,7 +10,9 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 @author: Carlos Andres Ferreira (adapted)
 '''
-from .main import importer #, display
+import sys, os 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from main import importer #, display
 importer(['S', 'K'], globals())
 
 def Approach1(X_train, y_train, X_test, y_test, par_batch_size, par_epochs, par_lr, par_dropout, save_results, dir_path, modelfolder='model') :

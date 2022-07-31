@@ -4,18 +4,18 @@ import time
 from os import path
 from datetime import datetime
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from tqdm import tqdm_notebook as tqdm
-from keras.layers import Dense, Lambda, LSTM, GRU, Bidirectional, Concatenate, Add, Average, Embedding, Dropout, Input
-from keras.initializers import he_normal, he_uniform
-from keras.models import Model, load_model
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from keras.optimizers import RMSprop, Adam
-from keras.preprocessing.sequence import pad_sequences
-from keras.layers import Input, ConvLSTM2D, BatchNormalization, RepeatVector, Conv2D
-from keras.regularizers import l1
-from keras import backend as K
-from pymove.models import metrics
-from pymove.processing import trajutils
+from tqdm.auto import tqdm
+from tensorflow.keras.layers import Dense, Lambda, LSTM, GRU, Bidirectional, Concatenate, Add, Average, Embedding, Dropout, Input
+from tensorflow.keras.initializers import he_normal, he_uniform
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from tensorflow.keras.optimizers import RMSprop, Adam
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import Input, ConvLSTM2D, BatchNormalization, RepeatVector, Conv2D
+from tensorflow.keras.regularizers import l1
+from tensorflow.keras import backend as K
+from automatize.methods._lib.pymove.models import metrics
+from automatize.methods._lib.pymove.processing import trajutils
 
 
 
@@ -112,6 +112,7 @@ class TulvaeClassier(object):
                 # customizar callback deepest
                 #https://www.tensorflow.org/guide/keras/custom_callback
             print('... Starting training')
+            print(X_val, y_val)
             self.history = self.model.fit(X_train, 
                                         y_train,
                                         epochs=epochs,

@@ -14,18 +14,100 @@ import sys, os
 sys.path.insert(0, os.path.abspath('.'))
 from automatize.methods.marc.marc_nn import marc
 
-if len(sys.argv) < 8:
-    print('Please run as:')
-    print('\tpython MARC.py', 'TRAIN_FILE', 'TEST_FILE', 'RESULTS_FILE', 'DATASET_NAME', 'EMBEDDING_SIZE', 'MERGE_TYPE', 'RNN_CELL')
-    exit()
-    
-METHOD = 'OURS'
-TRAIN_FILE = sys.argv[1]
-TEST_FILE = sys.argv[2]
-METRICS_FILE = sys.argv[3]
-DATASET = sys.argv[4]
-EMBEDDER_SIZE = int(sys.argv[5])
-MERGE_TYPE = sys.argv[6].lower()
-RNN_CELL = sys.argv[7].lower()
+import argparse
 
-marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL)
+def parse_args():
+    """[This is a function used to parse command line arguments]
+
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='MARC Trajectory Classification')
+    parse.add_argument('train-file', type=str, help='path for the train dataset file')
+    parse.add_argument('test-file', type=str, help='path for the train dataset file')
+    parse.add_argument('metrics-file', type=str, help='path for the resulting metrics file')
+    parse.add_argument('-d', '--dataset', type=str, default='specific', help='dataset name (for output purposes)')
+    parse.add_argument('-e', '--embedding-size', type=int, default=100, help='the embedding size (default 100)')
+    parse.add_argument('-m', '--merge-tipe', type=str, default='concatenate', help='the merge type (add, average, [concatenate])')
+    parse.add_argument('-c', '--rnn-cell', type=str, default='lstm', help='the RNN cell type ([lstm], gru)')
+    
+    parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
+    
+    #parse.add_argument('--gpu', action=argparse.BooleanOptionalAction, default=True, help='Use GPU devices, or False for CPU')    
+    #parse.add_argument('-M', '--ram', type=int, default=-1, help='Limit RAM memory GB (not implemented)')
+    #parse.add_argument('-T', '--njobs', type=int, default=-1, help='Limit number of threads, and no GPU (not implemented)')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+METHOD        = 'OURS'
+TRAIN_FILE    = config["train-file"]
+TEST_FILE     = config["test-file"]
+METRICS_FILE  = config["metrics-file"]
+DATASET       = config["dataset"]
+EMBEDDER_SIZE = config["embedding_size"]
+MERGE_TYPE    = config["merge_tipe"].lower()
+RNN_CELL      = config["rnn_cell"].lower()
+
+random_seed   = config["seed"]
+
+#GPU           = config["gpu"]
+#GIG           = config["ram"]
+#THR           = config["njobs"]
+
+#from tensorflow.python.client import device_lib
+#print([x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU'])
+#print([x.name for x in device_lib.list_local_devices() if x.device_type == 'CPU'])
+
+#import tensorflow as tf
+#
+#if THR > 0:
+#    tf.config.threading.set_intra_op_parallelism_threads(THR)
+#    tf.config.threading.set_inter_op_parallelism_threads(THR)
+#
+#with tf.device('/device:GPU:0' if GPU else '/device:CPU:0'):       
+    
+marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
+
+
+    
+# TODO: Configuring environment
+# -----------------------------------------------------------------------------------
+# # Limit Threads?:
+# if THR > 0:
+#     print('Limiting MARC to', str(THR), ' Threads') #  and no GPU
+
+#     import tensorflow
+#     os.environ['CUDA_VISIBLE_DEVICES']='-1'
+#     os.environ["OMP_NUM_THREADS"] = str(THR)
+#     tensorflow.config.threading.set_inter_op_parallelism_threads(THR)
+
+#     GPU = False
+
+# # Limit MEMORY?:
+# if GIG > 0:
+#     print('Limiting MARC to', str(GIG), 'G')
+
+#     GIG = GIG*1073741824
+#     import resource
+#     soft, hard = resource.getrlimit(resource.RLIMIT_DATA)
+#     resource.setrlimit(resource.RLIMIT_DATA, (GIG, hard))
+
+
+# NO GPU, run on CPU:
+#if gpu == False:
+#    print('> GPU set to disable')
+#    os.environ['CUDA_VISIBLE_DEVICES']='-1'
+#print(os.environ['CUDA_VISIBLE_DEVICES'], tf.test.is_gpu_available())
+#import tensorflow as tf
+#if tf.test.gpu_device_name():
+#    print('> GPU found!')
+#    if gpu == False:
+#        exit()
+#else:
+#    print("> GPU not found.")
+# ----------------------------------------------------------------------------------- 

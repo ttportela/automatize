@@ -20,7 +20,7 @@ from .methods.movelet.classification import *
 # from PACKAGE_NAME.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
 # --------------------------------------------------------------------------------
 def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
-                   data_path=''):
+                   data_path='', random_seed=1):
 #     import os
 # #     import sys
 #     import numpy as np
@@ -40,13 +40,13 @@ def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', clas
         todo = not os.path.exists( os.path.join(path, modelfolder) )
         empty = not os.path.exists( os.path.join(path, "train.csv") )
         if todo and not empty:
-            ClassifyByMovelet(path, '', '', data_path, save_results, modelfolder, classifiers)
+            ClassifyByMovelet(path, '', '', data_path, save_results, modelfolder, classifiers, random_seed)
         else:
             print(method + (" Done." if not empty else " Empty."))
             
 # ----------------------------------------------------------------------------------
 def ClassifyByMovelet(res_path, dataset, dir_path, data_path='', 
-             save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM']):
+             save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'], random_seed=1):
 #     import os
 # #     import sys
 # #     import numpy as np
@@ -56,6 +56,10 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
 # #     def_random_seed(random_num, seed_num)
 #     from ..main import importer
 #     importer(['S'], locals())
+
+    importer(['random'], globals())
+    np.random.seed(seed=random_seed)
+    random.set_seed(random_seed)
     
     dir_path = os.path.join(res_path, dataset, dir_path)
     times = {'SVM': [0], 'RF': [0], 'MLP': [0], 'TEC': [0]}
@@ -88,7 +92,8 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
             
 # ----------------------------------------------------------------------------------
 def ClassifyByTrajectory(res_path, data_path, prefix=None,
-             save_results=True, classifiers=['MARC', 'POIS', 'TRF', 'TXGB', 'TULVAE', 'BITULER', 'DST']):
+                         save_results=True, classifiers=['MARC', 'POIS', 'TRF', 'TXGB', 'TULVAE', 'BITULER', 'DST'],
+                         random_seed=1, geohash=False):
 
     prefix = prefix if prefix else 'specific'
 
@@ -99,7 +104,7 @@ def ClassifyByTrajectory(res_path, data_path, prefix=None,
             
         marc('OURS', train_file, test_file, \
              os.path.join(res_folder, 'MARC-'+prefix+'_results.csv'), \
-             prefix, 100, "concatenate", "lstm")
+             prefix, 100, "concatenate", "lstm", random_seed=random_seed) # geohash always true
     
     if 'POIS' in classifiers:
         from automatize.methods.pois.poifreq import poifreq
@@ -110,23 +115,23 @@ def ClassifyByTrajectory(res_path, data_path, prefix=None,
 
     if 'TRF' in classifiers:
         from automatize.methods.rf.randomforrest import TrajectoryRF
-        TrajectoryRF(data_path, res_path, prefix, save_results)
+        TrajectoryRF(data_path, res_path, prefix, save_results, random_state=random_seed)
 
     if 'TXGB' in classifiers:
         from automatize.methods.xgboost.XGBoost import TrajectoryXGBoost
-        TrajectoryXGBoost(data_path, res_path, prefix, save_results)
+        TrajectoryXGBoost(data_path, res_path, prefix, save_results, random_state=random_seed)
 
     if 'TULVAE' in classifiers:
         from automatize.methods.tuler.TULVAE import TrajectoryTULVAE
-        TrajectoryTULVAE(data_path, res_path, prefix, save_results)
+        TrajectoryTULVAE(data_path, res_path, prefix, save_results, random_state=random_seed)
 
     if 'BITULER' in classifiers:
         from automatize.methods.tuler.BITULER import TrajectoryBITULER
-        TrajectoryBITULER(data_path, res_path, prefix, save_results)
+        TrajectoryBITULER(data_path, res_path, prefix, save_results, random_state=random_seed)
 
     if 'DST' in classifiers:
         from automatize.methods.deepest.DeepestST import TrajectoryDeepestST
-        TrajectoryDeepestST(data_path, res_path, prefix, save_results)
+        TrajectoryDeepestST(data_path, res_path, prefix, save_results, random_state=random_seed)
             
 # ----------------------------------------------------------------------------------
 #def MLP(res_path, prefix, dir_path, save_results = True, modelfolder='model'):

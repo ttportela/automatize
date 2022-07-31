@@ -28,7 +28,7 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import XGBoost as xg
     from methods._lib.datahandler import loadTrajectories
-    from methods._lib.utils import *
+    from methods._lib.utils import update_report, print_params, concat_params
     
     dir_validation = os.path.join(res_path, 'TXGB-'+prefix, 'validation')
     dir_evaluation = os.path.join(res_path, 'TXGB-'+prefix)
@@ -73,6 +73,7 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     def getParamData(f):
         marksplit = '-'
         df_ = pd.read_csv(f)
+        f = f[f.find('xgboost-'):]
         df_['ne']=   f.split(marksplit)[1]
         df_['md']=     f.split(marksplit)[2]
         df_['lr']=     f.split(marksplit)[3]
@@ -128,8 +129,8 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                         y_train, 
                         X_val,
                         y_val,
-                        loss=loss, 
-                        early_stopping_rounds=epch)
+                        loss=loss)#, 
+                        #early_stopping_rounds=epch)
 
             validation_report, y_pred = xgboost.predict(X_val, y_val)
 
@@ -168,15 +169,15 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     loss = df_result.iloc[model]['loss']
     epch = int(df_result.iloc[model]['epoch'])
 
-    filename = dir_evaluation + 'eval_xgboost-'+\
-        concat_params(ne, md, lr, gm, ss, cst, l1, l2, loss, epch, features)+'.csv'
+    filename = os.path.join(dir_evaluation, 'eval_xgboost-'+\
+        concat_params(ne, md, lr, gm, ss, cst, l1, l2, loss, epch, features)+'.csv')
 
     print("[TXGB:] Filename: {}.".format(filename))
 
-    if not path.exists(filename):
+    if not os.path.exists(filename):
         print('[TXGB:] Creating a model to test set')
-        print("[TXGB:] Parameters: " + print_params('ne, md, mss, msl, mf, bs, features',
-                                              ne, md, mss, msl, mf, bs, features) )
+        print("[TXGB:] Parameters: " + print_params('ne, md, lr, gm, ss, cst, l1, l2, loss, epch, features',
+                                              ne, md, lr, gm, ss, cst, l1, l2, loss, epch, features) )
 
         evaluate_report = []
         rounds = 10
@@ -199,8 +200,8 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                         y_train, 
                         X_val,
                         y_val,
-                        loss=loss, 
-                        early_stopping_rounds=epch)
+                        loss=loss)#, 
+                        #early_stopping_rounds=epch)
 
             #evaluate_report.append(xgboost.predict(X_test, y_test))
             eval_report, y_pred = xgboost.predict(X_test, y_test)

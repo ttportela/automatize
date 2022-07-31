@@ -30,9 +30,10 @@ def parse_args():
     parse.add_argument('results-path', type=str, help='path for the results folder')
     parse.add_argument('folder', type=str, help='dataset name')
     parse.add_argument('-c', '--classifiers', type=str, default='MLP,RF,SVM', help='classifiers methods')
-    parse.add_argument('-s', '--save', type=bool, default=True, help='save results')
+    parse.add_argument('-m', '--modelfolder', type=str, default='model', help='model folder')
+    
     parse.add_argument('-r', '--random', type=int, default=1, help='random seed')
-    parse.add_argument('-m', '--modelfolder', type=int, default='model', help='model folder')
+    parse.add_argument('--save', action=argparse.BooleanOptionalAction, default=True, help='save results')
 
     args = parse.parse_args()
     config = vars(args)
@@ -50,4 +51,4 @@ random       = config["random"] # TODO
 
 classifiers  = config["classifiers"].split(',')
 
-ACC4All(res_path, folder, save_results, modelfolder, classifiers=classifiers)
+ACC4All(res_path, folder, save_results, modelfolder, classifiers=classifiers, random_seed=random_seed)

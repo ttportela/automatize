@@ -16,17 +16,25 @@ import glob2 as glob
 
 from automatize.results import containErrors, containWarnings
 
-# from main import importer
-# importer(['S', 'glob', 'containErrors', 'containWarnings'], globals())
+import argparse
 
-if len(sys.argv) < 1:
-    print('Please run as:')
-    print('\tResultsTo.py', 'PATH TO RESULTS')
-    print('Example:')
-    print('\tResultsTo.py', '"./results"')
-    exit()
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-results_path = sys.argv[1]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Chek result files for erros, warnings, and count classes.')
+    parse.add_argument('results-path', type=str, help='path for the results folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["results-path"]
 
 path = os.path.join(results_path, '**', '*.txt' )
 

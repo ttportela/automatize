@@ -108,6 +108,7 @@ This is a more complete and second version of the previous package [Automatise](
  - New Classifier: **Trajectory Ensemble Classifier (TEC)** - an ensemble classifier for trajectory data based in POIS, MARC and movelets methods;
  - [POI-F](https://doi.org/10.1145/3341105.3374045) extension: **POIS** is an extension to the POI-F method capable of concatenating dimensions and sequences for trajectory classification. Available for the methods `poi`, `npoi`, and `wnpoi`.
  - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest*
+ - Scripts for classification refactored to command line best practices, and implemented random seed parameter to all methods for reproductibility purposes.
  
  *TODO*:
  - New visualization tools: 

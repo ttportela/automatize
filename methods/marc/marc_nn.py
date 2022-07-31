@@ -11,7 +11,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Lucas May Petry
 '''
 import sys, os 
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('.')) # TODO fix imports
 
 ###############################################################################
 #from core.logger import Logger
@@ -25,7 +25,7 @@ from datetime import datetime
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 #from core.utils.geohash import bin_geohash
 from automatize.methods._lib.geohash import bin_geohash
-
+  
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, GRU, Dropout
@@ -34,8 +34,8 @@ from tensorflow.keras.regularizers import l1
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Input, Add, Average, Concatenate, Embedding
 from tensorflow.keras.callbacks import EarlyStopping
-#from core.utils.metrics import compute_acc_acc5_f1_prec_rec
-
+#from core.utils.metrics import compute_acc_acc5_f1_prec_rec 
+from tensorflow import random
 ###############################################################################
 from numpy import argmax
 from sklearn.metrics import classification_report
@@ -45,29 +45,13 @@ from automatize.preprocessing import readDataset
 
 # importer(['S', 'sys', 'datetime', 'encoding', 'MARC'], globals())
 
-# TODO:
-# # Limit Threads?:
-# if len(sys.argv) > 8:
-#     T = int(sys.argv[8])
-#     print('Limiting MARC to', str(T), ' Threads and no GPU')
+def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, 
+         save_results=True, random_seed=1):
 
-#     import tensorflow
-#     os.environ['CUDA_VISIBLE_DEVICES']='-1'
-#     os.environ["OMP_NUM_THREADS"] = str(T)
-#     tensorflow.config.threading.set_inter_op_parallelism_threads(T)
+    np.random.seed(seed=random_seed)
+    random.set_seed(random_seed)
+    #random.seed(random_seed)
     
-# # Limit MEMORY?:
-# if len(sys.argv) > 9:
-#     G = int(sys.argv[9])
-#     print('Limiting MARC to', str(G), 'G')
-
-#     G = G*1073741824
-#     import resource
-#     soft, hard = resource.getrlimit(resource.RLIMIT_DATA)
-#     resource.setrlimit(resource.RLIMIT_DATA, (G, hard))
-
-def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, save_results=True):
-
     logger = Logger()
 
     print("MARC Starting: building neural network for", METHOD, DATASET)

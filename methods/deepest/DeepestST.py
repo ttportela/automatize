@@ -50,7 +50,7 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import DeepestST as DST
     from methods._lib.datahandler import loadTrajectories
-    from methods._lib.utils import *
+    from methods._lib.utils import update_report, print_params, concat_params
     
     dir_validation = os.path.join(res_path, 'DST-'+prefix, 'validation')
     dir_evaluation = os.path.join(res_path, 'DST-'+prefix)
@@ -59,7 +59,8 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
-                                                                          y_one_hot_encodding=y_one_hot_encodding)
+                                                                          y_one_hot_encodding=y_one_hot_encodding,
+                                                                          data_preparation=2)
     assert (len(X) > 2), "[DST:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
@@ -114,7 +115,7 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     def getParamData(f):
         marksplit = '-'
         df_ = pd.read_csv(f)
-        f = f.split('deepest')[-1]
+        f = f[f.find('deepest-'):]
         df_['nn']= f.split(marksplit)[1]
         df_['un']= f.split(marksplit)[2]
         df_['mt']= f.split(marksplit)[3]
@@ -122,7 +123,7 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
         df_['dp_af']= f.split(marksplit)[5]
         df_['em_s']= f.split(marksplit)[6]
         df_['bs']= f.split(marksplit)[7]
-        df_['epch']= f.split(marksplit)[8]
+        df_['epoch']= f.split(marksplit)[8]
         df_['pat']= f.split(marksplit)[9]
         df_['mon']= f.split(marksplit)[10]
         df_['opt']= f.split(marksplit)[11]
@@ -217,7 +218,7 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     df_result = df_result[df_result['nn'] == 'lstm']
     df_result.reset_index(drop=True, inplace=True)
     df_result.sort_values('acc', ascending=False, inplace=True)
-
+    
     model = 0
     nn =  df_result.iloc[model]['nn']
     un =  int(df_result.iloc[model]['un'])
@@ -228,7 +229,7 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     em_s = int(df_result.iloc[model]['em_s'])
 
     bs = int(df_result.iloc[0]['bs'])
-    epoch = int(df_result.iloc[model]['epch'])
+    epoch = int(df_result.iloc[model]['epoch'])
     pat = float(df_result.iloc[model]['pat'])
     mon = df_result.iloc[model]['mon']
 
@@ -239,11 +240,12 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
 
     y_ohe = y_one_hot_encodding
 
-    filename = dir_evaluation + 'eval_deepest-'+ \
-        concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features)+'.csv'
+    filename = os.path.join(dir_evaluation, 'eval_deepest-'+ \
+        concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features)+'.csv')
+    
     print("[DST:] Filename: {}.".format(filename))
 
-    if not path.exists(filename):
+    if not os.path.exists(filename):
         print('[DST:] Creating a model to test set')
         print("[DST:] Parameters: " + print_params(
             'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features',

@@ -1,10 +1,10 @@
-from pymove.processing import trajutils
-from pymove.core import  utils as ut
+from automatize.methods._lib.pymove.processing import trajutils
+from automatize.methods._lib.pymove.core import  utils as ut
 import numpy as np
-import numpy as np
+#import numpy as np
 import pandas as pd
 import time
-from tqdm import tqdm_notebook as tqdm
+from tqdm.auto import tqdm
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 """main labels """

@@ -15,18 +15,27 @@ import pandas as pd
 import glob2 as glob
 import shutil
 
-# from main import importer
-# importer(['S', 'glob', 'shutil'], globals())
+import argparse
 
-if len(sys.argv) < 2:
-    print('Please run as:')
-    print('\tResultsTo.py', 'PATH TO RESULTS', 'DESTINATION')
-    print('Example:')
-    print('\tResultsTo.py', '"./results"', '"./simple_results"')
-    exit()
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-results_path = sys.argv[1]
-to_path    = sys.argv[2]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Move the metric result files (do not include data files)')
+    parse.add_argument('from-path', type=str, help='path for the results folder')
+    parse.add_argument('to-path', type=str, help='path for the results folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["from-path"]
+to_path         = config["to-path"]
 
 def getFiles(path):
     filesList = []
@@ -44,28 +53,6 @@ filesList = []
 for file in filelist:
     path = os.path.join(results_path, '**', file)
     filesList = filesList + getFiles(path)
-    
-# path = os.path.join(results_path, '**', '*.txt' )
-# filesList.append( getFiles(path) )
-# path = os.path.join(results_path, '**', 'model', '**')
-# filesList.append( getFiles(path) )
-
-
-# 1: Build up list of files:
-# import glob2 as glob
-# print("Looking for result files in " + path)
-# for files in glob.glob(path):
-#     fileName, fileExtension = os.path.splitext(files)
-#     filelist.append(fileName) #filename without extension
-#     filesList.append(files) #filename with extension
-
-
-# path = os.path.join(results_path, '**', 'model', '**')
-# print("Looking for result files in " + path)
-# for files in glob.glob(path):
-#     fileName, fileExtension = os.path.splitext(files)
-#     filelist.append(fileName) #filename without extension
-#     filesList.append(files) #filename with extension
 
 
 results_path = os.path.abspath(results_path)

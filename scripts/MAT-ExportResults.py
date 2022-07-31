@@ -16,17 +16,26 @@ import glob2 as glob
 import shutil
 import tarfile
 
-# from main import importer
-# importer(['S', 'glob', 'shutil'], globals())
+import argparse
 
-if len(sys.argv) < 2:
-    print('Please run as:')
-    print('\tExportResults.py', 'PATH TO RESULTS')
-    print('Example:')
-    print('\tExportResults.py', '"./results"')
-    exit()
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-results_path = sys.argv[1]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='Export and compress a .tgz archive of the metric result files (do not include data files)')
+    parse.add_argument('results-path', type=str, help='path for the results folder')
+
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+results_path    = config["results-path"]
+
 to_file    = os.path.join(results_path, os.path.basename(os.path.normpath(results_path))+'.tgz')
 
 def getFiles(path):

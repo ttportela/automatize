@@ -27,10 +27,13 @@ def parse_args():
     parse.add_argument('data-path', type=str, help='path for the dataset folder')
     parse.add_argument('results-path', type=str, help='path for the results folder')
     parse.add_argument('-ds', '--dataset', type=str, default='specific', help='dataset name')
-    parse.add_argument('-c', '--classifiers', type=str, default='TRF', help='classifiers methods')
-    parse.add_argument('-s', '--save', type=bool, default=True, help='save results')
+    parse.add_argument('-c', '--classifiers', type=str, default='MARC,TRF,TXGB,TULVAE,BITULER,DST', help='classifiers methods')
+    
     parse.add_argument('-r', '--random', type=int, default=1, help='random seed')
-    parse.add_argument('-gh', '--geohash', type=int, default=True, help='use GeoHash encoding for spatial aspects')
+    
+    parse.add_argument('--save', action=argparse.BooleanOptionalAction, default=True, help='save results')    
+    parse.add_argument('--geohash', action=argparse.BooleanOptionalAction, default=False, 
+                       help='use GeoHash encoding for spatial aspects (not implemented)')    
 
     args = parse.parse_args()
     config = vars(args)
@@ -50,4 +53,4 @@ geohash    = config["geohash"]
 classifiers  = config["classifiers"].split(',')
 
 print('Starting analysis in: ', res_path, prefix)
-ClassifyByTrajectory(res_path, data_path, prefix, save_results, classifiers=classifiers)
+ClassifyByTrajectory(res_path, data_path, prefix, save_results, classifiers=classifiers, random_seed=random, geohash=geohash)

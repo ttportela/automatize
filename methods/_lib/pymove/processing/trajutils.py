@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import time
 from scipy.interpolate import interp1d
-from tqdm import tqdm_notebook as tqdm
-from pymove.core import utils as ut
-from pymove.processing import gridutils
-from pymove.processing import segment
-from pymove.core import labels
+from tqdm.auto import tqdm
+from automatize.methods._lib.pymove.core import utils as ut
+from automatize.methods._lib.pymove.processing import gridutils
+from automatize.methods._lib.pymove.processing import segment
+from automatize.methods._lib.pymove.core import labels
 
 """main labels """
 dic_labels = labels.dic_labels

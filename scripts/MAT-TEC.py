@@ -17,25 +17,41 @@ from datetime import datetime
 # importer(['S', 'datetime', 'ClassifierEnsemble'], globals())
 from automatize.methods.tec.tec import TEC
 
-if len(sys.argv) < 4:
-    print('Please run as:')
-    print('\tMAT-TEC.py', 'PATH TO DATASET', 'PATH TO RESULTS_DIR', 'ENSEMBLES', 'DATASET')
-    print('Example:')
-    print('\tMAT-TEC.py', '"./data"', '"./results"', '"{\'movelets\': \'./movelets-res\', \'marc\': \'./data\', \'poifreq\': \'./poifreq-res\'}"', 'specific')
-    exit()
+import argparse
 
-data_path = sys.argv[1]
-results_path = sys.argv[2]
-ensembles = eval(sys.argv[3])
-dataset = sys.argv[4]
+def parse_args():
+    """[This is a function used to parse command line arguments]
 
-modelfolder='model-ensemble'
-if len(sys.argv) >= 5:
-    modelfolder = sys.argv[5]
+    Returns:
+        args ([object]): [Parse parameter object to get parse object]
+    """
+    parse = argparse.ArgumentParser(description='TEC Trajectory Ensemble Classification')
+    parse.add_argument('data-path', type=str, help='path for the dataset files')
+    parse.add_argument('result-path', type=str, help='path for the results files')
+    parse.add_argument('ensembles', type=str, help='dictionary of the ensembles')
+    parse.add_argument('-d', '--dataset', type=str, default='specific', help='dataset prefix name')
+    parse.add_argument('-m', '--model-folder', type=str, default='model-ensemble', help='the folder where to put classification results')
+    
+    parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
+    
+    args = parse.parse_args()
+    config = vars(args)
+    return config
+ 
+config = parse_args()
+#print(config)
+
+data_path    = config["data-path"]
+results_path = config["result-path"]
+ensembles    = eval(config["ensembles"])
+dataset      = config["dataset"]
+
+modelfolder  = config["model_folder"]
+random_seed   = config["seed"]
     
 time = datetime.now()
 
-TEC(data_path, results_path, ensembles, dataset, save_results=True, modelfolder=modelfolder)
+TEC(data_path, results_path, ensembles, dataset, save_results=True, modelfolder=modelfolder, random_seed=random_seed)
 
 time_ext = (datetime.now()-time).total_seconds() * 1000
 

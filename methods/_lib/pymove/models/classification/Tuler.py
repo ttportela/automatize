@@ -3,18 +3,18 @@ import numpy as np
 import time
 from os import path
 from datetime import datetime
-from keras.layers import Dense, LSTM, GRU, Bidirectional, Concatenate, Add, Average, Embedding, Dropout, Input
-from keras.initializers import he_normal, he_uniform
-from keras.models import Model, load_model
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from keras.optimizers import RMSprop, Adam
-from keras.preprocessing.sequence import pad_sequences
-from keras import backend as K
+from tensorflow.keras.layers import Dense, LSTM, GRU, Bidirectional, Concatenate, Add, Average, Embedding, Dropout, Input
+from tensorflow.keras.initializers import he_normal, he_uniform
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from tensorflow.keras.optimizers import RMSprop, Adam
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras import backend as K
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from tqdm import tqdm_notebook as tqdm
-from keras.regularizers import l1
-from pymove.models import metrics
-from pymove.processing import geoutils, trajutils
+from tqdm.auto import tqdm
+from tensorflow.keras.regularizers import l1
+from automatize.methods._lib.pymove.models import metrics
+from automatize.methods._lib.pymove.processing import geoutils, trajutils
 
 class BiTulerLSTM(object):
 

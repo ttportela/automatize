@@ -149,14 +149,13 @@ def MARC(data_folder, res_path, prefix, folder, train="train.csv", test="test.cs
     
     TRAIN_FILE   = os.path.join(data_folder, train)
     TEST_FILE    = os.path.join(data_folder, test)
-    DATASET_NAME = folder
+    DATASET_NAME = prefix if prefix != None else 'specific' # or the dataset name
     RESULTS_FILE = os.path.join(res_folder, folder + "_results.csv")
     OUTPUT_FILE  = '"' + os.path.join(res_folder, folder+'.txt') + '"'
     
-#     mkdir(os.path.join(res_path, prefix), print_only)
-        
-#     PROGRAM = os.path.join(prg_path, 'multi_feature_classifier.py')
-    CMD = pyshel('MARC', prg_path, pyname)+' "' + TRAIN_FILE + '" "' + TEST_FILE + '" "' + RESULTS_FILE + '" "' + DATASET_NAME + '" ' + str(EMBEDDING_SIZE) + ' ' + MERGE_TYPE + ' ' + RNN_CELL + ((' ' + extra_params) if extra_params else '')
+    #CMD = pyshel('MARC', prg_path, pyname)+' "' + TRAIN_FILE + '" "' + TEST_FILE + '" "' + RESULTS_FILE + '" "' + DATASET_NAME + '" ' + str(EMBEDDING_SIZE) + ' ' + MERGE_TYPE + ' ' + RNN_CELL + ((' ' + extra_params) if extra_params else '')
+    # New script version:
+    CMD = pyshel('MARC', prg_path, pyname)+' -d "' + DATASET_NAME + '" -e ' + str(EMBEDDING_SIZE) + ' -m ' + MERGE_TYPE + ' -c ' + RNN_CELL + ((' ' + extra_params) if extra_params else '') + ' "' + TRAIN_FILE + '" "' + TEST_FILE + '" "' + RESULTS_FILE + '"'
     
     if os.name == 'nt':
         tee = ' >> '+OUTPUT_FILE 
@@ -229,12 +228,12 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
     
         # RUN:
         CMD = pyshel('POIS', prg_path, pyname)+" "
-        CMD = CMD + "\""+method+"\" "
-        CMD = CMD + "\""+(','.join([str(n) for n in sequences]))+"\" "
-        CMD = CMD + "\""+(','.join(features))+"\" "
-        CMD = CMD + "\""+dataset+"\" "
-        CMD = CMD + "\""+data_folder+"\" "
-        CMD = CMD + "\""+res_folder+"\""
+        CMD = CMD + '-m "'+method+'" '
+        CMD = CMD + '-s "'+(','.join([str(n) for n in sequences]))+'" '
+        CMD = CMD + '-a "'+(','.join(features))+'" '
+        CMD = CMD + '-d "'+dataset+'" '
+        CMD = CMD + '-f "'+res_folder+'" '
+        CMD = CMD + '"'+data_folder+'"'
         
         if os.name == 'nt':
             CMD = CMD +  ' >> "'+outfile+'"'
@@ -246,13 +245,17 @@ def POIFREQ(data_folder, res_path, prefix, dataset, sequences, features, method=
         result_file = os.path.join(res_folder, method+'_'+result_name)#+'_'+ds_var)
         
         # Classification:
+        def printClassCMD(method, pois, res_folder):
+            print(pyshel('MATC-POIS', prg_path, pyname)+' -m "'+method+'" -p "'+pois+'" -f "'+method.upper()+'-'+pois+'" "'+res_folder+'" ')
         if doclass:
             for s in sequences:
                 pois = ('_'.join(features))+'_'+str(s)
-                print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+                printClassCMD(method, pois, res_folder)
+                #print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
                 
             pois = ('_'.join(features))+'_'+('_'.join([str(n) for n in sequences]))
-            print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
+            printClassCMD(method, pois, res_folder)
+            #print(pyshel('MATC-POIS', prg_path, pyname)+' "'+method+'" "'+pois+'" "'+res_folder+'" "'+method.upper()+'-'+pois+'"')
         
         return result_file
     else:
@@ -323,11 +326,11 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
     if print_only:
         if num_runs == 1:
             CMD = pyshel('TEC', prg_path, pyname)+" "
-            CMD = CMD + "\""+data_path+"\" "
-            CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
-            CMD = CMD + "\""+str(ensembles)+"\" "
-            CMD = CMD + "\""+dataset+"\" "
-            CMD = CMD + "\""+modelfolder+"\" "
+            CMD = CMD + '-d "'+dataset+'" '
+            CMD = CMD + '-m "'+modelfolder+'" '
+            CMD = CMD + '"'+data_path+'" '
+            CMD = CMD + '"'+os.path.join(results_path, ename)+'" '
+            CMD = CMD + '"'+str(ensembles)+'" '
             CMD = CMD + ' 2>&1 | tee -a "'+os.path.join(results_path, ename, modelfolder+'.txt')+'" '
             print(CMD)
             print('')
@@ -336,11 +339,18 @@ def Ensemble(data_path, results_path, prefix, ename, methods=['master','npoi','m
                 print('# Classifier TEC run-'+str(i))
 #                 print('mkdir -p "'+os.path.join(results_path, postfix, modelfolder))
                 CMD = pyshel('TEC', prg_path, pyname)+" "
-                CMD = CMD + "\""+data_path+"\" "
-                CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
-                CMD = CMD + "\""+str(ensembles)+"\" "
-                CMD = CMD + "\""+dataset+"\" "
-                CMD = CMD + "\""+modelfolder+'-'+str(i)+"\" "
+                CMD = CMD + '-d "'+dataset+'" '
+                CMD = CMD + '-m "'+modelfolder+'-'+str(i)+'" '
+                CMD = CMD + '-r '+str(i)+' '
+                CMD = CMD + '"'+data_path+'" '
+                CMD = CMD + '"'+os.path.join(results_path, ename)+'" '
+                CMD = CMD + '"'+str(ensembles)+'" '
+            
+                #CMD = CMD + "\""+data_path+"\" "
+                #CMD = CMD + "\""+os.path.join(results_path, ename)+"\" "
+                #CMD = CMD + "\""+str(ensembles)+"\" "
+                #CMD = CMD + "\""+dataset+"\" "
+                #CMD = CMD + "\""+modelfolder+'-'+str(i)+"\" "
                 CMD = CMD + ' 2>&1 | tee -a "'+os.path.join(results_path, ename, modelfolder+'-'+str(i)+'.txt')+'" '
 #                 CMD = CMD + " 2>&1 | tee -a \""+os.path.join(results_path, postfix, modelfolder, 'EC_results-'+modelfolder+'-'+str(i)+'.txt')+"\" "
                 print(CMD)

@@ -10,7 +10,10 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 @author: Francisco Vicenzi (adapted)
 '''
-    
+import sys, os 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from main import importer
+
 ## POI-F: POI Frequency
 def poi(df_train, df_test, possible_sequences, seq2idx, sequence, dataset, feature, result_dir=None, tid_col='tid', class_col='label'):
 #     from ..main import importer
@@ -220,7 +223,7 @@ def poifreq_all(sequence, dataset, feature, folder, result_dir, tid_col='tid', c
 ## By Tarlis: Run this first...
 ## --------------------------------------------------------------------------------------------
 def poifreq(sequences, dataset, features, folder, result_dir, method='npoi', save_all=False, doclass=True, tid_col='tid', class_col='label'):
-#     from ..main import importer
+#    from ..main import importer
     importer(['S', 'datetime'], globals(), {'preprocessing': ['dfVariance']})
 #     print('Dataset: {}, Feature: {}, Sequence: {}'.format(dataset, feature, sequence))
 #     from datetime import datetime

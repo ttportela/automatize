@@ -16,7 +16,7 @@ importer(['S'], globals())
 
 # --------------------------------------------------------------------------------
 # ANALYSIS By Ensemble Learning Models
-def TEC(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble'):
+def TEC(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble', random_seed=1):
 #     from ..main import importer
     importer(['S', 'datetime', 'tf', 'TEC.report', 'KerasClassifier', 'readDataset'], globals())
     
@@ -26,6 +26,9 @@ def TEC(data_path, results_path, ensembles, dataset='specific', save_results=Tru
 #     from datetime import datetime
 #     import tensorflow
     tf.keras.backend.clear_session()
+    
+    np.random.seed(seed=random_seed)
+    tf.random.set_seed(random_seed)
     
     print('[Ensemble]: Loading base data description.')
     if dataset == '':
@@ -155,7 +158,7 @@ def TEC(data_path, results_path, ensembles, dataset='specific', save_results=Tru
     print("---------------------------------------------------------------------------------")
     return time
 
-def TEC2(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble'):
+def TEC2(data_path, results_path, ensembles, dataset='specific', save_results=True, modelfolder='model_ensemble', random_seed=1):
 #     from ..main import importer
     importer(['S', 'datetime', 'tf', 'KerasClassifier', 'A2'], globals())
     # V2.0 - Concatenate data from POI-S and Movelets (pois, movelets)
@@ -165,6 +168,9 @@ def TEC2(data_path, results_path, ensembles, dataset='specific', save_results=Tr
 #     from datetime import datetime
 #     import tensorflow
     tf.keras.backend.clear_session()
+    
+    np.random.seed(seed=random_seed)
+    tf.random.set_seed(random_seed)
 
 #     from keras.wrappers.scikit_learn import KerasClassifier
     
