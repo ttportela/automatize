@@ -407,13 +407,13 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 #             print(pyname+' '+package_scripts+'/Classifier-MLP_RF.py "'+results+'" "'+MNAME+'"') #MLP_RF
             #print(pyshel(DEFAULT_MC, prog_path, pyname)+' "'+results+'" "'+MNAME+'" "MLP,RF"') #MLP_RF
             if 'rounds' in params:
-                    print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
-                    print('do')
-                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
-                    print('done')
-                    print()
-                else:
-                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
+                print('do')
+                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print('done')
+                print()
+            else:
+                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')

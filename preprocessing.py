@@ -34,7 +34,7 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
         df = pd.read_csv(url, na_values=missing)
     elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
         file = file.replace('.csv', '.zip')
-        df = convert_zip2csv(data_path, file, class_col=class_col)
+        df = zip2df(data_path, file, class_col=class_col)
     elif '.mat' in url or os.path.exists(url.replace('.csv', '.mat')):
         importer(['ts_io'], globals())
         url = url.replace('.csv', '.mat')

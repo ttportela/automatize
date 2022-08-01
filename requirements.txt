@@ -30,3 +30,4 @@ argparse
 mplleaflet
 traceback
 xgboost
+scikit-mobility

@@ -481,6 +481,14 @@ def get_stats(resfile, path, method, list_stats, modelfolder='model', show_warni
 #     importer(['S'], locals())
 
     stats = []
+    
+    # When no stats file is provided:
+    if not resfile:
+        for x in list_stats:
+            stats.append( 0 )
+        return stats
+    
+    # OR if a stats file is provided:
     data = read_csv(resfile)
     
     for x in list_stats:
@@ -700,16 +708,47 @@ def getResultFiles(res_path):
         return fl
        
     filesList = []
-    filesList = filesList + findFiles('classification_times.csv') # NN / RF / SVM
+    
+    # First try to find classification results:
+    #for f in findFiles('*-*.txt'):
+    #    fs = findFiles(os.path.join(os.path.dirname(f), '**', 'classification_times.csv'))
+    #    if len(fs) > 0:
+    #        filesList = filesList + fs
+    #    elif not isMethod(f, 'POIF'):
+    #        filesList = filesList + [f]
+    
+    
+    for f in findFiles('TEC*/*.txt'):
+        fs = findFiles(os.path.join(os.path.dirname(f), '**', 'model_approachEnsemble_history.csv'))
+        if len(fs) > 0:
+            filesList = filesList + fs
+        else:
+            filesList = filesList + [f]
+    
+    # Second add the remaining:
+    filesList = filesList + findFiles('*-*.txt') # NN / RF / SVM
+    #filesList = filesList + findFiles('classification_times.csv') # NN / RF / SVM
     filesList = filesList + findFiles('poifreq_results.txt') # POI-F / POI-FS
-    filesList = filesList + findFiles('MARC-*.txt') # MARC
-    filesList = filesList + findFiles('model_approachEnsemble_history.csv') # TEC
+    #filesList = filesList + findFiles('MARC-*.txt') # MARC
+    #filesList = filesList + findFiles('model_approachEnsemble_history.csv') # TEC
+    #filesList = filesList + findFiles('TEC*/*.txt') # TEC
     
     return filesList
 
 def decodeURL(ijk):
     rpos = ijk.find('run')
     path = ijk[:ijk.find(os.path.sep, rpos+5)]
+    
+    if not (isMethod(ijk, 'POIF') or isMethod(ijk, 'TEC') or isMethod(ijk, 'MARC')):
+        files = glob.glob(os.path.join(path, '*', 'classification_times.csv'), recursive=True)
+        statsf = files[0] if len(files) > 0 else None
+        model = 'model'
+    elif isMethod(ijk, 'TEC'):
+        files = glob.glob(os.path.join(ijk.replace('.txt', ''), 'model_approachEnsemble_history.csv'), recursive=True)
+        statsf = files[0] if len(files) > 0 else None  
+        model = os.path.basename(ijk)[:-4]
+    else:
+        statsf = ijk
     
     method = path[path.rfind(os.path.sep)+1:]
     subset = method.split('-')[-1]
@@ -720,8 +759,9 @@ def decodeURL(ijk):
 
     prefix = os.path.basename(path[:rpos-1])
 
-    model = os.path.dirname(ijk)
-    model = model[model.rfind(os.path.sep)+1:]
+    if statsf:
+        model = os.path.dirname(statsf)
+        model = model[model.rfind(os.path.sep)+1:]
     
     if isMethod(ijk, 'POIF'):
         subsubset = model.split('-')[1] 
@@ -740,16 +780,17 @@ def decodeURL(ijk):
     if not random.isdigit():
         random = 1
     
-    if not (isMethod(ijk, 'POIF') or isMethod(ijk, 'TEC') or isMethod(ijk, 'MARC')):
+    #if not (isMethod(ijk, 'POIF') or isMethod(ijk, 'TEC') or isMethod(ijk, 'MARC')):
+    if ijk.endswith('classification_times.csv'): # means that is not POIF, TEC or MARC
         files = glob.glob(os.path.join(path, method+'*.txt'), recursive=True)
         ijk = files[0] if len(files) > 0 else ijk
         
-    return run, random, method, subset, subsubset, prefix, model, path, ijk
+    return run, random, method, subset, subsubset, prefix, model, path, ijk, statsf
 
 def organizeResults(filesList, subsets=None):
     results = {}
     for ijk in filesList:
-        run, random, method, subset, subsubset, prefix, model, path, file = decodeURL(ijk)
+        run, random, method, subset, subsubset, prefix, model, path, file, statsf = decodeURL(ijk)
  
         is_POIF = isMethod(ijk, 'POIF')
         is_TEC  = isMethod(ijk, 'TEC')
@@ -764,7 +805,7 @@ def organizeResults(filesList, subsets=None):
             results[dataset] = {}
         if mname not in results[dataset].keys():
             results[dataset][mname] = []
-        results[dataset][mname].append([run, random, method, subset, subsubset, prefix, model, path, file])
+        results[dataset][mname].append([run, random, method, subset, subsubset, prefix, model, path, file, statsf])
 
     return results
 
@@ -779,9 +820,9 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
     list_stats_ind = [p[x] for p in list_stats for x in range(len(p))]
             
     for ijk in filesList:
-        run, random, method, subset, subsubset, prefix, model, path, file = decodeURL(ijk)
+        run, random, method, subset, subsubset, prefix, model, path, file, statsf = decodeURL(ijk)
         
-        stats = get_stats(file, path, method+'-'+subset, list_stats, modelfolder=model)
+        stats = get_stats(statsf, path, method+'-'+subset, list_stats, modelfolder=model)
         def gstati(x):
             return stats[list_stats_ind.index(x) // 3]
         def gstat(x):
@@ -851,10 +892,10 @@ def check_run(res_path, show_warnings=False):
     for ijk in filesList:
         if 'POI-' in ijk and not ijk.endswith('poifreq_results.txt'): # DEPRECATED
             continue
-        run, random, method, subset, subsubset, prefix, model, path, file = decodeURL(ijk)
+        run, random, method, subset, subsubset, prefix, model, path, file, statsf = decodeURL(ijk)
         e = runningProblems(file)
         
-        res = get_stats(file, path, method, STATS(['AccTT']), model, show_warnings=show_warnings)
+        res = get_stats(statsf, path, method, STATS(['AccTT']), model, show_warnings=show_warnings)
         line = '[' + adj(format_float(res[0]),6) +']['+ format_hour(res[1])+']'
         
         if e:
@@ -887,9 +928,9 @@ def compileResults(res_path, subsets=['specific'], list_stats=STATS(['S']), isfo
 
             # ---
             partial_result = False
-            for run, random, method, subset, subsubset, prefix, model, path, file in results[dataset][mname]:
+            for run, random, method, subset, subsubset, prefix, model, path, file, statsf in results[dataset][mname]:
                 run_cols.append(run)
-                df[run] = get_stats(file, path, method, list_stats, model)
+                df[run] = get_stats(statsf, path, method, list_stats, model)
 
                 e = runningProblems(file)
                 if e:
@@ -925,11 +966,12 @@ def compileResults(res_path, subsets=['specific'], list_stats=STATS(['S']), isfo
     return table
 
 def isMethod(file, key):
-    if key == 'POIF' and file.endswith('poifreq_results.txt'):
+    if key == 'POIF' and (file.endswith('poifreq_results.txt') or 'POI' in os.path.basename(file).split('-')[0]):
         return True
     elif key == 'MARC' and 'MARC' in file:
         return True
-    elif key == 'TEC' and file.endswith('model_approachEnsemble_history.csv'):
+    elif key == 'TEC' and (file.endswith('model_approachEnsemble_history.csv') or 
+                           'TEC' in os.path.basename(os.path.dirname(file)).split('-')[0]):
         return True
     else:
         return False

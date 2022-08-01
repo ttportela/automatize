@@ -318,6 +318,8 @@ def scalerRandomGenerator(
         pbar.update(1)
         
         if save_to and save_desc_files:
+            desc_cols = {g.name: g.descType() for g in cycleGenerators(i, generators)}
+            
             printFeaturesJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ ".json"))
             printFeaturesJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ "_hp.json"))
     
@@ -418,7 +420,7 @@ def randomGenerator(
         desc_cols = {g.name: g.descType() for g in generators}
         
         for outType in outformats:
-            writeFile(save_to, new_df, filename, 'tid', 'label', list(df.columns), None, outType, desc_cols)
+            writeFile(save_to, new_df, filename, 'tid', 'label', list(new_df.columns), None, outType, desc_cols)
         #filename += '.csv'
         #new_df.to_csv( os.path.join(save_to, filename), index=False)
 
@@ -469,8 +471,11 @@ def sample_set(df_for_sampling, N, M, label, j):
     new_df.reset_index(drop=True, inplace=True)
     return new_df
 
+def cycleGenerators(L, generators):
+    return list(itertools.islice(itertools.cycle(generators), L))
+
 def random_trajectory(M, L, tid, generators):
-    g = list(itertools.islice(itertools.cycle(generators), L))
+    g = cycleGenerators(L, generators)
     df_ = pd.concat( list(map(lambda i: pd.Series(g[i].nextn(M), name='a'+str(i+1)+'_'+g[i].name), range(L))), axis=1)
     df_.insert(0,'tid', tid)
     return df_
