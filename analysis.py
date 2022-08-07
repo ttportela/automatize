@@ -19,8 +19,7 @@ from .methods.movelet.classification import *
 # --------------------------------------------------------------------------------
 # from PACKAGE_NAME.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
 # --------------------------------------------------------------------------------
-def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'],
-                   data_path='', random_seed=1):
+def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'], random_seed=1, data_path=''):
 #     import os
 # #     import sys
 #     import numpy as np
@@ -45,8 +44,7 @@ def ACC4All(res_path, res_folder, save_results = True, modelfolder='model', clas
             print(method + (" Done." if not empty else " Empty."))
             
 # ----------------------------------------------------------------------------------
-def ClassifyByMovelet(res_path, dataset, dir_path, data_path='', 
-             save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'], random_seed=1):
+def ClassifyByMovelet(res_path, dataset, dir_path, data_path='', save_results = True, modelfolder='model', classifiers=['MLP', 'RF', 'SVM'], random_seed=1):
 #     import os
 # #     import sys
 # #     import numpy as np
@@ -59,7 +57,7 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
 
     importer(['random'], globals())
     np.random.seed(seed=random_seed)
-    random.set_seed(random_seed)
+    #random.set_seed(random_seed)
     
     dir_path = os.path.join(res_path, dataset, dir_path)
     times = {'SVM': [0], 'RF': [0], 'MLP': [0], 'TEC': [0]}
@@ -78,7 +76,7 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='',
         times['SVM'] = [MoveletClassifier_SVM(dir_path, save_results, modelfolder)]
         
     if 'TEC' in classifiers:
-        times['TEC'] = [MoveletClassifier_TEC(dir_path, data_path, save_results, modelfolder)]
+        times['TEC'] = [MoveletClassifier_TEC(dir_path, data_path, save_results, modelfolder, random_seed=random_seed)]
         
 #     t_svm = Classifier_SVM(dir_path, save_results, modelfolder)
 #     t_rf  = Classifier_RF(dir_path, save_results, modelfolder)

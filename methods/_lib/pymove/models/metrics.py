@@ -37,7 +37,6 @@ def balanced_accuracy(y_true, y_pred):
         return balanced_accuracy_score(y_true.argmax(axis=1), y_pred.argmax(axis=1))
 
 def accuracy_top_k(y_true, y_pred, K=5):
-    print(y_true[0], y_pred[0])
     if y_pred.ndim == 1:
         return 0
     else:

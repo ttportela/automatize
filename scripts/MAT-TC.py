@@ -31,8 +31,8 @@ def parse_args():
     
     parse.add_argument('-r', '--random', type=int, default=1, help='random seed')
     
-    parse.add_argument('--save', action=argparse.BooleanOptionalAction, default=True, help='save results')    
-    parse.add_argument('--geohash', action=argparse.BooleanOptionalAction, default=False, 
+    parse.add_argument('--save', action='store_true', default=True, help='save results')    
+    parse.add_argument('--geohash', action='store_true', default=False, 
                        help='use GeoHash encoding for spatial aspects (not implemented)')    
 
     args = parse.parse_args()

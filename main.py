@@ -226,7 +226,12 @@ def importer(key=['S'], this=None, modules={}):
         
     if set(key) & set(['*', 'report', 'NN', 'MLP', 'RF', 'RFHP', 'DT', 'SVC', 'TEC.report']):
         module = importlib.import_module('sklearn.metrics')
-        mdic.update( {'classification_report': getattr(module, 'classification_report')} )      
+        mdic.update( {'classification_report': getattr(module, 'classification_report')} ) 
+        
+    if set(key) & set(['*', 'report', 'MARC', 'Logger']):
+        module = importlib.import_module(PACKAGE_NAME+'.methods._lib.logger')
+        if set(key) & set(['*', 'report', 'MARC', 'Logger']):
+            mdic.update( {'Logger': getattr(module, 'Logger')} )       
       
     if set(key) & set(['*', 'preprocessing', 'encoding', 'PP', 'NN', 'MLP', 'MARC', 'POIS', 'MinMaxScaler', 
                        'KFold', 'split', 'train_test_split', 'pad_sequences', 'LabelEncoder', 'OneHotEncoder', 
@@ -322,18 +327,17 @@ def importer(key=['S'], this=None, modules={}):
         if set(key) & set(['*', 'classifiers', 'AMLP', 'ApproachMLP']):
             mdic.update( {'ApproachMLP': getattr(module, 'ApproachMLP')} )  
             
-    if set(key) & set(['*', 'report', 'TEC.report', 'f1', 'classification_report_csv', 'calculateAccTop5']):
+    if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'f1', 'classification_report_csv', 'calculateAccTop5']):
         module = importlib.import_module(PACKAGE_NAME+'.methods._lib.metrics')
-        if set(key) & set(['*', 'report', 'TEC.report', 'classification_report_csv']):
+        if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'classification_report_csv']):
             mdic.update( {'classification_report_csv': getattr(module, 'classification_report_csv')} )
-        if set(key) & set(['*', 'report', 'calculateAccTop5']):
+        if set(key) & set(['*', 'report', 'MC.report', 'calculateAccTop5']):
             mdic.update( {'calculateAccTop5': getattr(module, 'calculateAccTop5')} )
-        if set(key) & set(['*', 'report', 'f1']):
+        if set(key) & set(['*', 'report', 'MC.report', 'f1']):
             mdic.update( {'f1': getattr(module, 'f1')} )
             
             
-    if set(key) & set(['*', 'results', 'STATS', 'printLatex', 'results2df', 'check_run'
-                       'containErrors', 'containWarnings', 'containTimeout', 'get_stats',
+    if set(key) & set(['*', 'results', 'STATS', 'printLatex', 'results2df',
                        'format_stats', 'format_hour']):
         module = importlib.import_module(PACKAGE_NAME+'.results')
         if set(key) & set(['*', 'results', 'STATS']):
@@ -342,16 +346,16 @@ def importer(key=['S'], this=None, modules={}):
             mdic.update( {'printLatex': getattr(module, 'printLatex')} )
         if set(key) & set(['*', 'results', 'results2df']):
             mdic.update( {'results2df': getattr(module, 'results2df')} )
-        if set(key) & set(['*', 'results', 'check_run', 'containErrors', 'containWarnings', 'containTimeout']):
-            mdic.update( {'containErrors': getattr(module, 'containErrors'), 
-                          'containWarnings': getattr(module, 'containWarnings'), 
-                          'containTimeout': getattr(module, 'containTimeout')} )
+        #if set(key) & set(['*', 'results', 'check_run', 'containErrors', 'containWarnings', 'containTimeout']):
+        #    mdic.update( {'containErrors': getattr(module, 'containErrors'), 
+        #                  'containWarnings': getattr(module, 'containWarnings'), 
+        #                  'containTimeout': getattr(module, 'containTimeout')} )
         if set(key) & set(['*', 'results', 'format_stats']):
             mdic.update( {'format_stats': getattr(module, 'format_stats')} )
         if set(key) & set(['*', 'format_hour']): # except
             mdic.update( {'format_hour': getattr(module, 'format_hour')} )
-        if set(key) & set(['*', 'results', 'get_stats']):
-            mdic.update( {'get_stats': getattr(module, 'get_stats')} )
+        #if set(key) & set(['*', 'results', 'get_stats']):
+        #    mdic.update( {'get_stats': getattr(module, 'get_stats')} )
             
             
     if set(key) & set(['*', 'analysis', 'loadData']):

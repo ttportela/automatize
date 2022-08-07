@@ -16,7 +16,7 @@ from main import importer
 importer(['S'], globals())
 
 # ----------------------------------------------------------------------------------
-def MoveletClassifier_TEC(dir_path, data_path, ensembles=None, save_results = True, modelfolder='model'):
+def MoveletClassifier_TEC(dir_path, data_path, ensembles=None, save_results = True, modelfolder='model', random_seed=1):
 #     import os
 #     from PACKAGE_NAME.ensemble import ClassifierEnsemble
 #     from ..main import importer
@@ -29,7 +29,7 @@ def MoveletClassifier_TEC(dir_path, data_path, ensembles=None, save_results = Tr
         }
     # --------------------------------------------------------------------------------
     return TEC(data_path, os.path.join(dir_path,'EC'), ensembles, 
-                              save_results=save_results, modelfolder=modelfolder)
+                              save_results=save_results, modelfolder=modelfolder, random_seed=random_seed)
 
 def MoveletClassifier_MLP(dir_path, save_results = True, modelfolder='model', X_train = None, y_train = None, X_test = None, y_test = None):
 #     from datetime import datetime

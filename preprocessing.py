@@ -84,7 +84,7 @@ def readAttributes(desc_file):
     return attrs
 
 # --------------------------------------------------------------------------------
-def printFeaturesJSON(df, version=1, deftype='nominal', defcomparator='equals', label_col='label', file=False):
+def featuresJSON(df, version=1, deftype='nominal', defcomparator='equals', label_col='label', file=False):
     
     if isinstance(df, list):
         cols = {x: deftype for x in df}
@@ -412,7 +412,7 @@ def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spli
     return ktrain, ktest
 
 def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
-                            columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat']):
+                            columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat'], verbose=False):
 #     from ..main import importer
     importer(['S', 'KFold'], globals())
     

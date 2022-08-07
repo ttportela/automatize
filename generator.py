@@ -10,7 +10,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 from .main import importer #, display
-importer(['S', 'generator', 'tqdm'], globals(), {'preprocessing': ['writeFile', 'printFeaturesJSON']})
+importer(['S', 'generator', 'tqdm'], globals(), {'preprocessing': ['writeFile', 'featuresJSON']})
 
 #import math
 #import random
@@ -26,10 +26,12 @@ def scalerSamplerGenerator(
     Cs=[2,  10],
     random_seed=1,
     fileprefix='scalability',
+    fileposfix='train',
     cols_for_sampling = ['space','time','day','rating','price','weather','root_type','type'],
     save_to=None,
     base_data=None,
-    save_desc_files=True):
+    save_desc_files=True,
+    outformats=['csv', 'mat']):
     '''
     [Function to generate trajectory datasets based on real data.]
 
@@ -54,11 +56,15 @@ def scalerSamplerGenerator(
         save_to [str, bool]: 
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
-            Output filename prefix (default 'train')
+            Output filename prefix (default 'sample')
+        fileposfix [str]: 
+            Output filename postfix (default 'train')
         base_data [DataFrame]: 
             DataFrame of trajectoris to use as base for sampling data (default 'assets/examples/Foursquare_Example.csv')
         save_desc_files [bool]: 
             True if to save the .json description files or False, if not to save (default True)
+        outformats [list]:
+            Output file formats for saving (default ['csv', 'mat'])
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -96,17 +102,17 @@ def scalerSamplerGenerator(
     
     # 1 - Scale attributes (reshape columns), fixed trajectories, points, and classes:
     cols = cols_for_sampling.copy()
-    prefix = fileprefix + '_L'
+    prefix = fileprefix #+ '_L'
     for i in range(Ls[1]):        
         #if len(cols) == miL:
         #    cols_for_sampling = cols
             
-        samplerGenerator(miN, miM, miC, random_seed, prefix, cols, save_to, df)
+        samplerGenerator(miN, miM, miC, random_seed, fileprefix, fileposfix, cols, save_to, df, outformats)
         pbar.update(1)
         
         if save_to and save_desc_files:
-            printFeaturesJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ ".json"))
-            printFeaturesJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ "_hp.json"))
+            featuresJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ ".json"))
+            featuresJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(len(cols)),'attrs'])+ "_hp.json"))
         
         if i < Ls[1]-1:
             df_ = df[cols].copy()
@@ -118,29 +124,36 @@ def scalerSamplerGenerator(
             df = pd.concat([df, df_], axis=1)
     
     # 2 -  Scale trajectories, fixed points, attributes, and classes
-    prefix = fileprefix + '_N'
+    #prefix = fileprefix + '_N'
     for i in Ns:
-        samplerGenerator(i,miM,miC,random_seed, prefix, cols_for_sampling, save_to, df)
         pbar.update(1)
+        if i == miN:
+            continue
+        samplerGenerator(i,miM,miC,random_seed, fileprefix, fileposfix, cols_for_sampling, save_to, df, outformats)
     
     # 3 -  Scale points, fixed trajectories, attributes, and classes
-    prefix = fileprefix + '_M'
+    #prefix = fileprefix + '_M'
     for i in Ms:
-        samplerGenerator(miN,i,miC,random_seed, prefix, cols_for_sampling, save_to, df)
         pbar.update(1)
+        if i == miM:
+            continue
+        samplerGenerator(miN,i,miC,random_seed, fileprefix, fileposfix, cols_for_sampling, save_to, df, outformats)
     
     # 4 -  Scale classes, fixed trajectories, points, and attributes
-    prefix = fileprefix + '_C'
+    #prefix = fileprefix + '_C'
     for i in Cs:
-        samplerGenerator(miN,miM,i,random_seed, prefix, cols_for_sampling, save_to, df)
         pbar.update(1)
+        if i == miC:
+            continue
+        samplerGenerator(miN,miM,i,random_seed, fileprefix, fileposfix, cols_for_sampling, save_to, df, outformats)
 
 def samplerGenerator(
     N=10,
     M=50,
     C=1,
     random_seed=1,
-    fileprefix='train',
+    fileprefix='sample',
+    fileposfix='train',
     cols_for_sampling = ['space','time','day','rating','price','weather','root_type','type'],
     save_to=False,
     base_data=None,
@@ -162,7 +175,9 @@ def samplerGenerator(
         save_to [str, bool]: 
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
-            Output filename prefix (default 'train')
+            Output filename prefix (default 'sample')
+        fileposfix [str]: 
+            Output filename postfix (default 'train')
         base_data [DataFrame]: 
             DataFrame of trajectoris to use as base for sampling data (default 'assets/examples/Foursquare_Example.csv')
         outformats [list]:
@@ -206,7 +221,12 @@ def samplerGenerator(
         if not os.path.exists(save_to):
             os.makedirs(save_to)
             
-        filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(len(cols_for_sampling)),'attrs',str(C),'labels'])
+        filename = '_'.join([fileprefix,
+                             str(N),'trajectories',
+                             str(M),'points',
+                             str(len(cols_for_sampling)),'attrs',
+                             str(C),'labels',
+                             fileposfix])
         
         for outType in outformats:
             writeFile(save_to, new_df, filename, 'tid', 'label', ['tid', 'label']+cols_for_sampling, None, desc_cols, outType)
@@ -244,9 +264,11 @@ def scalerRandomGenerator(
     Cs=[2,  10],
     random_seed=1,
     fileprefix='scalability',
+    fileposfix='train',
     attr_desc=None,
     save_to=None,
-    save_desc_files=True):
+    save_desc_files=True,
+    outformats=['csv', 'mat']):
     '''
     [Function to generate trajectory datasets based on real data.]
 
@@ -270,9 +292,13 @@ def scalerRandomGenerator(
         save_to [str, bool]: 
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
-            Output filename prefix (default 'train')
+            Output filename prefix (default 'sample')
+        fileposfix [str]: 
+            Output filename postfix (default 'train')
         save_desc_files [bool]: 
             True if to save the .json description files or False, if not to save (default True)
+        outformats [list]:
+            Output file formats for saving (default ['csv', 'mat'])
     
     Returns:
         [pandas.DataFrame] the generated dataset
@@ -312,34 +338,40 @@ def scalerRandomGenerator(
     generators = instantiate_generators(attr_desc)
     
     # 1 - Scale attributes (reshape columns), fixed trajectories, points, and classes:
-    prefix = fileprefix + '_L'
+    #prefix = fileprefix #+ '_L'
     for i in La:        
-        randomGenerator(miN, miM, i, miC, random_seed, prefix, generators, save_to)
+        randomGenerator(miN, miM, i, miC, random_seed, fileprefix, fileposfix, cycleGenerators(i, generators), save_to, outformats)
         pbar.update(1)
         
         if save_to and save_desc_files:
             desc_cols = {g.name: g.descType() for g in cycleGenerators(i, generators)}
             
-            printFeaturesJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ ".json"))
-            printFeaturesJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ "_hp.json"))
+            featuresJSON(desc_cols, 1, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ ".json"))
+            featuresJSON(desc_cols, 2, file=os.path.join(save_to, '_'.join([fileprefix,str(i),'attrs'])+ "_hp.json"))
     
     # 2 -  Scale trajectories, fixed points, attributes, and classes
-    prefix = fileprefix + '_N'
+    #prefix = fileprefix + '_N'
     for i in Ns:
-        randomGenerator(i, miM, miL, miC, random_seed, prefix, generators, save_to)
         pbar.update(1)
+        if i == miN:
+            continue
+        randomGenerator(i, miM, miL, miC, random_seed, fileprefix, fileposfix, generators, save_to, outformats)
     
     # 3 -  Scale points, fixed trajectories, attributes, and classes
-    prefix = fileprefix + '_M'
+    #prefix = fileprefix + '_M'
     for i in Ms:
-        randomGenerator(miN, i, miL, miC, random_seed, prefix, generators, save_to)
         pbar.update(1)
+        if i == miM:
+            continue
+        randomGenerator(miN, i, miL, miC, random_seed, fileprefix, fileposfix, generators, save_to, outformats)
     
     # 4 -  Scale classes, fixed trajectories, points, and attributes
-    prefix = fileprefix + '_C'
+    #prefix = fileprefix + '_C'
     for i in Cs:
-        randomGenerator(miN, miM, miL, i, random_seed, prefix, generators, save_to)
         pbar.update(1)
+        if i == miC:
+            continue
+        randomGenerator(miN, miM, miL, i, random_seed, fileprefix, fileposfix, generators, save_to, outformats)
 
 def randomGenerator(
     N=10,
@@ -347,7 +379,8 @@ def randomGenerator(
     L=10,
     C=10,
     random_seed=1,
-    fileprefix='train',
+    fileprefix='random',
+    fileposfix='train',
     attr_desc=None,
     save_to=False,
     outformats=['csv', 'mat']):
@@ -371,7 +404,9 @@ def randomGenerator(
         save_to [str, bool]: 
             Destination folder to save or False, if not to save csv file (default False)
         fileprefix [str]: 
-            Output filename prefix (default 'train')
+            Output filename prefix (default 'sample')
+        fileposfix [str]: 
+            Output filename postfix (default 'train')
         outformats [list]:
             Output file formats for saving (default ['csv', 'mat'])
     
@@ -391,9 +426,11 @@ def randomGenerator(
     
     if not attr_desc:
         attr_desc = default_types()
-        generators = instantiate_generators(attr_desc)
-    elif isinstance(attr_desc[0], AttributeGenerator):
+        
+    if isinstance(attr_desc[0], AttributeGenerator):
         generators = attr_desc
+    else:
+        generators = instantiate_generators(attr_desc)
     
     # Number of Trajectories per class
     n = int(N / C)
@@ -401,7 +438,7 @@ def randomGenerator(
     new_df = pd.concat( list(map(lambda j: random_set(n, M, L, 'C'+str(j+1), j, generators), range(C))) )
 
     if len(new_df['tid'].unique()) < N:
-        df_ = random_trajectory(M, N-1, generators)
+        df_ = random_trajectory(M, L, N-1, generators)
         df_['label'] = 'C'+str(C)
         new_df = pd.concat([new_df, df_])
     
@@ -415,12 +452,17 @@ def randomGenerator(
         if not os.path.exists(save_to):
             os.makedirs(save_to)
             
-        filename = '_'.join([fileprefix,str(N),'trajectories',str(M),'points',str(L),'attrs',str(C),'labels'])
+        filename = '_'.join([fileprefix,
+                             str(N),'trajectories',
+                             str(M),'points',
+                             str(L),'attrs',
+                             str(C),'labels',
+                             fileposfix])
         
         desc_cols = {g.name: g.descType() for g in generators}
         
         for outType in outformats:
-            writeFile(save_to, new_df, filename, 'tid', 'label', list(new_df.columns), None, outType, desc_cols)
+            writeFile(save_to, new_df, filename, 'tid', 'label', list(new_df.columns), None, desc_cols, outType)
         #filename += '.csv'
         #new_df.to_csv( os.path.join(save_to, filename), index=False)
 

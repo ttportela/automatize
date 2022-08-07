@@ -12,7 +12,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 from .main import importer, pyshel, PACKAGE_NAME, DEFAULT_MC, DEFAULT_TC #, display
 importer(['S'], globals())
 
-def gensh(method, datasets, params=None):
+def gensh(method, datasets, params=None, check_done=True, doacc=True):
 #     from run import Movelets, MARC, k_MARC
 #     import os, sys
     importer(['sys'], globals())
@@ -55,7 +55,7 @@ def gensh(method, datasets, params=None):
             
             print('BASE="'+params['root']+'"')
             printRun(method, data, results, prog_path, prefix, mname, var, json, params, runopts, islog, print_only, 
-                     True, True, pname)
+                     check_done, doacc, pname)
                 
             print("# END - By Tarlis Portela")
             sys.stdout = orig_stdout
@@ -393,11 +393,11 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                 if 'rounds' in params:
                     print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
                     print('do')
-                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                    print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
                     print('done')
                     print()
                 else:
-                    print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+                    print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print('done')
             print('# --------------------------------------------------------------------------------------')
             print()
@@ -409,11 +409,11 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             if 'rounds' in params:
                 print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
                 print('do')
-                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
                 print('done')
                 print()
             else:
-                print(pyshel(DEFAULT_TC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')
@@ -452,12 +452,14 @@ def sh2bat(path, folder, root=None, root_win=None, py_name='python'):
         '/': '\\',
         'python3': py_name,
         'for RUN in ': 'FOR %%RUN IN (',
+        'for ROUND in ': 'FOR %%ROUND IN (',
         'done' : ')',
         '\ndo' : ') DO (',
         '" "run' : ',run',
         '${DIR}': '%DIRET%',
         '${BASE}': '%BASE%',
         '${RUN}': '%RUN%',
+        '${ROUND}': '%ROUND%',
 #         '"': '',
     }
     

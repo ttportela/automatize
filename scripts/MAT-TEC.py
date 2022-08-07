@@ -47,7 +47,7 @@ ensembles    = eval(config["ensembles"])
 dataset      = config["dataset"]
 
 modelfolder  = config["model_folder"]
-random_seed   = config["seed"]
+random_seed  = config["seed"]
     
 time = datetime.now()
 

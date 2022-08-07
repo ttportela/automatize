@@ -33,7 +33,7 @@ def parse_args():
     
     parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
     
-    parse.add_argument('--classify', action=argparse.BooleanOptionalAction, default=False, help='Do also classification?')
+    parse.add_argument('--classify', action='store_true', default=False, help='Do also classification?')
     
     args = parse.parse_args()
     config = vars(args)

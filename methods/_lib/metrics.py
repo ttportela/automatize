@@ -17,7 +17,7 @@ main_dir = os.path.abspath(os.path.join( script_dir, '..' , '..'))
 sys.path.append( main_dir )
 
 from main import importer #, display
-importer(['S', 'datetime', 'metrics'], globals())
+importer(['S', 'datetime', 'metrics', 'K'], globals())
 
 
 def _process_pred(y_pred):
@@ -93,8 +93,6 @@ def compute_acc_acc5_f1_prec_rec(y_true, y_pred, print_metrics=True,
 
 def f1(y_true, y_pred):
 #     from ..main import importer
-    importer(['K'], globals())
-    importer(['K'], locals())
     
     def recall(y_true, y_pred):
         """Recall metric.

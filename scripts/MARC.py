@@ -33,7 +33,7 @@ def parse_args():
     
     parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
     
-    #parse.add_argument('--gpu', action=argparse.BooleanOptionalAction, default=True, help='Use GPU devices, or False for CPU')    
+    #parse.add_argument('--gpu', action='store_true', default=True, help='Use GPU devices, or False for CPU')    
     #parse.add_argument('-M', '--ram', type=int, default=-1, help='Limit RAM memory GB (not implemented)')
     #parse.add_argument('-T', '--njobs', type=int, default=-1, help='Limit number of threads, and no GPU (not implemented)')
 
