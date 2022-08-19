@@ -12,7 +12,6 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import sys, os 
 sys.path.insert(0, os.path.abspath('.'))
-from automatize.methods.marc.marc_nn import marc
 
 import argparse
 
@@ -22,7 +21,10 @@ def parse_args():
     Returns:
         args ([object]): [Parse parameter object to get parse object]
     """
-    parse = argparse.ArgumentParser(description='MARC Trajectory Classification')
+    parse = argparse.ArgumentParser(
+        description='MARC Trajectory Classification',
+        epilog="Created on Dec, 2021. Copyright (C) 2022, GPLv3. Author: Tarlis Tortelli Portela"
+    )
     parse.add_argument('train-file', type=str, help='path for the train dataset file')
     parse.add_argument('test-file', type=str, help='path for the train dataset file')
     parse.add_argument('metrics-file', type=str, help='path for the resulting metrics file')
@@ -33,7 +35,7 @@ def parse_args():
     
     parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
     
-    #parse.add_argument('--gpu', action='store_true', default=True, help='Use GPU devices, or False for CPU')    
+    parse.add_argument('--no-gpu', action='store_false', help='Don´t use GPU devices.')    
     #parse.add_argument('-M', '--ram', type=int, default=-1, help='Limit RAM memory GB (not implemented)')
     #parse.add_argument('-T', '--njobs', type=int, default=-1, help='Limit number of threads, and no GPU (not implemented)')
 
@@ -55,23 +57,32 @@ RNN_CELL      = config["rnn_cell"].lower()
 
 random_seed   = config["seed"]
 
-#GPU           = config["gpu"]
+GPU           = not config["no_gpu"]
 #GIG           = config["ram"]
 #THR           = config["njobs"]
 
-#from tensorflow.python.client import device_lib
-#print([x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU'])
-#print([x.name for x in device_lib.list_local_devices() if x.device_type == 'CPU'])
+# ---
+from automatize.methods.marc.marc_nn import marc
+# ---
 
-#import tensorflow as tf
-#
+if not GPU:
+    from tensorflow.python.client import device_lib
+    gp = [x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU']
+    cp = [x.name for x in device_lib.list_local_devices() if x.device_type == 'CPU']
+
+    print('Use GPU set as: ' + str(GPU), '- Device list:')
+    print(gp)
+    print(cp)
+
 #if THR > 0:
 #    tf.config.threading.set_intra_op_parallelism_threads(THR)
 #    tf.config.threading.set_inter_op_parallelism_threads(THR)
 #
-#with tf.device('/device:GPU:0' if GPU else '/device:CPU:0'):       
-    
-marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
+    import tensorflow as tf
+    with tf.device(gp[0] if GPU else cp[0]):
+        marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
+else:
+    marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
 
 
     

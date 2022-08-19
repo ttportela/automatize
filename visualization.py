@@ -11,7 +11,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 from pandas import json_normalize
 from .main import importer #, display
-importer(['S', 'glob', 'np'], globals())
+importer(['S', 'glob', 'np', 'tqdm'], globals())
 
 # ------------------------------------------------------------------------------------------------------------
 # TRAJECTORY 
@@ -32,8 +32,7 @@ class Trajectory:
         
         self.points       = []
         if new_points is not None:
-            for point in new_points:
-                self.add_point(point)
+            self.points = list(map(lambda point: self.point_dict(point), new_points))
                 
     def __repr__(self):
         return '=>'.join([str(x) for x in self.points])
@@ -47,8 +46,14 @@ class Trajectory:
                 
     def add_point(self, point):
         assert isinstance(point, dict)
-        px = {}
-        for k, v in point.items():
+        self.points.append(self.point_dict(px))
+        
+    def point_dict(self, point):
+        assert isinstance(point, dict)
+        points = {}    
+        
+        def getKV(k,v):
+            px = {}
             if isinstance(v, dict):
                 if k == 'lat_lon' or k == 'space':
                     px['lat'] = v['x']
@@ -67,37 +72,65 @@ class Trajectory:
                     px['z'] = v[2]
                 else:
                     px[k] = v
-                
-        self.points.append(px)
+            return px
         
+        list(map(lambda x: points.update(getKV(x[0], x[1])), point.items()))
+                
+        return points
+        
+            #if isinstance(v, dict):
+            #    if k == 'lat_lon' or k == 'space':
+            #        px['lat'] = v['x']
+            #        px['lon'] = v['y']
+            #    else:
+            #        px[k] = v['value']
+            #else:
+            #    if k == 'lat_lon' or k == 'space':
+            #        v = v.split(' ')
+            #        px['lat'] = v[0]
+            #        px['lon'] = v[1]
+            #    elif k == 'space3d':
+            #        v = v.split(' ')
+            #        px['x'] = v[0]
+            #        px['y'] = v[1]
+            #        px['z'] = v[2]
+            #    else:
+            #        px[k] = v
+            #        
 #         self.points.append(point)
         
     def toString(self):
         return str(self)
         
     def toText(self):
-        return ' >> '.join([("\n".join("{}: {}".format(k, v) for k, v in x.items())) for x in self.points])
+        return ' >> '.join(list(map(lambda y: "\n".join(list(map(lambda x: "{}: {}".format(x[0], x[1]), y.items()))), self.points)))
     
     def points_trans(self):
         pts_trans = []
-        for attr in self.attributes:
+        def trans(attr):
+        #for attr in self.attributes:
             col = {}
             col['attr'] = attr
             for i in range(self.size):
                 col['p'+str(i)] = self.points[i][attr]
-            pts_trans.append(col)
+            return col
+            #pts_trans.append(col)
+
+        pts_trans = list(map(lambda attr: trans(attr), self.attributes))
         return pts_trans
     
-def parse_trajectories(df, tid_col='tid', label_col='label'):
+def parse_trajectories(df, tid_col='tid', label_col='label', from_traj=0, to_traj=100):
     ls_trajs = []
-    for tid in df[tid_col].unique():
+    def processT(df, tid):
         df_aux = df[df[tid_col] == tid]
         label = df_aux[label_col].unique()[0]
         features = [x for x in df.columns if x not in [tid_col, label_col]]
         points = df_aux[features].to_dict(orient='records')
-        ls_trajs.append(
-            Trajectory(tid, label, features, points, len(points))
-        )
+        return Trajectory(tid, label, features, points, len(points))
+    
+    tids = list(df[tid_col].unique())
+    #tids = tids[from_traj: to_traj if len(tids) > to_traj else len(tids)] # TODO
+    ls_trajs = list(map(lambda tid: processT(df, tid), tqdm(tids, desc='Reading Trajectories')))
         
     return ls_trajs
 
@@ -116,8 +149,9 @@ class Movelet:
         
         self.data     = []
         if points is not None:
-            for point in points:
-                self.add_point(point)
+            list(map(lambda point: self.add_point(point), points))
+            #for point in points:
+            #    self.add_point(point)
                 
     def __repr__(self):
         return '=>'.join([str(x) for x in self.data])
@@ -134,8 +168,14 @@ class Movelet:
     
     def add_point(self, point):
         assert isinstance(point, dict)
-        px = {}
-        for k, v in point.items():
+        self.data.append(self.point_dict(point))
+        
+    def point_dict(self, point):
+        assert isinstance(point, dict)
+        points = {}    
+        
+        def getKV(k,v):
+            px = {}
             if isinstance(v, dict):
                 if k == 'lat_lon' or k == 'space':
                     px['lat'] = v['x']
@@ -154,26 +194,21 @@ class Movelet:
                     px['z'] = v[2]
                 else:
                     px[k] = v
-                
-        self.data.append(px)
+            return px
         
-#         if isinstance(list(point.values())[0], dict):
-#             px = {}
-#             for k, v in point.items():
-#                 px[k] = list(v.values())[0]
-#             self.data.append(px)
-#         else:
-#             self.data.append(point)
+        list(map(lambda x: points.update(getKV(x[0], x[1])), point.items()))
+                
+        return points
         
     def toString(self):
         return str(self) + ' ('+'{:3.2f}'.format(self.quality)+'%)'    
     
     def diffToString(self, mov2):
         dd = self.diffPairs(mov2)
-        return ' >> '.join([str(x) for x in dd]) + ' ('+'{:3.2f}'.format(self.quality)+'%)' 
+        return ' >> '.join(list(map(lambda x: str(x), dd))) + ' ('+'{:3.2f}'.format(self.quality)+'%)' 
         
     def toText(self):
-        return ' >> '.join([("\n".join("{}: {}".format(k, v) for k, v in x.items())) for x in self.data]) \
+        return ' >> '.join(list(map(lambda y: "\n".join(list(map(lambda x: "{}: {}".format(x[0], x[1]), x.items()))), self.data))) \
                     + '\n('+'{:3.2f}'.format(self.quality)+'%)'
     
     def commonPairs(self, mov2):
@@ -223,24 +258,28 @@ def read_movelets_json(file_name, name='movelets', count=0):
 def parse_movelets(file, name='movelets', count=0):
     importer(['json'], globals())
     
-    ls_movelets = []
+    #ls_movelets = []
     data = json.load(file)
     if name not in data.keys():
         name='shapelets'
     l = len(data[name])
-    for x in range(0, l):
+    #for x in range(0, l):
+    def parseM(x):
+        nonlocal count
         points = data[name][x]['points_with_only_the_used_features']
-        ls_movelets.append(
-            Movelet(\
+        #ls_movelets.append(
+        count += 1
+        return Movelet(\
                 count, data[name][x]['trajectory'],\
                 points,\
                 float(data[name][x]['quality']['quality'] * 100.0),\
                 data[name][x]['label'],\
                 data[name][x]['start'],\
                 int(data[name][x]['quality']['size']))\
-        )
+        #)
+    ls_movelets = list(map(lambda x: parseM(x), tqdm(range(0, l), desc='Reading Movelets')))
 
-        count += 1
+#        count += 1
     ls_movelets.sort(key=lambda x: x.quality, reverse=True)
     return ls_movelets
 

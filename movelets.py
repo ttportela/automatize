@@ -251,15 +251,22 @@ def trajectory_statistics(ls_trajs):
     bot = float('inf')
     npoints = 0
     classes = {}
-    df = pd.DataFrame()
-    for T in ls_trajs:
+    
+    #df = pd.DataFrame()
+    #for T in ls_trajs:
+    def processT(T):
+        nonlocal npoints, top, bot, labels, classes
         labels.add(T.label)
         classes[T.label] = 1 if T.label not in classes.keys() else classes[T.label]+1
         npoints += T.size
         top = max(top, T.size)
         bot = min(bot, T.size)
-        for p in T.points:
-            df = df.append(p, ignore_index=True)
+        #for p in T.points:
+        #    df = pd.concat([df, pd.DataFrame.from_records(p)], ignore_index=True)
+            #p = pd.DataFrame(p)
+            #df = df.append(p, ignore_index=True)
+    
+    list(map(lambda T: processT(T), ls_trajs))
     
     labels = [str(l) for l in labels]
     labels.sort()
@@ -267,20 +274,16 @@ def trajectory_statistics(ls_trajs):
     diff_size = max( avg_size - bot , top - avg_size)
     attr = list(ls_trajs[0].points[0].keys())
     num_attr = len(attr)
-#     stats=pd.DataFrame()
-#     df = df.select_dtypes(include=np.number)
-#     stats["Mean"]=df.mean()
-#     stats["Std.Dev"]=df.std()
-#     stats["Var"]=df.var()
-    stats=pd.DataFrame()
-    dfx = df.apply(pd.to_numeric, args=['coerce'])
-    stats["Mean"]=dfx.mean(axis=0, skipna=True)
-    stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
-    stats["Variance"]=dfx.var(axis=0, skipna=True)
     
-    stats = stats.sort_values('Variance', ascending=False)
+    #stats=pd.DataFrame()
+    #dfx = df.apply(pd.to_numeric, args=['coerce'])
+    #stats["Mean"]=dfx.mean(axis=0, skipna=True)
+    #stats["Std.Dev"]=dfx.std(axis=0, skipna=True)
+    #stats["Variance"]=dfx.var(axis=0, skipna=True)
     
-    return labels, samples, top, bot, npoints, avg_size, diff_size, attr, num_attr, classes, stats
+    #stats = stats.sort_values('Variance', ascending=False) #TODO
+    
+    return labels, samples, top, bot, npoints, avg_size, diff_size, attr, num_attr, classes#, stats
 
 # -----------------------------------------------------------------------
 # def initMovelet(points):

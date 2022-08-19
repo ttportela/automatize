@@ -517,9 +517,11 @@ def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_column
         
 def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
     # WRITE Train
-    writeFile(data_path, train, file+'train', tid_col, class_col, columns_order, mat_columns, outformat, opSuff='TRAIN - '+opSuff)
+    writeFile(data_path, train, file+'train', tid_col, class_col, columns_order, mat_columns, desc_cols, 
+              outformat, opSuff='TRAIN - '+opSuff)
     # WRITE Test
-    writeFile(data_path, test,  file+'test',  tid_col, class_col, columns_order, mat_columns, outformat, opSuff='TEST - '+ opSuff)
+    writeFile(data_path, test,  file+'test',  tid_col, class_col, columns_order, mat_columns, desc_cols, 
+              outformat, opSuff='TEST - '+ opSuff)
     
 #def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
 #    if outformat == 'zip':

@@ -70,11 +70,12 @@ def page_trajectories_filter(ls_trajs, from_trajs, to_trajs, attributes, sel_att
     ], style = {'display':'inline'})
     
 def getAttrSize(T, sel_attributes):
-    size = 0
-    for i in range(T.size):
-        for attr in sel_attributes:
-            size = max(size, len(str(T.points[i][attr])))
-    return size
+    #size = 0
+    #for i in range(T.size):
+        #for attr in sel_attributes:
+        #    size = max(size, len(str(T.points[i][attr])))
+    #return size
+    return max( list(map(lambda i: max( list(map(lambda attr: len(str(T.points[i][attr])), sel_attributes)) ), range(T.size))) )
     
 CH_SIZE = 10
 def getAttrCHS(length, size):
@@ -89,7 +90,7 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
     if len(ls_trajs) > 0:
         attributes = ls_trajs[0].attributes
 #         print(sel_attributes)
-        if sel_attributes == '':
+        if sel_attributes == '' or sel_attributes is None:
             sel_attributes = attributes
         else:
             sel_attributes = sel_attributes if isinstance(sel_attributes, list) else sel_attributes.split(',') 
@@ -103,7 +104,9 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
         ls_components.append(page_trajectories_filter(ls_trajs, from_trajs, to_trajs, attributes, sel_attributes))
 
         ls_trajs = ls_trajs[(from_trajs if from_trajs < len(ls_trajs)-1 else 0) : (to_trajs if to_trajs < len(ls_trajs)-1 else 100)]
-        for k in range(len(ls_trajs)):
+        #for k in range(len(ls_trajs)):
+        def renderT(k):
+            nonlocal ls_trajs, ls_components
     #         points = T.points_trans()
             T = ls_trajs[k]
             ls_components.append(html.Div(className='traj-color'+str((k % ncor) + 1)+'-rangeslider traj-slider', children = [
@@ -120,51 +123,32 @@ def render_page_trajectories(ls_trajs, range_value, ls_movs, sel_attributes):
     #                 disabled=True,
                 )]),
             ], style={'width': getAttrCHS(T.size, size)}))
-            for attr in T.attributes:
-                if attr in sel_attributes:
-                    values = []
-                    for m in ls_movs:
-                        if m.tid == T.tid and attr in m.attributes():
-                            values += [m.start, m.start+m.size]
+            #for attr in T.attributes:
+            #    if attr in sel_attributes:
+            def getAttrLine(attr):
+                values = []
+                for m in ls_movs:
+                    if m.tid == T.tid and attr in m.attributes():
+                        values += [m.start, m.start+m.size]
 #                     print(values)
-                    ls_components.append(html.Div(
-                        className='traj-color'+str((k % ncor) + 1)+'-rangeslider traj-slider traj-slider', children = [
-                        html.A(attr, style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
-                        html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
-                            marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
-                            min=0,
-                            max=T.size-1,
+                #ls_components.append(
+                return html.Div(
+                    className='traj-color'+str((k % ncor) + 1)+'-rangeslider traj-slider traj-slider', children = [
+                    html.A(attr, style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
+                    html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
+                        marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
+                        min=0,
+                        max=T.size-1,
 #                             value=[0, T.size-1],
-                            value=list(set(values)),
-                            disabled=True,
-                        )]),
-                    ], style={'width': getAttrCHS(T.size, size)}))
-    #         ls_components.append(dash_table.DataTable(
-    #             id='table-tid-'+str(T.tid),
-    #             style_data={
-    #                 'fontSize': '8px',
-    # #                 'whiteSpace': 'normal',
-    # #                 'height': 'auto',
-    # #                 'width': '100%',
-    #             },
-    #             style_table={'minWidth': '100%'},
-    #             style_cell={
-    #                 'overflow': 'hidden',
-    #                 'textOverflow': 'ellipsis',
-    # #                 'maxWidth': '10%',
-    #                 'width': '50px',
-    #                 'textAlign': 'center',
-    #             },
-    #             style_cell_conditional=[
-    #                 {'if': {'column_id': 'attr'},
-    #                  'minWidth': '50px', 'maxWidth': '50px'},
-    #             ],
-    #             columns=[{"name": str(T.tid), "id": 'attr'}]+[{"name": 'p'+str(i), "id": 'p'+str(i)} for i in range(T.size)],
-    #             data=T.points_trans(),
-    #         ))
+                        value=list(set(values)),
+                        disabled=True,
+                    )]),
+                ], style={'width': getAttrCHS(T.size, size)})#)
+            ls_components = ls_components + list(map(lambda attr: getAttrLine(attr), sel_attributes))
             ls_components.append(html.Hr())
+        list(map(lambda k: renderT(k), tqdm(range(len(ls_trajs)), desc='Rendering Trajectories')))
     else:
-        ls_components.append(page_trajectories_filter(ls_trajs, from_trajs, to_trajs, [], sel_attributes))
+        ls_components.append(page_trajectories_filter(ls_trajs, from_trajs, to_trajs, [], []))
     
     return html.Div(ls_components)
 
@@ -190,24 +174,35 @@ def render_page_movelets(T, ls_movs):
     ls_components.append(html.Hr())
     
 #     print(ls_movs)
-    for m in ls_movs:
+    #for m in ls_movs:
+    def renderM(m):
+        nonlocal ls_components, T
         if m.tid == T.tid:
             ls_components.append(html.H6('Movelet: '+str(m.mid)))
-            for attr in m.attributes():
-                ls_components.append(html.Div(children = [
+#            for attr in m.attributes():
+#                ls_components.append(html.Div(children = [
+#                    html.A(attr, 
+#                           style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
+#                    html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
+#                        marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
+#                        min=0,
+#                        max=T.size-1,
+#                        value=[m.start, m.start+m.size],
+#                        tooltip={"placement": "bottom", "always_visible": False},
+#                    )]),
+#                ], style={'width': getAttrCHS(T.size, size)}))
+            ls_components += list(map(lambda attr: html.Div(children = [
                     html.A(attr, 
                            style={'float': 'left', 'textAlign': 'center', 'width': '50px', 'fontSize': str(CH_SIZE)+'px'}),
                     html.Div(style={'marginLeft': '50px'}, children = [dcc.RangeSlider(
                         marks={i: str(T.points[i][attr]) for i in range(T.size)}, # , 'style':{'display': 'block'}
                         min=0,
                         max=T.size-1,
-    #                             value=[0, T.size-1],
                         value=[m.start, m.start+m.size],
                         tooltip={"placement": "bottom", "always_visible": False},
-        #                 style={'display': 'block'}
-    #                         disabled=True,
                     )]),
-                ], style={'width': getAttrCHS(T.size, size)}))
+                ], style={'width': getAttrCHS(T.size, size)}), m.attributes()))
             ls_components.append(html.Hr())
+    list(map(lambda m: renderM(m), ls_movs))
     
     return html.Div(ls_components)

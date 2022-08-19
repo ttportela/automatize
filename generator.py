@@ -491,7 +491,7 @@ def instantiate_generators(attr_desc=default_types()):
     return list(map(lambda g: AttributeGenerator(**g), attr_desc))    
 
 def getScale(start=100, n_ele=10):
-    return (lambda i, x=[int(start/2)]: [(x.append(x[y]+x[y]), x[y]+x[y])[1] for y in range(i)])(n_ele)
+    return [start] + (getScale(start+start, n_ele-1) if n_ele-1 else [])
 
 def getMiddleE(X):
     return X[int((len(X) - 1)/2)]

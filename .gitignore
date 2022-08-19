@@ -131,3 +131,14 @@ assets/examples/Example/.DS_Store
 assets/examples/.DS_Store
 methods/_lib/pymove/models/.ipynb_checkpoints/lossutils-checkpoint.py
 methods/tec/models/.ipynb_checkpoints/marc-checkpoint.py
+.ipynb_checkpoints/automatize-web-checkpoint
+.ipynb_checkpoints/movelets-checkpoint.py
+.ipynb_checkpoints/pyproject-checkpoint.toml
+.ipynb_checkpoints/setup-checkpoint.py
+assets/routes/.ipynb_checkpoints/page_analysis-checkpoint.py
+assets/routes/.ipynb_checkpoints/subpage_models-checkpoint.py
+assets/routes/.ipynb_checkpoints/page_datasets-checkpoint.py
+assets/routes/.ipynb_checkpoints/subpage_trajectories-checkpoint.py
+assets/examples/.DS_Store
+assets/examples/.DS_Store
+scripts/.ipynb_checkpoints/MAT-ExportMovelets-checkpoint.py

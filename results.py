@@ -107,9 +107,9 @@ def STATS(name=['*']):
         ]
         
     if set(name) & set(['*', 'MSG', 'err', 'warn', 'TC']):
-        if set(name) & set(['*', 'MSG', 'err']):
+        if set(name) & set(['*', 'MSG']): # the only not boolean
             list_stats = list_stats + [
-                ['Messages', 'msg', 'msg'],
+                ['Messages', 'msg', 'msg'], 
             ]
         if set(name) & set(['*', 'err']):
             list_stats = list_stats + [
@@ -122,6 +122,10 @@ def STATS(name=['*']):
         if set(name) & set(['*', 'TC']):
             list_stats = list_stats + [
                 ['Finished', 'msg', 'TC'],
+            ]
+        if set(name) & set(['*', 'isMsg']):
+            list_stats = list_stats + [
+                ['Messages', 'msg', 'isMsg'],
             ]
         
     if set(name) & set(['*', '#', 'D']):
@@ -601,19 +605,20 @@ def compileResults(res_path, subsets=['specific'], list_stats=STATS(['S']), isfo
             partial_result = False
             for m in results[dataset][mname]:
                 run_cols.append(m.run)
-                df[m.run] = m.metrics(list_stats)#get_stats([file, statsf], path, method, list_stats, model)
+                df[m.run] = m.metrics(list_stats, show_warnings=True if verbose else False)#get_stats([file, statsf], path, method, list_stats, model)
 
                 e = m.runningProblems()
                 if e:
                     partial_result = True
-                    print('*** Warning: '+mname+'-'+m.run+' contains problems > ' + e)
+                    if verbose:
+                        print('*** Warning: '+mname+'-'+m.run+' contains problems > ' + e)
             # ---
             if k and len(run_cols) != k:
                 partial_result = True
             method = mname.split('-')[0]
-            df[method] = summaryRuns(df, method, run_cols, list_stats)
+            df[method] = summaryRuns(df, run_cols, list_stats)
             
-            if verbose:
+            if verbose and verbose > 1:
                 print('Adding:', dataset, '\t', len(run_cols), 'run(s)', '\t', mname)
             
             if return_ranks:
@@ -695,7 +700,7 @@ def resultRanks(df, list_stats=STATS(['S'])):
     return rank
 
 # --------------------------------------------------------------------------------->  
-def toLatex(df, cols=None, ajust=9, clines=[], resize=True, doubleline=True, mark_results=2, ranks=None):
+def results2latex(df, cols=None, ajust=9, clines=[], resize=True, doubleline=True, mark_results=2, ranks=None):
     if not cols:
         cols = df.columns
        
@@ -751,7 +756,7 @@ def toLatex(df, cols=None, ajust=9, clines=[], resize=True, doubleline=True, mar
         return line
     # ---
 
-    n_ds = len(df['Dataset'].unique()) #-1
+    n_ds = len(df['Dataset'].unique())-1 #TODO ?
     n_rows = int(int(len(df)) / n_ds)
     n_idx = 1 if n_rows == 1 else 2
     
@@ -775,7 +780,7 @@ def toLatex(df, cols=None, ajust=9, clines=[], resize=True, doubleline=True, mar
             df[col] = '-'
     df = df[visible]
     
-    df.fillna('-', inplace=True)
+    df = df.fillna('-')
     
     # ---
     s = ('\\begin{table*}[!ht]\n')
@@ -832,7 +837,201 @@ def toLatex(df, cols=None, ajust=9, clines=[], resize=True, doubleline=True, mar
     s += ('\\caption{Results for xxx dataset.}\n')
     s += ('\\label{tab:results_xxx}\n')
     s += ('\\end{table*}\n')
+    
+    print('Done.')
     return s
+
+def results2xlsx(df, cols=None, seplines=[], mark_results=2, ranks=None, filename='results.xlsx'):
+    if not cols:
+        cols = df.columns
+       
+    def visibleCols(cols):
+        ls = []
+        for i in cols:
+            ls.extend(i if type(i) == list else [i])
+        return ls
+
+    datasets = df['Dataset'].replace('', np.nan).dropna().unique()
+    n_ds = len(datasets) #-1
+    n_rows = int(int(len(df)) / n_ds)
+    n_idx = 1 if n_rows == 1 else 2
+    
+    visible = visibleCols(cols) 
+    methods = list(filter(lambda x: x not in ['Dataset', ' '], visible))
+    n_cols = len(visible)
+    
+    if ranks is not None and mark_results > 0:
+        for col in methods:
+            if col not in ranks.columns:
+                ranks[col] = np.nan
+        ranks = ranks[methods]
+    
+    if n_rows > 1 and (' ' in df.columns and ' ' not in cols):
+        visible = [' '] + visible
+    if 'Dataset' in df.columns and 'Dataset' not in cols:
+        visible = ['Dataset'] + visible
+        
+    for col in visible:
+        if col not in df.columns:
+            df[col] = '-'
+    df = df[visible]
+    
+    df = df.fillna('-')
+    
+    # ---
+    sheet_name = 'Results'
+    writer = pd.ExcelWriter(filename, engine='xlsxwriter')
+    pd.DataFrame().to_excel(writer, sheet_name=sheet_name, index=False)
+    
+    workbook  = writer.book
+    worksheet = writer.sheets[sheet_name]
+    
+    firstc_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'center', 'valign': 'vcenter', 'text_wrap': True,
+                                         'fg_color': '#4285f4', 'color': '#FFFFFF'})
+    header_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'center', 'valign': 'vcenter', 
+                                         'fg_color': '#34a853', 'color': '#FFFFFF'})
+    
+    first_format  = workbook.add_format({'top': 1, 'left': 1, 'right': 1, 'align': 'right', 'valign': 'vcenter', 'fg_color': '#a4c2f4'})
+    odd_format    = workbook.add_format({'border': 0,'left': 1,'right': 1, 'align': 'right',  'valign': 'vcenter', 'fg_color': '#c9daf8'})
+    even_format   = workbook.add_format({'border': 0,'left': 1,'right': 1, 'align': 'right',  'valign': 'vcenter', 'fg_color': '#a4c2f4'})
+    last_format   = workbook.add_format({'bottom': 1,'left': 1,'right': 1, 'align': 'right',  'valign': 'vcenter', 'fg_color': '#ffff00'})
+    
+    mark_formats = [
+        workbook.add_format({'bold': True}),
+        workbook.add_format({'italic': True, 'underline': True}),
+        workbook.add_format({'italic': True})
+    ]
+    err_format = workbook.add_format({'color': '#ea4335'})
+    
+    if mark_results > len(mark_formats):
+        mark_results = len(mark_formats)
+    
+    # First two columns
+    first = 1 if n_cols > len(cols) else 0
+    j = 0
+    if 'Dataset' in df.columns:
+        worksheet.merge_range(0, j, first, j, 'Dataset', firstc_format)
+        i = first+1
+        for ds in range(n_ds):
+            worksheet.merge_range(i, j, i+n_rows-1, j, datasets[ds].replace('(specific)', ''), firstc_format)
+            i = i+n_rows
+            if ds+1 in seplines:
+                i += 1
+        worksheet.set_column(j, j, 10)
+        j += 1
+    if ' ' in df.columns:
+        worksheet.merge_range(0, j, first, j, ' ', firstc_format)
+        i = first+1
+        for ds in range(n_ds):
+            for r in range(n_rows):
+                l = (ds * n_rows) + r
+                if r == 0:
+                    style = first_format
+                elif r == n_rows-1:
+                    style = last_format
+                elif (r % 2) == 0:
+                    style = even_format
+                else:
+                    style = odd_format
+                worksheet.write(i, j, df.at[l,' '], style)
+                i += 1
+            if ds+1 in seplines:
+                i += 1
+        worksheet.set_column(j, j, 14)
+        j += 1
+    startc = j
+    
+    # First Line, group headers (if it has):
+    if n_cols > len(cols):
+        for i in range(len(cols)):
+            if type(cols[i]) == list:
+                worksheet.merge_range(0, j, 0, j+len(cols[i])-1, cols[i][0].replace('_', '-'), header_format)
+                j += len(cols[i])
+            else:
+                worksheet.write(0, j, cols[i].replace('_', '-'), header_format)
+                j += 1
+            j += 1
+    
+    # Second Line, headers:
+    j = startc
+    for i in range(len(cols)):
+        if type(cols[i]) == list:
+            for ii in range(len(cols[i])):
+                worksheet.write(first, j, cols[i][ii].replace('_', '-'), header_format)
+                worksheet.set_column(j, j, 14)
+                j += 1
+        else:
+            worksheet.write(first, j, cols[i].replace('_', '-'), header_format)
+            worksheet.set_column(j, j, 14)
+            j += 1
+        worksheet.set_column(j, j, 1)
+        j += 1
+    
+    #--
+    def getValue(ln, col):
+        value = df.at[ln,col] if col in df.columns else '-'
+        value = str(value)
+        style = None
+        if ranks is not None and mark_results > 0 and col in ranks.columns:
+            marks = list(filter(lambda x:  x == x, list(ranks.loc[ln,:].unique())))
+            marks.sort()
+            if ranks.at[ln,col] in marks and marks.index(ranks.at[ln,col]) < mark_results:
+                style = mark_formats[marks.index(ranks.at[ln,col])]
+        if '*' in value:
+            style = err_format
+        return value, style
+    
+    def write(wl, wc, l, c, style):
+        def searchColumn(col):
+            if '*' in col:
+                import fnmatch
+                filtered = fnmatch.filter(df.columns, col)
+                for c1 in filtered:
+                    if df.at[l,c1] != '-' and df.at[l,c1]:
+                        return c1
+                return filtered[0] if len(filtered) > 0 else col
+            return col
+         
+        value, special = getValue(l, searchColumn(c))
+        if special:
+            #worksheet.write(wl, wc, value, style)
+            worksheet.write_rich_string(wl, wc, ' ', special, value, ' ', style)
+        else:
+            worksheet.write(wl, wc, value, style)
+    #---
+    
+    # The rest of data:
+    i = first+1
+    for ds in range(n_ds):
+        for r in range(n_rows):
+            l = (ds * n_rows) + r
+            if r == 0:
+                style = first_format
+            elif r == n_rows-1:
+                style = last_format
+            elif (r % 2) == 0:
+                style = even_format
+            else:
+                style = odd_format
+                
+            j = startc
+            for jj in range(len(cols)):
+                if type(cols[jj]) == list:
+                    for jjj in range(len(cols[jj])):
+                        write(i, j, l, cols[jj][jjj], style)
+                        j += 1
+                else:
+                    write(i, j, l, cols[jj], style)
+                    j += 1
+                j += 1
+                
+            i += 1
+        if ds+1 in seplines:
+            i += 1
+       
+    # --
+    workbook.close()
+    print(filename + ', Done.')
     
 #def df2Latex(df, ajust=9, clines=[]):
 #    n_cols = (len(df.columns)-2)
@@ -951,20 +1150,37 @@ def split_runtime(millis):
     return (hours, minutes, seconds)
 
 # ----------------------------------------------------------------------------------
-def summaryRuns(df, method, run_cols, list_stats):
-    stats = df.loc[:, run_cols].mean(axis=1)
-    
+def summaryRuns(df, run_cols, list_stats):    
+    stats = []
     for i in range(len(list_stats)):
-        if list_stats[i][1] == 'endDate':
+        if list_stats[i][1] == 'endDate' or list_stats[i][1] == 'max': # For maximuns
             val = -1
             for rc in run_cols:
                 val = max(val, df.at[i, rc])
-            stats[i] = val
-        elif list_stats[i][1] == 'msg':
+            stats.append(val)
+        elif list_stats[i][1] == 'min': # For minimuns
+            val = float("inf")
+            for rc in run_cols:
+                val = min(val, df.at[i, rc])
+            stats.append(val if val != float("inf") else 0)
+        elif list_stats[i][2] == 'msg': # For texts
+            val = ''
+            for rc in run_cols:
+                e = df.at[i, rc]
+                val = val + (e if e else '_') + (',' if rc != run_cols[-1] else '')
+            stats.append(val)
+        elif list_stats[i][1] == 'msg': # For booleans
             val = False
             for rc in run_cols:
                 val = True if val or df.at[i, rc] else False
-            stats[i] = val
+            stats.append(val)
+        else: # For mean
+            val = 0
+            ct = 0
+            for rc in run_cols:
+                val += df.at[i, rc]
+                ct += 1
+            stats.append(val / ct)
     
     return stats
 

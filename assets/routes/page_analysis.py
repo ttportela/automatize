@@ -48,7 +48,7 @@ from automatize.preprocessing import readDataset, organizeFrame
 def reset():
 #     global from_trajs, to_trajs, sel_attributes, sel_traj, ls_tids, ls_trajs, ls_movs
     sess('from_trajs', 0)
-    sess('to_trajs', 100)
+    sess('to_trajs', 50)
     sess('sel_attributes', [])
     sess('sel_traj', '')
     # ------------------------------------------------------------
@@ -77,75 +77,112 @@ def render_statistics(ls_tids, ls_trajs, ls_movs):
         df_stats = movelets_statistics(ls_movs)
         df_stats = movelets_statistics_bylabel(df_stats)
         
-        components.append(html.Div(style = {'margin':10, 'display':'grid'}, children = [
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Number of Movelets: '),
-                html.Span(str(len(ls_movs))),
-            ]),
-        ]))
-        components.append(dash_table.DataTable(
-            id='table-movs-stats',
-            columns=[{"name": i, "id": i} for i in df_stats.columns],
-            data=df_stats.to_dict('records'),
-#             css=[{'selector': 'table', 'rule': 'table-layout: fixed; width: 50%'}],
-#             style_cell={
-#                 'width': '{}%'.format(len(df_stats.columns)*2),
-#                 'textOverflow': 'ellipsis',
-#                 'overflow': 'hidden'
-#             }
+#        components.append(html.Div(style = {'margin':10, 'display':'grid'}, children = [
+#            html.Div(style = {'display':'inline'}, children = [
+#                html.Strong('Number of Movelets: '),
+#                html.Span(str(len(ls_movs))),
+#            ]),
+#        ]))
+#        components.append(dash_table.DataTable(
+#            id='table-movs-stats',
+#            columns=[{"name": i, "id": i} for i in df_stats.columns],
+#            data=df_stats.to_dict('records'),
+##             css=[{'selector': 'table', 'rule': 'table-layout: fixed; width: 50%'}],
+##             style_cell={
+##                 'width': '{}%'.format(len(df_stats.columns)*2),
+##                 'textOverflow': 'ellipsis',
+##                 'overflow': 'hidden'
+##             }
+#        ))
+        components.append(html.Details(style = {'margin':10, 'display':'grid'}, open=True, children = 
+            [
+                html.Summary(
+                    html.A(children=[
+                        html.Strong('Total Number of Movelets: '),
+                        html.Span(str(len(ls_movs))),
+                    ]),
+                ),
+                html.Div(list(map(lambda d: 
+                     html.Details(open=True, children = [
+                        html.Summary([
+                            html.Strong('Label: '),
+                            html.Span(str(d['label'])),
+                        ]),
+                        html.Div(list(map(lambda x:
+                            html.Div([
+                                html.Strong(x[0]+': '),
+                                html.Span(str(x[1])),
+                            ])
+                        , list(d.items())[1:])),
+                        style={'text-indent':'4em'})
+                     ]), df_stats.to_dict('records'))),
+                    style={'text-indent':'2em'}
+                )
+            ]
         ))
         components.append(html.Hr())
     
     if len(ls_trajs) > 0:
-        labels, samples, top, bot, npoints, avg_size, diff_size, attr, num_attr, classes, stats = trajectory_statistics(ls_trajs)
-        components.append(html.Div(style = {'margin':10, 'display':'grid'}, children = [
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Number os Trajectories: '),
-                html.Span(str(samples)),
-#                 html.Br(),
-#                 html.Span(', '.join(['Class '+str(k)+': '+str(v) for k,v in classes.items()])),
-            ]),
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Attributes: '),
-                html.Span(str(num_attr)),
-                html.Br(),
-                html.Span('[' + (', '.join(attr)) + ']'),
-            ]),
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Trajectories Size: '),
-                html.Span(str(avg_size) + ' | from ' + str(bot) + ' to ' + str(top) + ' | ±' + str(diff_size)),
-            ]),
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Number of Points: '),
-                html.Span(str(npoints)),
-            ]),
-            html.Div(style = {'display':'inline'}, children = [
-                html.Strong('Classes: '),
-                html.Span(str(len(labels))),
-                html.Br(),
-                html.Span('[' + (', '.join(labels)) + ']'),
-            ]),
-        ]))
-        stats.index.name = 'Attribute'
-        stats.reset_index(level=0, inplace=True)
-        components.append(dash_table.DataTable(
-            id='table-trajs-stats',
-            columns=[{"name": i, "id": i} for i in stats.columns],
-            data=stats.to_dict('records'),
-            css=[{'selector': 'table', 'rule': 'table-layout: fixed; width: 50%'}],
-            style_cell={
-                'width': '{}%'.format(len(stats.columns)*2),
-                'textOverflow': 'ellipsis',
-                'overflow': 'hidden'
-            }
-        ))
+        #labels, samples, top, bot, npoints, avg_size, diff_size, attr, num_attr, classes, stats = trajectory_statistics(ls_trajs)
+        labels, samples, top, bot, npoints, avg_size, diff_size, attr, num_attr, classes = trajectory_statistics(ls_trajs)
+        
+        ds_stats = html.Div(style = {'margin':10}, children = [
+            dbc.Accordion(
+                [
+                    dbc.AccordionItem(
+                        [
+                            html.Div(style = {'margin':10, 'display':'grid'}, children = [
+                                html.Div(style = {'display':'inline'}, children = [
+                                    html.Strong('Number os Trajectories: '),
+                                    html.Span(str(samples)),
+                    #                 html.Br(),
+                    #                 html.Span(', '.join(['Class '+str(k)+': '+str(v) for k,v in classes.items()])),
+                                ]),
+                                html.Div(style = {'display':'inline'}, children = [
+                                    html.Strong('Attributes: '),
+                                    html.Span(str(num_attr)),
+                                    html.Br(),
+                                    html.Span('[' + (', '.join(attr)) + ']'),
+                                ]),
+                                html.Div(style = {'display':'inline'}, children = [
+                                    html.Strong('Trajectories Size: '),
+                                    html.Span(str(avg_size) + ' | from ' + str(bot) + ' to ' + str(top) + ' | ±' + str(diff_size)),
+                                ]),
+                                html.Div(style = {'display':'inline'}, children = [
+                                    html.Strong('Number of Points: '),
+                                    html.Span(str(npoints)),
+                                ]),
+                            ])
+                        ],
+                        title="Dataset Statistics",
+                    ),
+                    dbc.AccordionItem(
+                        [
+                            html.Div(style = {'display':'inline'}, children = [
+                                #html.Strong('Classes: '),
+                                #html.Span(str(len(labels))),
+                                #html.Br(),
+                                html.Span(', '.join(labels)),
+                            ]),
+                        ],
+                        title="Classes",
+                    ),
+                    dbc.AccordionItem(
+                        [
+                            html.Div(style = {'display':'inline'}, children = [
+                                #html.Br(),
+                                #html.Strong('Trajectories per Class: '),
+                                #html.Br(),
+                                html.Span(', '.join(['C('+str(k)+'): '+str(v) for k,v in classes.items()])),
+                            ])
+                        ],
+                        title="Trajectories per Class",
+                    ),
+                ],
+            )]
+        )
+        components.append(ds_stats)
         components.append(html.Hr())
-        components.append(html.Div(style = {'display':'inline'}, children = [
-                html.Br(),
-                html.Strong('Trajectories per Class: '),
-                html.Br(),
-                html.Span(', '.join(['C('+str(k)+'): '+str(v) for k,v in classes.items()])),
-            ]))
         
     return components
 
@@ -173,7 +210,7 @@ def parse_contents(contents, filename, date):
 
             df.columns = df.columns.astype(str)
 
-            columns_order_zip, columns_order_csv = organizeFrame(df)
+            df, columns_order_zip, columns_order_csv = organizeFrame(df)
             update_trajectories(df[columns_order_csv])
         elif 'json' in filename:
             update_movelets(io.BytesIO(decoded))
@@ -194,10 +231,14 @@ def update_trajectories(df):
     ls_trajs       = gess('ls_trajs', [])
     
     ls_aux = parse_trajectories(df)
-    for T in ls_aux:
+    #for T in ls_aux:
+    def processT(T):
+        nonlocal ls_tids, ls_trajs
         if T.tid not in ls_tids:
             ls_tids.add(T.tid)
             ls_trajs.append(T)
+            
+    list(map(lambda T: processT(T), ls_aux))
             
     sess('ls_tids', list(ls_tids))
     sess('ls_trajs', ls_trajs)
@@ -208,8 +249,10 @@ def update_movelets(data):
     ls_movs       = gess('ls_movs', [])
     
     ls_aux = parse_movelets(data)
-    for m in ls_aux:
-        ls_movs.append(m)
+    #for m in ls_aux:
+    #    ls_movs.append(m)
+    
+    ls_movs = ls_movs + ls_aux 
         
     sess('ls_movs', ls_movs)
 
@@ -226,8 +269,9 @@ def update_movelets(data):
               Input('upload-data', 'contents'),
               State('upload-data', 'filename'),
               State('upload-data', 'last_modified'),
+              State('output-data-upload', 'children'),
 )
-def update_statistic(list_of_contents, list_of_names, list_of_dates):
+def update_statistic(list_of_contents, list_of_names, list_of_dates, components):
     ls_tids        = set(gess('ls_tids', []))
     ls_trajs       = gess('ls_trajs', [])
     ls_movs        = gess('ls_movs', [])

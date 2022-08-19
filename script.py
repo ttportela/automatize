@@ -57,7 +57,7 @@ def gensh(method, datasets, params=None, check_done=True, doacc=True):
             printRun(method, data, results, prog_path, prefix, mname, var, json, params, runopts, islog, print_only, 
                      check_done, doacc, pname)
                 
-            print("# END - By Tarlis Portela")
+            print("# Automatize - END generated script")
             sys.stdout = orig_stdout
             f.close()
     return f_name
@@ -264,9 +264,10 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     
     if k:
         data = os.path.join(data, '${RUN}')
-        results = os.path.join(results, prefix.replace('/', '_'), '${RUN}')
     else:
-        results = os.path.join(results, prefix.replace('/', '_'), 'run0')
+        print('RUN="run0"')
+        #results = os.path.join(results, prefix.replace('/', '_'), 'run0')
+    results = os.path.join(results, prefix.replace('/', '_'), '${RUN}')
     
     if k:
         print('for RUN in '+ ' '.join(['"run'+str(x)+'"' for x in list(k)]) )
@@ -353,34 +354,39 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         elif 'SM' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
             Movelets(data, results, prefix, MNAME, json, \
-                       Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, \
-                       print_only=print_only, jar_name='SUPERMovelets', java_opts='-Xmx'+GIG+'G', \
-                       pyname=pyname, timeout=timeout, impl=2)
+                     Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, \
+                     print_only=print_only, jar_name='SUPERMovelets', java_opts='-Xmx'+GIG+'G', \
+                     pyname=pyname, timeout=timeout, impl=2, \
+                     keep_folder=(2 if 'keep_results' not  in params else params['keep_results']))
 
         elif 'MM' in method or 'MMp' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
             Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
-                        prg_path=prog_path, print_only=print_only, jar_name='MASTERMovelets', java_opts='-Xmx'+GIG+'G', \
-                        pyname=pyname, timeout=timeout, impl=2)
+                     prg_path=prog_path, print_only=print_only, jar_name='MASTERMovelets', java_opts='-Xmx'+GIG+'G', \
+                     pyname=pyname, timeout=timeout, impl=2, \
+                     keep_folder=(2 if 'keep_results' not  in params else params['keep_results']))
 
         elif 'Movelets' in method:
             timeout = params['timeout'] if 'timeout' in params.keys() else None
             Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
-                        prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
-                        pyname=pyname, timeout=timeout, impl=1)
+                     prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
+                     pyname=pyname, timeout=timeout, impl=1, \
+                     keep_folder=(2 if 'keep_results' not  in params else params['keep_results']))
 
         elif oneof(method, ['Dodge', 'Xiao', 'Zheng']):
             timeout = params['timeout'] if 'timeout' in params.keys() else None
             Movelets(data, results, prefix, MNAME, json, Ms=islog, n_threads=THREADS, extra=runopts, \
-                        prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
-                        pyname=pyname, timeout=timeout, impl=0)
+                    prg_path=prog_path, print_only=print_only, jar_name=trimsuffix(method), java_opts='-Xmx'+GIG+'G', \
+                    pyname=pyname, timeout=timeout, impl=0, \
+                    keep_folder=(2 if 'keep_results' not  in params else params['keep_results']))
 
 
         else: #if 'hiper' in method or 'ultra' in method or 'random' in method or 'indexed' in method or method == 'pivots':
             desc = None if 'use.mat' in params and params['use.mat'] else json+'_hp'
             Movelets(data, results, prefix, MNAME, desc, version=trimsuffix(method), \
                      Ms=islog, extra=runopts, n_threads=THREADS, prg_path=prog_path, print_only=print_only, \
-                     jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname)
+                     jar_name='TTPMovelets', java_opts='-Xmx'+GIG+'G', pyname=pyname, \
+                     keep_folder=(2 if 'keep_results' not in params else params['keep_results']))
 
 
         if 'samples' in params and not(method == 'MARC' or 'poi' in method or 'TEC' in method):
@@ -409,11 +415,11 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
             if 'rounds' in params:
                 print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
                 print('do')
-                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${FOLD}" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" -r ${ROUND} -m "model_${ROUND}" "'+results+'/${ROUND}" "'+MNAME+'"')
                 print('done')
                 print()
             else:
-                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" "'+results+'/${FOLD}" "'+MNAME+'"')
+                print(pyshel(DEFAULT_MC, prog_path, pyname)+' -c "MLP,RF" "'+results+'" "'+MNAME+'"')
             print()
         
 #     print('echo "${DIR}/'+mname+'-'+var+' => Done."')
@@ -425,6 +431,163 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
         print('done')
     print('# --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ')
     
+# --------------------------------------------------------------------------------------
+def scalability(methods, datasets, params=None,
+    Ns=[100, 10],
+    Ms=[10,  10],
+    Ls=[8,   10],
+    Cs=[2,   10],
+    Ts=[1,    4],
+    n=-1, m=-1, l=-1, c=-1, t=-1,
+    fileprefix='scalability',
+    fileposfix='train',
+    memoryprofile=True,
+    run_prefix=''):
+    
+    assert Ns[0] > 0, 'N > 0'
+    assert Ms[0] > 0, 'M > 0'
+    assert Cs[0] > 0, 'C > 0'
+    assert Ls[0] > 0, 'L > 0'
+    assert Ns[0] >= Cs[0], 'N >= C'
+    
+    importer(['sys', 'itertools'], globals())
+    from automatize.generator import getScale, getMiddleE
+    
+    N = getScale(Ns[0], Ns[1])
+    M = getScale(Ms[0], Ms[1])
+    L = getScale(Ls[0], Ls[1])
+    C = getScale(Cs[0], Cs[1])
+    T = getScale(Ts[0], Ts[1])
+    
+    n = getMiddleE(N) if n == -1 else n
+    m = getMiddleE(M) if m == -1 else m
+    l = getMiddleE(L) if l == -1 else l
+    c = getMiddleE(C) if c == -1 else c
+    t = getMiddleE(T) if t == -1 else t
+    
+    class Comb():
+        def __init__(self, name, n, m, l, c, t):
+            self.name = name
+            self.n = n
+            self.m = m
+            self.l = l
+            self.c = c
+            self.t = t
+
+        def __hash__(self):
+            return hash((str(self.n), str(self.m), str(self.l), str(self.c), str(self.t)))
+        def __eq__(self, other):
+            return other and self.__hash__() == other.__hash__()
+        def __repr__ (self):
+            return '_'.join([str(self.n),'trajectories',str(self.m),'points',str(self.l),'attrs',str(self.c),'labels',str(self.t),'T'])
+
+        def before(self, x, y):
+            return x - y < 0
+        def __lt__(self, other):
+            if not other:
+                return False
+
+            if  (self.before(self.l, other.l)) or \
+                (self.l == other.l and self.before(self.n, other.n)) or \
+                (self.l == other.l and self.n == other.n and self.before(self.m, other.m)) or \
+                (self.l == other.l and self.n == other.n and self.m == other.m and self.before(self.c, other.c)) or \
+                (self.l == other.l and self.n == other.n and self.m == other.m and self.c == other.c and self.before(other.t, self.t)):
+                return True
+            else:
+                return False
+            
+    def combs(name, N, M, L, C, T):
+        return list(map(lambda x: Comb(name, x[0], x[1], x[2], x[3], x[4]), 
+                                 itertools.product(N, M, L, C, T)))
+
+    ln = combs('N', N, [m], [l], [c], [t])
+    lm = combs('M', [n], M, [l], [c], [t])
+    lc = combs('C', [n], [m], [l], C, [t])
+    ll = combs('L', [n], [m], L, [c], [t])
+    lt = combs('T', [n], [m], [l], [c], T)
+
+    lx = list(set(ln + lm + lc + ll + lt))
+    lx.sort()    
+    
+    print_only = True
+    doacc = False
+    check_done = True
+    params['use.mat'] = True
+    params['keep_results'] = 0
+    
+    if memoryprofile:
+        run_prefix = 'mprof run --multiprocess ' + run_prefix
+    
+    f_name = ''
+
+    def printScript(name, method, key, dataset, lx, params):
+        method, params, mname, runopts, islog, pname, THREADS, GIG, data_folder, res_path, prog_path = configMethod(method, params)
+        # -----------------------------
+        TEST_PATH   = (params['folder'] if 'folder' in params else 'Scalability')+'-' + GIG+'G'
+        DESC_PATH   = os.path.join(data_folder, 'descriptors')
+        results     = os.path.join(res_path, TEST_PATH)
+        # -----------------------------
+        
+        torun = ''
+        
+        prefix      = dataset #.capitalize()
+        data        = os.path.join(data_folder, key, dataset)
+        #json        = os.path.join(DESC_PATH, desc)
+
+        os.makedirs(params['sh_folder'], exist_ok=True)        
+
+        scrpt = 'run-scalability_'+name+'-'+mname+'-'+dataset+'.sh'
+        scrpt = scrpt.replace('/', '_')
+
+        torun += run_prefix + 'sh ' + scrpt + '\n'
+        #print('sh ' + scrpt)
+
+        orig_stdout = sys.stdout
+        f = open(os.path.join(params['sh_folder'], scrpt), 'w')
+        sys.stdout = f
+        print('#!/bin/bash')
+
+        #json = json + '_' + var
+        file = '"'+fileprefix+'_${FILE}_'+fileposfix+'"'
+        params['extra'] = '-inprefix ' + file
+
+        #var = prefix if ('useds' in params and params['useds']) else var
+
+        print('BASE="'+params['root']+'"')
+
+        print('for FILE in "'+ '" "'.join(map(lambda x: str(x), lx)) + '"')
+        print('do')
+        print('# ------------------------------------------------------------------')
+
+        printRun(method, data, results, prog_path, prefix, mname, '${FILE}', None, params, 
+                 runopts, islog, print_only, check_done, doacc, pname)
+
+        print('done')
+        print("# Automatize - END generated script")
+        sys.stdout = orig_stdout
+        f.close()
+        
+        return torun
+
+    # ---
+    for key in datasets:
+        for dataset in datasets[key]:
+            for name in ['N', 'M', 'C', 'L', 'T']:
+                for method in methods:
+                    l = [x for x in lx if x.name == name]
+                    f_name += printScript(name, method, key, dataset, l, params)
+                f_name += '\n'  
+            f_name += '# ------------------------------------------------------------------\n'
+
+    # ---
+    f = open(os.path.join(params['sh_folder'], 'run-all-scalability.sh'),'w')
+    print('#!/bin/bash', file=f)
+    print(f_name, file=f)
+    print('# --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ', file=f)
+    print("# Automatize - END generated script", file=f)
+    f.close()
+    return f_name
+
 # --------------------------------------------------------------------------------------
 def sh2bat(path, folder, root=None, root_win=None, py_name='python'):
     # Convert sh to bat:

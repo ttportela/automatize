@@ -109,7 +109,9 @@ This is a more complete and second version of the previous package [Automatise](
  - [POI-F](https://doi.org/10.1145/3341105.3374045) extension: **POIS** is an extension to the POI-F method capable of concatenating dimensions and sequences for trajectory classification. Available for the methods `poi`, `npoi`, and `wnpoi`.
  - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest*
  - Scripts for classification refactored to command line best practices, and implemented random seed parameter to all methods for reproductibility purposes.
+ - Trajectory Generator Module: offers two types of generation methods: random or sampling real data. Possible to control the number of: trajectories, points, attributes, and classes.
  
  *TODO*:
  - New visualization tools: 
  - New classification methods: MainTUL*
+ - New visualization tools: trajectory spatial heatmap, ... (graphincs.py)
