@@ -12,8 +12,6 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import geohash2 as gh
 import numpy as np
-# from ...main import importer #, display
-# importer(['S', 'gh'], locals())
 
 
 base32 = ['0', '1', '2', '3', '4', '5', '6', '7',

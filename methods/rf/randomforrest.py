@@ -44,7 +44,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 from main import importer
 #importer(['S'], globals())
 
-def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42):
+def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, geohash=False, geo_precision=30):
     
     #import time
     #import mplleaflet as mpl
@@ -57,7 +57,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
 ##    from methods._lib.pymove.models import datautils
     from methods._lib.pymove.core import utils
     
-    importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    importer(['S', 'TCM', 'sys', 'json', 'tqdm', 'datetime'], globals())
     from methods._lib.datahandler import loadTrajectories
     from methods._lib.utils import update_report, print_params, concat_params
 
@@ -72,11 +72,16 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
     dir_validation = os.path.join(res_path, 'TRF-'+prefix, 'validation')
     dir_evaluation = os.path.join(res_path, 'TRF-'+prefix)
 
+    #space_geohash=False # True: Geohash, False: indexgrid
+    #geo_precision=30 #meters
+    
     # Load Data - Tarlis:
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
-                                                                          y_one_hot_encodding=False)
+                                                                          y_one_hot_encodding=False,
+                                                                          space_geohash=geohash,
+                                                                          geo_precision=geo_precision)
     
 #    df_train = pd.read_csv(file_train)
 #    df_val = pd.read_csv(file_val)
@@ -108,7 +113,7 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
         y_test = y[2]
             
     print("\n[TRF:] Building Random Forrest Model")
-    start_time = time.time()
+    start_time = datetime.now()
     
     n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]# Number of trees in random forest
     max_depth = [int(x) for x in np.linspace(20, 40, num = 3)] # Maximum number of levels in tree
@@ -262,9 +267,11 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
                             n_jobs=n_jobs)
 
 
-            RF.fit(X_train, y_train)
+            #RF.fit(X_train, y_train)
+            RF.fit(np.concatenate([X_train, X_val]), np.concatenate([y_train, y_val]))
             #RF.fit(X_val, y_val)
             eval_report, y_pred = RF.predict(X_test, y_test)
+            #eval_report, y_pred = RF.predict(X_val, y_val)
             evaluate_report.append(eval_report)
 
             RF.free()
@@ -276,8 +283,8 @@ def TrajectoryRF(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, ra
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
             
-        end_time = time.time()
-        print('[TRF:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
+        end_time = (datetime.now()-time).total_seconds() * 1000
+        print('[TRF:] Processing time: {} milliseconds. Done.'.format(end_time))
     else:
         print('[TRF:] Model previoulsy built.')
         

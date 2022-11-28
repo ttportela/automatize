@@ -12,3 +12,4 @@ networkx
 plotly
 scikit-mobility
 xlsxwriter
+seaborn

@@ -114,6 +114,14 @@ def importer(key=['S'], this=None, modules={}):
         if set(key) & set(['*', 'others', 'TCM', 'collections']):
             module = importlib.import_module('collections')
             mdic.update( {'collections': module} ) 
+            
+        if set(key) & set(['*', 'others', 'sns']):
+            module = importlib.import_module('seaborn')
+            mdic.update( {'sns': module} ) 
+            
+        if set(key) & set(['*', 'others', 'sns', 'plt']):
+            module = importlib.import_module('matplotlib')
+            mdic.update( {'plt': getattr(module, 'pyplot')} )
     
     # FOR neural networks:
     if set(key) & set(['*', 'pynn', 'models', 'layers', 'initializers', 'regularizers', 'callbacks', 'optimizers', 
@@ -294,7 +302,7 @@ def importer(key=['S'], this=None, modules={}):
             module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.marc')
             mdic.update( {'model_marc': getattr(module, 'model_marc')} )
         if set(key) & set(['*', 'ensembles', 'TEC.POIS']):
-            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.poifreq')
+            module = importlib.import_module(PACKAGE_NAME+'.methods.pois.model_poifreq')
             mdic.update( {'model_poifreq': getattr(module, 'model_poifreq')} )
 #        if set(key) & set(['*', 'ensembles', 'TEC.RF']):
 #            module = importlib.import_module(PACKAGE_NAME+'.methods.tec.models.randomforrest')
@@ -327,10 +335,11 @@ def importer(key=['S'], this=None, modules={}):
         if set(key) & set(['*', 'classifiers', 'AMLP', 'ApproachMLP']):
             mdic.update( {'ApproachMLP': getattr(module, 'ApproachMLP')} )  
             
-    if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'f1', 'classification_report_csv', 'calculateAccTop5']):
+    if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'f1', 'classification_report_csv', 'classification_report_dict2csv', 'calculateAccTop5']):
         module = importlib.import_module(PACKAGE_NAME+'.methods._lib.metrics')
-        if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'classification_report_csv']):
-            mdic.update( {'classification_report_csv': getattr(module, 'classification_report_csv')} )
+        if set(key) & set(['*', 'report', 'TEC.report', 'MC.report', 'classification_report_csv', 'classification_report_dict2csv']):
+            mdic.update( {'classification_report_dict2csv': getattr(module, 'classification_report_dict2csv')} )
+            mdic.update( {'classification_report_csv': getattr(module, 'classification_report_csv')} ) #TODO DEPRECATED
         if set(key) & set(['*', 'report', 'MC.report', 'calculateAccTop5']):
             mdic.update( {'calculateAccTop5': getattr(module, 'calculateAccTop5')} )
         if set(key) & set(['*', 'report', 'MC.report', 'f1']):

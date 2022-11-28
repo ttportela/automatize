@@ -11,10 +11,9 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import sys, os 
 #sys.path.insert(0, os.path.abspath('.'))
-import pandas as pd
+#import pandas as pd
 import glob2 as glob
 import shutil
-import tarfile
 
 import argparse
 
@@ -27,6 +26,8 @@ def parse_args():
     parse = argparse.ArgumentParser(description='Export and compress a .tgz archive of the metric result files (do not include data files)')
     parse.add_argument('results-path', type=str, help='path for the results folder')
 
+    parse.add_argument('-f', '--format', type=str, default='tgz', help='output format [tgz,zip]')
+    
     args = parse.parse_args()
     config = vars(args)
     return config
@@ -35,6 +36,8 @@ config = parse_args()
 #print(config)
 
 results_path    = config["results-path"]
+
+out_format      = config["format"]
 
 to_file    = os.path.join(results_path, os.path.basename(os.path.normpath(results_path))+'.tgz')
 
@@ -57,10 +60,22 @@ for file in filelist:
 
 filesList = list(set(filesList))
 
-with tarfile.open(to_file, "w:gz") as tar:
-    for source in filesList:
-        target = source.replace(results_path, '')
-        print('Add:', target)
-        tar.add(source, arcname=target)
+if out_format == 'tgz':
+    import tarfile
+    with tarfile.open(to_file, "w:gz") as tar:
+        for source in filesList:
+            target = source.replace(results_path, '')
+            print('Add:', target)
+            tar.add(source, arcname=target)
+
+elif out_format == 'zip':
+    import zipfile
+    with zipfile.ZipFile(to_file, mode="a") as fzip:
+        for source in filesList:
+            target = source.replace(results_path, '')
+            print('Add:', target)
+            fzip.write(source, target)
+else:
+    print("Format Invalid.")
 
 print("Done.")

@@ -281,16 +281,21 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     DIRF = os.path.join(results, MNAME)
 #     print('if [ -d "${DIR}/'+mname+'-'+var+'" ]; then')
 #     print('   echo "${DIR}/'+mname+'-'+var+'... [OK]"')
-    print('if [ -d "'+DIRF+'" ]; then')
-    print('   echo "'+DIRF+' ... [OK]"')
-    print('else')
-    print()
+    if check_done:
+        print('if [ -d "'+DIRF+'" ]; then')
+        print('   echo "'+DIRF+' ... [OK]"')
+        print('else')
+        print()
     
 #     dsvar = 'specific' if '_ts' not in data else prefix
     dsvar = var if '_ts' not in data else prefix
     
     if 'univariate_ts' in data:
         runopts += '-inprefix "' + prefix + '" '
+        
+    def mkdir(folder):
+        print('md' if os.name == 'nt' else 'mkdir -p', '"'+folder+'"')
+        print('')
     
 #     if method == 'TEC' or method == 'TEC2':
     if 'TEC' in method:
@@ -301,8 +306,10 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
 #         movelets_method = 'MML' if 'ensemble_methods' not in params else params['ensemble_methods'][0]
 #         pois_method = 'npoi' if 'ensemble_methods' not in params else params['ensemble_methods'][1]
 #         print('mkdir -p "${DIR}/'+mname+'-'+var+ '"')
-        print('mkdir -p "'+DIRF+'"')
-        print('')
+
+        mkdir(DIRF)
+#        print('mkdir -p "'+DIRF+'"')
+#        print('')
         
         for movelets_method in ensemble_methods[0]:
             for pois_method in ensemble_methods[1]:
@@ -323,19 +330,21 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
                      descriptor='', sequences=params['sequences'], features=params['features'], dataset=dsvar, num_runs=1,\
                      movelets_line=movelets_line, poif_line=poif_line)
     elif 'TC-' in method:
-        if 'rounds' in params:
-            print('# --------------------------------------------------------------------------------------')
-            print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
-            print('do')
-            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" -r ${ROUND} "'+data+'" "'+results+'/rand${ROUND}"')
-            print('done')
-            print('# --------------------------------------------------------------------------------------')
-            print()
-
-        else:
-            print('# --------------------------------------------------------------------------------------')
-            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" "'+data+'" "'+results+'"')
-            print()
+#        if 'rounds' in params:
+#            print('# --------------------------------------------------------------------------------------')
+#            print('for ROUND in '+ ' '.join(['"'+str(x)+'"' for x in range(1, params['rounds']+1)]) )
+#            print('do')
+#            print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" -r ${ROUND} "'+data+'" "'+results+'/rand${ROUND}"', '2>&1 | tee -a "'+outfile+'" ')
+#            print('done')
+#            print('# --------------------------------------------------------------------------------------')
+#            print()
+#
+#        else:
+        print('# --------------------------------------------------------------------------------------')
+        mkdir(DIRF)
+        print(pyshel(DEFAULT_TC, prog_path, pyname)+' -ds "'+dsvar+'" -c "'+method.split('-')[1]+'" "'+data+'" "'+results+'"', 
+              '2>&1 | tee -a "'+os.path.join(DIRF, MNAME)+'.txt" ')
+        print()
     else:
         prefix = None
         
@@ -426,7 +435,8 @@ def printRun(method, data, results, prog_path, prefix, mname, var, json, params,
     print('echo "'+DIRF+' ... Done."')
     if call_exit:
         print('exit 1')
-    print('fi')
+    if check_done:
+        print('fi')
     if k:
         print('done')
     print('# --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ')

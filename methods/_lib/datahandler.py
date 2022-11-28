@@ -21,8 +21,9 @@ def loadTrajectories(dir_path,
                      file_prefix='', 
                      tid_col='tid', 
                      class_col='label',
-                     space_geohash=False,
-                     geo_precision=8,  
+                     space_geohash=False, # True: Geohash, False: indexgrid
+                     geo_precision=8,     # Geohash: precision OR IndexGrid: meters
+                     features=None,
                      features_encoding=True, 
                      y_one_hot_encodding=False,
                      split_test_validation=True,
@@ -41,27 +42,49 @@ def loadTrajectories(dir_path,
     df_train = readDataset(os.path.dirname(train_file), file=os.path.basename(train_file), missing='-999')
     df_test = readDataset(os.path.dirname(test_file), file=os.path.basename(test_file), missing='-999')
     
-    _, _, columns_order = organizeFrame(df_train, tid_col=tid_col, class_col=class_col)
-    organizeFrame(df_test, tid_col=tid_col, class_col=class_col)
+    df_train, _, columns_order = organizeFrame(df_train, tid_col=tid_col, class_col=class_col)
+    df_test, _, _ = organizeFrame(df_test, tid_col=tid_col, class_col=class_col)
+
+    # TODO:
+    if 'lat' in df_train.columns and 'lon' in df_train.columns:
+        if space_geohash:
+    #        keys.remove('lat')
+    #        keys.remove('lon')
+            space = True
+            count_attr += geo_precision * 5
+            print("Attribute Space: " +
+                       str(geo_precision * 5) + "-bits value")
+        else: # Index Grid
+            from automatize.methods._lib.pymove.processing.gridutils import create_virtual_grid, create_update_index_grid_feature
+            df_ = pd.concat([df_train, df_test])
+            dic_grid = create_virtual_grid(geo_precision, [df_['lat'].min(), df_['lon'].min(), df_['lat'].max(), df_['lon'].max()])
+            create_update_index_grid_feature(df_train, dic_grid, sort=False)
+            create_update_index_grid_feature(df_test, dic_grid, sort=False)
+            columns_order = list(filter(lambda x: x not in ['space','lat','lon'], columns_order)) + ['index_grid']
+            #df_train.drop(['space','lat','lon'], axis=1, errors='ignore', inplace=True)
+            #df_test.drop(['space','lat','lon'], axis=1, errors='ignore', inplace=True)
     
-    df_train = df_train[columns_order]
-    df_test  = df_test[columns_order]
-    
-#    df_ = pd.concat([df_train, df_test])
+    if features:
+        columns_order = list(filter(lambda x: x in features + [tid_col,class_col], columns_order))
+        
+    if split_test_validation:
+        df_train, df_val = trainAndTestSplit('', df_train, train_size=0.75, tid_col=tid_col, class_col=class_col, outformats=[])
+        df_train = df_train[columns_order]
+        df_val  = df_val[columns_order]
+        df_test  = df_test[columns_order]
+        #data = [df_train, df_val, df_test]
+        data = [df_train, df_val, df_test]
+    else:
+        df_train = df_train[columns_order]
+        df_test  = df_test[columns_order]
+        data = [df_train, df_test]
+
+    #df_ = pd.concat(data)
     
     features = list(df_train.keys())
     num_classes = len(set(df_train[class_col])) 
     count_attr = 0
     space = False
-
-    # TODO:
-    if space_geohash and ('lat' in features and 'lon' in features):
-#        keys.remove('lat')
-#        keys.remove('lon')
-        space = True
-        count_attr += geo_precision * 5
-        print("Attribute Space: " +
-                   str(geo_precision * 5) + "-bits value")
 
     for attr in features:
         if attr != class_col:
@@ -70,12 +93,6 @@ def loadTrajectories(dir_path,
             print("Attribute '" + attr + "': " + str(values) + " unique values")
 
     print("Total of attribute/value pairs: " + str(count_attr))
-    
-    if split_test_validation:
-        df_train, df_val = trainAndTestSplit('', df_train, train_size=0.75, tid_col=tid_col, class_col=class_col, outformats=[])
-        data = [df_train, df_val, df_test]
-    else:
-        data = [df_train, df_test]
 
     
     if data_preparation == 1:
@@ -126,7 +143,7 @@ def generate_X_y_ml( data,
     dic_tid = {}
     for i, d in enumerate(data):
         dic_tid[i] = d[tid_col].unique()
-        print('tid_{}: {}'.format(i, len(dic_tid[i])))
+        print('TIDs_{}: {}'.format(i, len(dic_tid[i])))#, dic_tid[i])
     
     dic_parameters = {}
     if features_encoding == True:
@@ -155,18 +172,36 @@ def generate_X_y_ml( data,
         
     if input_total == 1:
         y = np.array(y, ndmin=2)
-    elif input_total > 1:
-        start = 0
-        end   = 0
+#    elif input_total > 1:
+#        start = 0
+#        end   = 0
+#
+#        y_aux = []
+#        for i in range(0, input_total):
+#            end = end + len(dic_tid[i])
+#            print('TID', i, start, end)
+#            display(y)
+#            y_ = y[start:end]
+#            y_aux.append(y_)
+#            start = end
+#        y = y_aux
+    elif input_total == 2:
+        y_train = y[:len(dic_tid[0])]
+        y_test = y[len(dic_tid[0]):]
+        y = []
+        y.append(y_train)
+        y.append(y_test)
+        
+    elif input_total == 3:
+        y_train = y[:len(dic_tid[0])]
+        y_val = y[len(dic_tid[0]):len(dic_tid[0])+len(dic_tid[1])]
+        y_test = y[len(dic_tid[0])+len(dic_tid[1]):]
+        y = []
+        y.append(y_train)
+        y.append(y_val)
+        y.append(y_test)
 
-        y_aux = []
-        for i in range(0, input_total):
-            end = end + len(dic_tid[i])
-            y_ = y[start:end]
-            y_aux.append(y_)
-            start = end
-        y = y_aux
-
+        
     X = []
     for i, ip in enumerate(dic_tid):
         X_aux = []
@@ -210,18 +245,18 @@ def generate_X_y_rnn(data=[],
     input_total = len(data)
     assert (input_total > 0) & (input_total <=3), "ERRO: data is not set or dimenssion > 3"
 
-    print('... input total: {}'.format(input_total))
+    print('Input total: {}'.format(input_total))
 
     if input_total > 1:
-        print('... concat dataframe')
+        #print('... concat dataframe')
         df_ = pd.concat(data)
     else:
-        print('... df_ is data')
+        #print('... df_ is data')
         df_ = data[0]
 
-    assert isinstance(df_, pd.DataFrame), "Erro: inform data as a list of pandas.Dataframe()"
-    assert class_col in df_, "ERRO: Label y in not on dataframe"
-    assert tid_col in df_, "ERRO: TID in not on dataframe"
+    assert isinstance(df_, pd.DataFrame), "ERR: inform data as a list of pandas.Dataframe()"
+    assert class_col in df_, "ERR: Label y in not on dataframe"
+    assert tid_col in df_, "ERR: TID in not on dataframe"
 
 
     features = list(df_.columns)
@@ -241,13 +276,13 @@ def generate_X_y_rnn(data=[],
     dic_parameters['dic_tid'] = dic_tid
 
 
-    print('... col_name: {}...\n... num_classes: {}\n... max_lenght: {}'.format(features, num_classes, max_lenght))
+    print('col_name: {}...\n... num_classes: {}\n... max_lenght: {}'.format(features, num_classes, max_lenght))
 
     col_drop = [tid_col, lat_col, lon_col, class_col] 
 
     for c in col_drop:
         if c in features:
-            print('... removing column {} of attr'.format(c))
+            print('Removing column {} of attr'.format(c))
             features.remove(c)
 
     if features_encoding == True:
@@ -255,7 +290,7 @@ def generate_X_y_rnn(data=[],
         if len(features) > 0:
             dic_parameters['encode_features'] = label_encoding_df_to_rnn(df_, col=features)
         else:
-            print('... encoding was not necessary')
+            print('Encoding was not necessary')
 
     col_groupby = {}
     for c in features:
@@ -268,17 +303,17 @@ def generate_X_y_rnn(data=[],
 
     print('\n\n###########      Generating y_train and y_test     ###########')       
     if y_one_hot_encodding == True:
-        print('... one hot encoding on label y')
+        print('OneHot encoding on label y')
         ohe_y = OneHotEncoder()
         y = ohe_y.fit_transform(pd.DataFrame(traj[class_col])).toarray()
         dic_parameters['encode_y'] = ohe_y 
     else:
-        print('... Label encoding on label y')
+        print('Label encoding on label y')
         le_y = LabelEncoder()
         y = np.array(le_y.fit_transform(pd.DataFrame(traj[class_col])))
         dic_parameters['encode_y'] = le_y
 
-    print('... input total: {}'.format(input_total))
+    print('Input total: {}'.format(input_total))
     if input_total == 1:
         y = np.array(y, ndmin=2)
     elif input_total == 2:
@@ -344,15 +379,15 @@ def label_encoding(df_, col=[]):
 
 def label_encoding_df_to_rnn(df_, col=[]): 
     if len(col) == 0:
-        print('... if col is empty, than col equal to df_columns')
+#        print('... if col is empty, than col equal to df_columns')
         col = df_.columns
 
-    assert set(col).issubset(set(df_.columns)), "Erro: some columns is not exist in df"
+    assert set(col).issubset(set(df_.columns)), "ERR: some columns does not exist in df."
     label_encode = {}
 
     for colname in col:
         if not isinstance(df_[colname].iloc[0], np.ndarray):
-            print('... encoding: {}'.format(colname))
+            print('   Encoding: {}'.format(colname))
             le = LabelEncoder()
             df_[colname] = le.fit_transform(df_[colname])
             label_encode[colname] = le
@@ -360,5 +395,5 @@ def label_encoding_df_to_rnn(df_, col=[]):
 
 def dencoding_df_to_rnn(df_, label_encode):
     for le in list(label_encode.keys()):
-        print('decoding le: {}'.format(le))
+        print('Decoding le: {}'.format(le))
         df_[le] = label_encode[le].inverse_transform(df_[le])

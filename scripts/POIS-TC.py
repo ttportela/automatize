@@ -11,7 +11,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 '''
 import sys, os 
 sys.path.insert(0, os.path.abspath('.'))
-from automatize.methods.tec.models.poifreq import model_poifreq
+from automatize.methods.pois.model_poifreq import model_poifreq
 
 import argparse
 

@@ -381,9 +381,11 @@ def loadTrajectories(train_file, test_file, tid_col='tid',
     x = [np.asarray(f) for f in x]
     y = one_hot_y.transform(pd.DataFrame(y)).toarray()
     
-    x_train = np.asarray([f[idx_train] for f in x])
+    #x_train = np.asarray([f[idx_train] for f in x])
+    x_train = [f[idx_train] for f in x]
     y_train = y[idx_train]
-    x_test = np.asarray([f[idx_test] for f in x])
+    #x_test = np.asarray([f[idx_test] for f in x])
+    x_test = [f[idx_test] for f in x]
     y_test = y[idx_test]
     print("Loading data ... DONE!")
 
@@ -391,9 +393,9 @@ def loadTrajectories(train_file, test_file, tid_col='tid',
     print('Labels:        ' + str(len(y[0])))
     print('Train size:    ' + str(len(x_train[0]) / trajs))
     print('Test size:     ' + str(len(x_test[0]) / trajs))
-    print('x_train shape: ' + str(x_train.shape))
+    print('x_train shape: ' + str(np.shape(x_train)))
     print('y_train shape: ' + str(y_train.shape))
-    print('x_test shape:  ' + str(x_test.shape))
+    print('x_test shape:  ' + str(np.shape(x_test)))
     print('y_test shape:  ' + str(y_test.shape))
 
     return (keys, vocab_size, num_classes, max_length,

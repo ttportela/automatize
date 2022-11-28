@@ -17,8 +17,8 @@ BASE_METHODS = [
     'MM+Log',
     
     'ultra',
-    'ultra-random',
-    'random',
+#    'ultra-random',
+    'random+Log',
     
     'SM',
     'SM-2',
@@ -29,29 +29,35 @@ BASE_METHODS = [
     'hiper-pivots',  
     'hiper+Log', 
     'hiper-pivots+Log',     
+    
+    'TC-TRF',
+    'TC-TXGB',
+    'TC-TULVAE',
+    'TC-BITULER',
+    'TC-DEEPEST',
 ]
 
 METHODS_NAMES = {
 
     'hiper': 'HiPerMovelets', 
     'hiper+Log': 'HiPerMovelets-Log',
-    'hiper-pivots': 'HiPerMovelets-Pivots', 
-    'hiper-pivots+Log': 'HiPerMovelets-Pivots-Log',
+    'hiper-pivots': 'HiPerPivots', 
+    'hiper-pivots+Log': 'HiPerPivots-Log',
     
     'H': 'HiPerMovelets τ=90%', 
-    'HL': 'HiPerMovelets-Log τ=90%',
-    'Hp': 'HiPerMovelets-Pivots τ=90%', 
-    'HpL': 'HiPerMovelets-Pivots-Log τ=90%',
+    'HL': 'HiPerMovelets τ=90%',
+    'Hp': 'HiPerPivots τ=90%', 
+    'HpL': 'HiPerPivots τ=90%',
     
     'HTR75': 'HiPerMovelets τ=75%', 
-    'HTR75L': 'HiPerMovelets-Log τ=75%',
-    'HpTR75': 'HiPerMovelets-Pivots τ=75%', 
-    'HpTR75L': 'HiPerMovelets-Pivots-Log τ=75%',
+    'HTR75L': 'HiPerMovelets τ=75%',
+    'HpTR75': 'HiPerPivots τ=75%', 
+    'HpTR75L': 'HiPerPivots τ=75%',
     
     'HTR50': 'HiPerMovelets τ=50%', 
-    'HTR50L': 'HiPerMovelets-Log τ=50%',
-    'HpTR50': 'HiPerMovelets-Pivots τ=50%', 
-    'HpTR50L': 'HiPerMovelets-Pivots-Log τ=50%',
+    'HTR50L': 'HiPerMovelets τ=50%',
+    'HpTR50': 'HiPerPivots τ=50%', 
+    'HpTR50L': 'HiPerPivots τ=50%',
     
     'SM': 'SUPERMovelets',
     'SM+Log': 'SUPERMovelets-Log',
@@ -61,31 +67,55 @@ METHODS_NAMES = {
     'SML': 'SUPERMovelets-Log',
     'SMD2': 'SUPERMovelets-λ',
     'SMD2L': 'SUPERMovelets-Log-λ',
+    'SMLD2': 'SUPERMovelets-Log-λ',
     
     'MM':   'MASTERMovelets',
     'MM+Log':  'MASTERMovelets-Log',
-    'MMp':  'MASTERMovelets-Pivots',
-    'MMp+Log': 'MASTERMovelets-Pivots-Log',
+    'MMp':  'MASTERPivots',
+    'MMp+Log': 'MASTERPivots-Log',
     'MML':  'MASTERMovelets-Log',
-    'MMpL': 'MASTERMovelets-Pivots-Log',
+    'MMpL': 'MASTERPivots-Log',
     
     'U': 'UltraMovelets', 
-    'Ur': 'UltraMovelets-R',
-    'R': 'RandomMovelets', 
+    'ultra': 'UltraMovelets', 
+#    'Ur': 'UltraMovelets-R',
+    'R': 'RandomMovelets',
+    'random': 'RandomMovelets',
+    'RL': 'RandomMovelets-Log', 
+    'random+Log': 'RandomMovelets-Log', 
     
     'MARC': 'MARC',
     'poi':  'POI-F',
     'npoi': 'NPOI-F',
     'wpoi': 'WPOI-F',
     
+    'POI_1':  'POI (1)',
+    'POI_2':  'POI (2)',
+    'POI_3':  'POI (3)',
+    'POI_1_2_3':  'POI (1+2+3)',
+    'NPOI_1':  'NPOI (1)',
+    'NPOI_2':  'NPOI (2)',
+    'NPOI_3':  'NPOI (3)',
+    'NPOI_1_2_3':  'NPOI (1+2+3)',
+    'WNPOI_1':  'WNPOI (1)',
+    'WNPOI_2':  'WNPOI (2)',
+    'WNPOI_3':  'WNPOI (3)',
+    'WNPOI_1_2_3':  'WNPOI (1+2+3)',
+    
     'Movelets': 'Movelets',
     'Dodge': 'Dodge',
     'Xiao': 'Xiao',
     'Zheng': 'Zheng',
     
+    'TC-TRF': 'TRF',
+    'TC-TXGB': 'TXGBoost',
+    'TC-TULVAE': 'TULVAE',
+    'TC-BITULER': 'BITULER',
+    'TC-DEEPEST': 'DeepestST',
 }
 
 CLASSIFIERS_NAMES = {
+    'NN': 'Neural Network',
     'MLP': 'Neural Network',
     'RF':  'Random Forrest',
     'SVM': 'Support Vector Machine',

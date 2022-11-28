@@ -43,9 +43,9 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from main import importer
 
-def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, label_poi='poi'):
+def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, label_poi='poi', geohash=False, geo_precision=30):
     
-    importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    importer(['S', 'TCM', 'sys', 'json', 'tqdm', 'datetime'], globals())
     from sklearn.preprocessing import LabelEncoder
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import Tulvae as tva
@@ -60,15 +60,19 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
                                                                           y_one_hot_encodding=False,
-                                                                          data_preparation=2)
+                                                                          data_preparation=2,
+                                                                          features=[label_poi],
+                                                                          space_geohash=geohash,
+                                                                          geo_precision=geo_precision)
+    
     assert (len(X) > 2), "[TULVAE:] ERR: data is not set or < 3"
     if len(X) > 2:
-        X_train = X[0] 
-        X_val = X[1]
-        X_test = X[2]
-        y_train = y[0] 
-        y_val = y[1]
-        y_test = y[2]
+        X_train = X[0]
+        X_val   = X[1]
+        X_test  = X[2]
+        y_train = y[0]
+        y_val   = y[1]
+        y_test  = y[2]
 
     #df_train = pd.read_csv(file_train)
     #df_val = pd.read_csv(file_val)
@@ -120,7 +124,7 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
     learning_rate = [0.001]
             
     print("\n[TULVAE:] Building TULVAE Model")
-    start_time = time.time()
+    start_time = datetime.now()
 
     total = len(rnn)*len(units)*len(stack)* len(dropout)* len(embedding_size)* len(z_values) * len(batch_size)*len(epochs) * len(patience) *len(monitor) * len(learning_rate) 
     print('[TULVAE:] Starting model training, {} iterations'.format(total))
@@ -272,8 +276,8 @@ def TrajectoryTULVAE(dir_path, res_path, prefix='', save_results=True, n_jobs=-1
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
             
-        end_time = time.time()
-        print('[TULVAE:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
+        end_time = (datetime.now()-time).total_seconds() * 1000
+        print('[TULVAE:] Processing time: {} milliseconds. Done.'.format(end_time))
     else:
         print('[TULVAE:] Model previoulsy built.')
         

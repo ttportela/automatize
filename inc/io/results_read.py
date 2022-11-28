@@ -31,7 +31,7 @@ class ResultConfig:
                                'TEC' in os.path.basename(os.path.dirname(file)).split('-')[0]):
             return ResultConfig.TEC
         elif os.path.basename(file).startswith('eval_') or \
-             os.path.basename(os.path.dirname(file)).split('-')[0] in ['TRF', 'TXGB', 'TULVAE', 'BITULER', 'DST']:
+             os.path.basename(os.path.dirname(file)).split('-')[0] in ['TRF', 'TXGB', 'TULVAE', 'BITULER', 'DEEPEST']:
             return ResultConfig.TC
         else: # Other type of files can be 
             return ResultConfig.MC
@@ -53,15 +53,15 @@ class ResultConfig:
     
     # Abstract methods:
     def decodeURL(self, ijk):
-        raise NotYetImplemented('Implement abstract method decodeURL')
+        raise Exception('Implement abstract method decodeURL')
     def acc(self):
-        raise NotYetImplemented('Implement abstract method acc')
+        raise Exception('Implement abstract method acc')
     def runtime(self):
-        raise NotYetImplemented('Implement abstract method runtime')
+        raise Exception('Implement abstract method runtime')
     def clstime(self):
-        raise NotYetImplemented('Implement abstract method clstime')
-    def totaltime(self):
-        raise NotYetImplemented('Implement abstract method totaltime')
+        raise Exception('Implement abstract method clstime')
+    def totaltime(self, show_warnings=True):
+        raise Exception('Implement abstract method totaltime')
         
     def classification(self):
         return [ ['NN', self.acc()*100, self.clstime()] ]
@@ -93,6 +93,9 @@ class ResultConfig:
             return False
         return str(self.statsf) < str(other.statsf)
     
+    def todict(self):
+        return vars(self)
+    
     def __str__ (self):
         return ' '.join(['type:',     self.tipe, 
                         'run:',       self.run, 
@@ -106,33 +109,48 @@ class ResultConfig:
                         'file:',      str(self.file) + '\n', 
                         'statsf:',    str(self.statsf)])
     
+    def dataset(self):
+        return self.prefix + ('-'+self.subset if self.subset != 'specific' and self.subset is not None else '')
+    
     def isType(self, tipe):
         return tipe and self.tipe == tipe
     
     # ------------------------------------------------------------
     def containErrors(self):
         if self.file is None:
-            return False
+            return True
         txt = open(self.file, 'r').read()
         return txt.find('Error: ') > -1 or txt.find('Traceback') > -1 
     def containWarnings(self):
         if self.file is None:
             return False
         txt = open(self.file, 'r').read()
-        return txt.find('UndefinedMetricWarning:') > -1 or txt.find('Could not load dynamic library') > -1
+        return txt.find('Warning') > -1 or txt.find('UndefinedMetricWarning:') > -1 or txt.find('Could not load dynamic library') > -1
     def containTimeout(self):
         if self.file is None:
             return False
         txt = open(self.file, 'r').read()
         return txt.find('Processing time:') < 0
     
+    def runningStatus(self):
+        self.errors = self.containErrors()
+        self.warns  = self.containWarnings()
+        self.touts  = self.containTimeout()
+        return self.errors, self.warns, self.touts
+    def runningErrors(self):
+        if not hasattr(self, 'errors'):
+            self.runningStatus()
+        return self.errors
     def runningProblems(self):
-        e1 = self.containErrors()
-        e2 = self.containWarnings()
-        e3 = self.containTimeout()
-        s = False
-        if e1 or e2 or e3:
-            s = ('[ER]' if e1 else '[--]')+('[WN]' if e2 else '[--]')+('[TC]' if e3 else '[--]')
+        if not hasattr(self, 'errors'):
+            self.runningStatus()
+        return self.errors or self.warns or self.touts
+    def runningProblemsStr(self):
+        if not hasattr(self, 'errors'):
+            self.runningStatus()
+        s = ''
+        if self.errors or self.warns or self.touts:
+            s = ('[ER]' if self.errors else '[--]')+('[WN]' if self.warns else '[--]')+('[TC]' if self.touts else '[--]')
         return s
     
     def read_log(self, file=None):
@@ -343,11 +361,11 @@ class TEC(ResultConfig):
         return self.runtime()
     
     def classification(self):
-        ls = [ ['NN', self.acc(), self.clstime()] ]
+        ls = [ ['NN', self.acc()*100, self.clstime()] ]
         for c in ['TEC.NN', 'TEC.MLP', 'TEC.POI', 'TEC.NPOI', 'TEC.WNPOI', 'TEC.MARC', 'TEC.RF', 'TEC.RFHP']:
             time = self.clstime(c)
             if time > 0:
-                ls.append(['#'+c, self.acc(c), time])
+                ls.append(['#'+c, self.acc(c)*100, time])
                 
         return ls
 
@@ -398,7 +416,7 @@ class MC(ResultConfig):
         return txt.find('Empty movelets set') > -1
     def containTimeout(self):
         txt = open(self.file, 'r').read()
-        return txt.find('[Warning] Time contract limit timeout.') > -1
+        return txt.find('[Warning] Time contract limit timeout.') > -1 or txt.find('Processing time:') < 0
     
     def read_approach(self, classifier):
         if classifier == 'RF':
@@ -468,11 +486,11 @@ class MC(ResultConfig):
         return timeRun + timeAcc
     
     def classification(self):
-        ls = [ ['NN', self.acc(), self.clstime()] ]
+        ls = [ ['NN', self.acc()*100, self.clstime()] ]
         for c in ['RF', 'SVM']:
             time = self.clstime(c)
             if time > 0:
-                ls.append([c, self.acc(c), time])
+                ls.append([c, self.acc(c)*100, time])
                 
         return ls
     
@@ -482,23 +500,22 @@ class TC(ResultConfig): # TODO
         rpos = ijk.find('run')
         path = ijk[:ijk.find(os.path.sep, rpos+5)]
 
-        model = os.path.dirname(ijk)
+        if ijk.endswith('.csv') or 'eval_' in ijk:
+            statsf = ijk
+            files = glob.glob(os.path.join(path, '*-*.txt'))
+            ijk = files[0] if len(files) > 0 else None
+        else:
+            files = glob.glob(os.path.join(path, '*eval_*.csv'))
+            if len(files) > 0:
+                statsf = files[0]
+            else:
+                statsf = None
+
+        model = os.path.dirname(statsf if statsf else ijk)
         model = model[model.rfind(os.path.sep)+1:]
 
-        if self.type not in [self.POIF, self.TEC, self.MARC]:
-        #(self.isMethod(ijk, 'POIF') or self.isMethod(ijk, 'TEC') or self.isMethod(ijk, 'MARC')):
-            files = glob.glob(os.path.join(path, '*', 'classification_times.csv'), recursive=True)
-            statsf = files[0] if len(files) > 0 else None
-            model = 'model'
-        elif self.type == self.TEC:
-            files = glob.glob(os.path.join(ijk.replace('.txt', ''), 'model_approachEnsemble_history.csv'), recursive=True)
-            statsf = files[0] if len(files) > 0 else None  
-            model = os.path.basename(ijk)[:-4]
-        elif self.type == self.MARC:
-            files = glob.glob(os.path.join(path, '**', '*_results.csv'), recursive=True)
-            statsf = files[0] if len(files) > 0 else None
-        else:
-            statsf = ijk
+        #files = glob.glob(os.path.join(path, '**', '*_results.csv'), recursive=True)
+        #statsf = files[0] if len(files) > 0 else None
 
         method = path[path.rfind(os.path.sep)+1:]
         subset = method.split('-')[-1]
@@ -509,31 +526,58 @@ class TC(ResultConfig): # TODO
 
         prefix = os.path.basename(path[:rpos-1])
 
-        #if statsf:
-        #    model = os.path.dirname(statsf)
-        #    model = model[model.rfind(os.path.sep)+1:]
+        subsubset = subset
 
-        if self.type == self.POIF:
-            subsubset = model.split('-')[1] 
-            method = method+ '_' + subsubset[re.search(r"_\d", subsubset).start()+1:]
-        else:
-            subsubset = subset
-
-        if self.type == self.TEC:
-            method += '_' + model.split('_')[-1]
-
-        if self.type == self.POIF:
-            random = '1' if model.count('-') <= 1 else model.split('-')[-1]
-        else:
-            random = '1' if '-' not in model else model.split('-')[-1]
-
-        if not random.isdigit():
-            random = 1
+        random = '1' if '-' not in model else model.split('-')[-1]
+        
+        if statsf:
+            self.decodeProperties(statsf)
 
         return run, random, method, subset, subsubset, prefix, model, path, ijk, statsf
+    
+    def decodeProperties(self, file):
+        properties = file.split('eval_')[-1].split('-')
+        
+        self.features = properties[-1].split('.csv')[0][1:-1].replace('\'', '').split(', ')
 
+        if properties[0] == 'randomforest':
+            names = ['model', 'ne', 'md', 'mss', 'msl', 'mf', 'bs']
+        elif properties[0] == 'xgboost':
+            names = ['model', 'ne', 'md', 'lr', 'gm', 'ss', 'cst', 'l1', 'l2', 'loss', 'epoch']
+        elif properties[0] == 'bituler':
+            names = ['model', 'nn', 'un', 'st', 'dp', 'es', 'bs', 'epoch', 'pat', 'mon', 'lr']
+        elif properties[0] == 'tulvae':
+            names = ['model', 'nn', 'un', 'st', 'dp', 'es', 'zv', 'bs', 'epoch', 'pat', 'mon', 'lr']
+        elif properties[0] == 'deepest':
+            names = ['model', 'nn', 'un', 'mt', 'dp_bf', 'dp_af', 'em_s', 'bs', 'epoch', 'pat', 'mon', 'opt', 'lr', 'ls', 'ls_p', 'ohe']
+        else:
+            names = ['prop_'+str(i) for i in range(len(properties)-1)]
 
+        self.properties = {k: v for k,v in zip(names, properties[:-1])}
+    
+    def readMetric(self, metric='acc'): # acc, acc_top_K5, balanced_accuracy, precision_macro, recall_macro, f1-macro
+        val = 0
+        if self.statsf:
+            data = pd.read_csv(self.statsf)
+            val = data[metric].mean()
+        return val
+    
+    def acc(self):
+        if not hasattr(self, '_acc'):
+            self._acc = self.readMetric()
+            
+        return self._acc
+    
+    def runtime(self):
+        if not hasattr(self, '_time'):
+            self._time = get_last_number_of_ms('Processing time: ', self.read_log()) 
+        return self._time 
+    def clstime(self):
+        return self.runtime()
+    def totaltime(self):
+        return self.runtime()
 
+# ----------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 def get_stats(config, list_stats, show_warnings=True):
 #     from main import importer

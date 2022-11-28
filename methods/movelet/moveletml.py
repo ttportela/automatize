@@ -62,8 +62,8 @@ def Approach1(X_train, y_train, X_test, y_test, par_batch_size, par_epochs, par_
 #         from numpy import argmax
         y_test_true_dec = le.inverse_transform(argmax(y_test1, axis = 1))
         y_test_pred_dec =  le.inverse_transform(argmax( classifier.predict(X_test) , axis = 1)) 
-        report = classification_report(y_test_true_dec, y_test_pred_dec )
-        classification_report_csv(report, os.path.join(dir_path, modelfolder, 'model_approach1_report.csv'),"Approach1")            
+        report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True)
+        classification_report_dict2csv(report, os.path.join(dir_path, modelfolder, 'model_approach1_report.csv'),"Approach1")            
         pd.DataFrame(history.history).to_csv(os.path.join(dir_path, modelfolder, "model_approach1_history.csv"))
         pd.DataFrame(y_test_true_dec,y_test_pred_dec).to_csv(os.path.join(dir_path, modelfolder, 'model_approach1_prediction.csv'), header = True)    
     
@@ -118,8 +118,8 @@ def Approach2(X_train, y_train, X_test, y_test, par_batch_size, lst_par_epochs, 
 #             from numpy import argmax
             y_test_true_dec = le.inverse_transform(argmax(y_test1, axis = 1))
             y_test_pred_dec =  le.inverse_transform(argmax( model.predict(X_test) , axis = 1)) 
-            report = classification_report(y_test_true_dec, y_test_pred_dec )
-            classification_report_csv(report, os.path.join(dir_path, modelfolder, 'model_approach2_report_Step'+str(k+1)+'.csv'), "Approach2_Step"+str(k+1)) 
+            report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True)
+            classification_report_dict2csv(report, os.path.join(dir_path, modelfolder, 'model_approach2_report_Step'+str(k+1)+'.csv'), "Approach2_Step"+str(k+1)) 
             pd.DataFrame(history.history).to_csv(os.path.join(dir_path, modelfolder, 'model_approach2_history_Step'+str(k+1)+'.csv'))
             pd.DataFrame(y_test_true_dec,y_test_pred_dec).to_csv(os.path.join(dir_path, modelfolder, 'model_approach2_prediction_Step'+str(k+1)+'.csv'), header = True)  
     
@@ -152,8 +152,8 @@ def ApproachRF(X_train, y_train, X_test, y_test, n_trees_set, save_results, dir_
             if not os.path.exists(os.path.join(dir_path, modelfolder)):
                 os.makedirs(os.path.join(dir_path, modelfolder))
                             
-            report = classification_report(y_test, classifier.predict(X_test) )
-            classification_report_csv(report, os.path.join(dir_path, modelfolder, "model_approachRF"+ str(n_tree) +"_report.csv"),"RF")        
+            report = classification_report(y_test, classifier.predict(X_test), output_dict=True)
+            classification_report_dict2csv(report, os.path.join(dir_path, modelfolder, "model_approachRF"+ str(n_tree) +"_report.csv"),"RF")        
             pd.DataFrame(lines).to_csv(os.path.join(dir_path, modelfolder, "model_approachRF"+ str(n_tree) +"_history.csv"))
             pd.DataFrame(y_test, y_predicted).to_csv(os.path.join(dir_path, modelfolder, "model_approachRF"+ str(n_tree) +"_prediction.csv"), header = False) 
     
@@ -212,8 +212,8 @@ def ApproachRFHP(X_train, y_train, X_test, y_test, save_results, dir_path, model
     if (save_results) :
         if not os.path.exists(os.path.join(dir_path, modelfolder)):
             os.makedirs(os.path.join(dir_path, modelfolder))
-        report = classification_report(y_test, classifier.predict(X_test) )
-        classification_report_csv(report, os.path.join(dir_path, modelfolder, "model_approachRFHP_report.csv"),"RFHP") 
+        report = classification_report(y_test, classifier.predict(X_test), output_dict=True)
+        classification_report_dict2csv(report, os.path.join(dir_path, modelfolder, "model_approachRFHP_report.csv"),"RFHP") 
         pd.DataFrame(line).to_csv(os.path.join(dir_path, modelfolder, "model_approachRFHP_history.csv")) 
         pd.DataFrame(y_test, y_predicted).to_csv(os.path.join(dir_path, modelfolder, "model_approachRFHP_prediction.csv"), header = False) 
     
@@ -241,8 +241,8 @@ def ApproachDT(X_train, y_train, X_test, y_test, save_results, dir_path, modelfo
     if (save_results) :
         if not os.path.exists(os.path.join(dir_path, modelfolder)):
             os.makedirs(os.path.join(dir_path, modelfolder))
-        report = classification_report(y_test, classifier.predict(X_test) )
-        classification_report_csv(report, os.path.join(dir_path, modelfolder, "model_approachDT_report.csv"),"DT") 
+        report = classification_report(y_test, classifier.predict(X_test), output_dict=True)
+        classification_report_dict2csv(report, os.path.join(dir_path, modelfolder, "model_approachDT_report.csv"),"DT") 
         pd.DataFrame(line).to_csv(os.path.join(dir_path, modelfolder, "model_approachDT_history.csv")) 
 # ----------------------------------------------------------------------------------
 
@@ -269,8 +269,8 @@ def ApproachSVC(X_train, y_train, X_test, y_test, save_results, dir_path, modelf
     if (save_results) :
         if not os.path.exists(os.path.join(dir_path, modelfolder)):
             os.makedirs(os.path.join(dir_path, modelfolder))
-        report = classification_report(y_test, classifier.predict(X_test) )
-        classification_report_csv(report,os.path.join(dir_path, modelfolder, "model_approachSVC_report.csv"),"SVC") 
+        report = classification_report(y_test, classifier.predict(X_test), output_dict=True)
+        classification_report_dict2csv(report,os.path.join(dir_path, modelfolder, "model_approachSVC_report.csv"),"SVC") 
         pd.DataFrame(line).to_csv(os.path.join(dir_path, modelfolder, "model_approachSVC_history.csv")) 
 # ----------------------------------------------------------------------------------
 
@@ -322,8 +322,8 @@ def ApproachMLP(X_train, y_train, X_test, y_test, par_batch_size, par_epochs, pa
 #         from numpy import argmax
         y_test_true_dec = le.inverse_transform(argmax(y_test1, axis = 1))
         y_test_pred_dec =  le.inverse_transform(argmax( classifier.predict(X_test) , axis = 1)) 
-        report = classification_report(y_test_true_dec, y_test_pred_dec )
-        classification_report_csv(report,os.path.join(dir_path, modelfolder, "model_approachMLP_report.csv"),"MLP") 
+        report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True)
+        classification_report_dict2csv(report,os.path.join(dir_path, modelfolder, "model_approachMLP_report.csv"),"MLP") 
         pd.DataFrame(history.history).to_csv(os.path.join(dir_path, modelfolder, "model_MLP_history.csv"))
         pd.DataFrame(y_test_true_dec, y_test_pred_dec).to_csv(os.path.join(dir_path, modelfolder, "model_MLP_prediction.csv"), header = False)    
         

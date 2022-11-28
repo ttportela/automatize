@@ -34,6 +34,8 @@ from scipy.stats import wilcoxon
 from scipy.stats import friedmanchisquare
 import networkx
 
+from automatize.inc.script_def import METHODS_NAMES
+
 # inspired from orange3 https://docs.orange.biolab.si/3/data-mining-library/reference/evaluation.cd.html
 def graph_ranks(avranks, names, p_values, cd=None, cdmethod=None, lowv=None, highv=None,
                 width=6, textspace=1, reverse=False, filename=None, labels=False, **kwargs):
@@ -154,7 +156,7 @@ def graph_ranks(avranks, names, p_values, cd=None, cdmethod=None, lowv=None, hig
 
     # calculate height needed height of an image
     minnotsignificant = max(2 * 0.2, linesblank)
-    height = cline + ((k + 1) / 2) * 0.2 + minnotsignificant
+    height = cline + ((k + 1) / 2) * 0.25 + minnotsignificant
 
     fig = plt.figure(figsize=(width, height))
     fig.set_facecolor('white')
@@ -206,8 +208,13 @@ def graph_ranks(avranks, names, p_values, cd=None, cdmethod=None, lowv=None, hig
 
     k = len(ssums)
 
+    suffix_cls = len(set(map(lambda x: x.split('-')[-1], nnames))) > 1
     def filter_names(name):
-        return name
+        x = name.split('-')
+        if x[0] in METHODS_NAMES:
+            return METHODS_NAMES[x[0]] + ('-'+x[-1] if suffix_cls else '')
+        else:
+            return name
 
     space_between_names = 0.24
 
@@ -230,7 +237,7 @@ def graph_ranks(avranks, names, p_values, cd=None, cdmethod=None, lowv=None, hig
         if labels:
             text(textspace + scalewidth - 0.3, chei - 0.075, format(ssums[i], '.4f'), ha="left", va="center", size=10)
         text(textspace + scalewidth + 0.2, chei, filter_names(nnames[i]),
-             ha="left", va="center", size=16)
+             ha="left", va="center", size=20) #16
 
     # no-significance lines
     def draw_lines(lines, side=0.05, height=0.1):
@@ -300,19 +307,24 @@ def draw_cd_diagram(df_perf, cls_name='name', ds_key='key', rank_col='accuracy',
 #     for p in p_values:
 #         print(p)
 
+    names = average_ranks.keys()
+#    from inc.script_def import METHODS_NAMES
+#    names = [METHODS_NAMES[x.split('-')[0]] for x in average_ranks.keys()]
 
-    graph_ranks(average_ranks.values, average_ranks.keys(), p_values,
+    graph_ranks(average_ranks.values, names, p_values,
                 cd=None, reverse=True, width=9, textspace=1.5, labels=labels)
 
     font = {'family': 'sans-serif',
         'color':  'black',
         'weight': 'normal',
-        'size': 22,
+        'size': 18,
         }
     if title:
-        plt.title(title,fontdict=font, y=0.9, x=0.5)
+        plt.title(title,fontdict=font, y=0.95, x=0.5)
 #     plt.savefig('cd-diagram.png',bbox_inches='tight')
-#     plt.show()
+#    plt.show()
+#    plt.update_layout(autosize=True)
+    plt.tight_layout()
     return plt
 
 def wilcoxon_holm(df_perf, cls_name='name', ds_key='key', rank_col='accuracy', alpha=0.05, ascending=True):

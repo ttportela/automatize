@@ -12,9 +12,12 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 # --------------------------------------------------------------------------------
 # # ANALYSIS
 from .main import importer #, display
-importer(['S'], globals())
+importer(['S', 'datetime'], globals())
 
 from .methods.movelet.classification import *
+
+def printNow():
+    print(datetime.now().isoformat())
 
 # --------------------------------------------------------------------------------
 # from PACKAGE_NAME.Methods import Approach1, Approach2, ApproachRF, ApproachRFHP , ApproachMLP, ApproachDT, ApproachSVC
@@ -90,9 +93,10 @@ def ClassifyByMovelet(res_path, dataset, dir_path, data_path='', save_results = 
             
 # ----------------------------------------------------------------------------------
 def ClassifyByTrajectory(res_path, data_path, prefix=None,
-                         save_results=True, classifiers=['MARC', 'POIS', 'TRF', 'TXGB', 'TULVAE', 'BITULER', 'DST'],
-                         random_seed=1, geohash=False):
+                         save_results=True, classifiers=['MARC', 'POIS', 'TRF', 'TXGB', 'TULVAE', 'BITULER', 'DEEPEST'],
+                         random_seed=1, geohash=False, geo_precision=30, one_feature='poi'):
 
+    prefix = prefix[::-1].replace('_','',1)[::-1]
     prefix = prefix if prefix else 'specific'
 
     if 'MARC' in classifiers:
@@ -101,36 +105,38 @@ def ClassifyByTrajectory(res_path, data_path, prefix=None,
         test_file = os.path.join(data_path, prefix+'_test.csv')
             
         marc('OURS', train_file, test_file, \
-             os.path.join(res_folder, 'MARC-'+prefix+'_results.csv'), \
-             prefix, 100, "concatenate", "lstm", random_seed=random_seed) # geohash always true
+             os.path.join(res_path, 'MARC-'+prefix+'_results.csv'), \
+             prefix, random_seed=random_seed, geo_precision=geo_precision) # geohash always true
     
     if 'POIS' in classifiers:
         from automatize.methods.pois.poifreq import poifreq
         sequences = [1,2,3]
         dataset   = 'specific'
         features  = None
-        poifreq(sequences, dataset, features, data_path, res_path, method='npoi', doclass=True)
+        poifreq(sequences, dataset, features, data_path, res_path, method='npoi', doclass=True) #TODO , geohash=False, geo_precision=30
 
     if 'TRF' in classifiers:
         from automatize.methods.rf.randomforrest import TrajectoryRF
-        TrajectoryRF(data_path, res_path, prefix, save_results, random_state=random_seed)
+        TrajectoryRF(data_path, res_path, prefix, save_results, random_state=random_seed, geohash=geohash, geo_precision=geo_precision)
 
     if 'TXGB' in classifiers:
         from automatize.methods.xgboost.XGBoost import TrajectoryXGBoost
-        TrajectoryXGBoost(data_path, res_path, prefix, save_results, random_state=random_seed)
+        TrajectoryXGBoost(data_path, res_path, prefix, save_results, random_state=random_seed, geohash=geohash, geo_precision=geo_precision)
 
     if 'TULVAE' in classifiers:
         from automatize.methods.tuler.TULVAE import TrajectoryTULVAE
-        TrajectoryTULVAE(data_path, res_path, prefix, save_results, random_state=random_seed)
+        TrajectoryTULVAE(data_path, res_path, prefix, save_results, random_state=random_seed, geohash=geohash, geo_precision=geo_precision, label_poi=one_feature)
 
     if 'BITULER' in classifiers:
         from automatize.methods.tuler.BITULER import TrajectoryBITULER
-        TrajectoryBITULER(data_path, res_path, prefix, save_results, random_state=random_seed)
+        TrajectoryBITULER(data_path, res_path, prefix, save_results, random_state=random_seed, geohash=geohash, geo_precision=geo_precision, label_poi=one_feature)
 
-    if 'DST' in classifiers:
+    if 'DEEPEST' in classifiers:
         from automatize.methods.deepest.DeepestST import TrajectoryDeepestST
-        TrajectoryDeepestST(data_path, res_path, prefix, save_results, random_state=random_seed)
-            
+        TrajectoryDeepestST(data_path, res_path, prefix, save_results, random_state=random_seed, geohash=geohash, geo_precision=geo_precision)
+    
+    printNow()
+
 # ----------------------------------------------------------------------------------
 #def MLP(res_path, prefix, dir_path, save_results = True, modelfolder='model'):
 ##     import os

@@ -34,6 +34,7 @@ def parse_args():
     parse.add_argument('-c', '--rnn-cell', type=str, default='lstm', help='the RNN cell type ([lstm], gru)')
     
     parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
+    parse.add_argument('-g', '--geo-precision', type=int, default=8, help='Space precision for GeoHash encoding')
     
     parse.add_argument('--no-gpu', action='store_false', help='Don´t use GPU devices.')    
     #parse.add_argument('-M', '--ram', type=int, default=-1, help='Limit RAM memory GB (not implemented)')
@@ -56,8 +57,9 @@ MERGE_TYPE    = config["merge_tipe"].lower()
 RNN_CELL      = config["rnn_cell"].lower()
 
 random_seed   = config["seed"]
+geo_precision = config["geo_precision"]
 
-GPU           = not config["no_gpu"]
+GPU           = config["no_gpu"]
 #GIG           = config["ram"]
 #THR           = config["njobs"]
 
@@ -80,9 +82,16 @@ if not GPU:
 #
     import tensorflow as tf
     with tf.device(gp[0] if GPU else cp[0]):
-        marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
+        marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, 
+             DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, 
+             random_seed=random_seed, geo_precision=geo_precision)
 else:
-    marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, random_seed=random_seed)
+    marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, 
+         DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, 
+         random_seed=random_seed, geo_precision=geo_precision)
+
+from datetime import datetime
+print(datetime.now().isoformat())
 
 
     

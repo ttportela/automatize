@@ -31,6 +31,8 @@ from assets.config import *
 from inc.CDDiagram import draw_cd_diagram 
 from inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES
 
+from automatize.graphics import resultsBoxPlots 
+
 from automatize.results import format_hour, format_float
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
@@ -72,11 +74,12 @@ def render_method(pathname):
     Input('input-results-datasets', 'value'),
     Input('input-results-methods', 'value'),
     Input('input-results-classifiers', 'value'),
+    Input('input-results-view', 'value'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
     State('upload-data', 'last_modified'),
 )
-def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers=None, 
+def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers=None, view='critical_difference',
                             contents=None, filename=None, fdate=None):
     if contents is not None:
 #         global DATA
@@ -90,17 +93,17 @@ def render_experiments_call(sel_datasets=None, sel_methods=None, sel_classifiers
                 decoded = io.StringIO(decoded.decode('utf-8'))
                 DATA = [pd.read_csv(decoded), filename, datetime.fromtimestamp(fdate)]
                 sess('DATA', DATA)
-                return render_experiments(None, None, None)
+                return render_experiments(None, None, None, view)
             else:
                 return [dbc.Alert("File format invalid (use CSV exported with 'automatise.results.history').", color="danger", style = {'margin':10})] + \
-                    render_experiments(None, None, None)
+                    render_experiments(None, None, None, view)
         except Exception as e:
 #             raise e
             print(e)
             return [dbc.Alert("There was an error processing this file.", color="danger", style = {'margin':10})] + \
-                    render_experiments(None, None, None)
+                    render_experiments(None, None, None, view)
     
-    return render_experiments(sel_datasets, sel_methods, sel_classifiers)
+    return render_experiments(sel_datasets, sel_methods, sel_classifiers, view)
 
 def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
     #     hsf = os.path.join('automatise', 'assets', 'experiments_history.csv')
@@ -118,7 +121,8 @@ def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, fi
         df = pd.read_csv(file, index_col=0)
         time = datetime.fromtimestamp(os.path.getmtime(file))
     
-    df['set'] = df['dataset'] #+ '-' + df['subset']
+    #df['set'] = df['dataset'] #+ '-' + df['subset']
+    df['set'] = df['dataset'] + list(map(lambda ss: ' ('+ss+')' if ss != 'specific' else '', df['subset']))
     
 #     df['accuracy'] = df['accuracy'] * 100
     
@@ -144,7 +148,7 @@ def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, fi
                    
     return df, DATA, time, datasets, methods, classifiers, names, dskeys, sel_datasets, sel_methods, sel_classifiers
   
-def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, file=RESULTS_FILE):
+def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None, view='critical_difference', file=RESULTS_FILE):
 
     df, DATA, time, datasets, methods, classifiers, names, dskeys, sel_datasets, sel_methods, sel_classifiers = filter_results(sel_datasets, sel_methods, sel_classifiers, file)
     
@@ -207,9 +211,21 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
                     ),
                 ], style={'width': '50%', 'padding': 10, 'flex': 1}),
             ], style={'display': 'flex', 'flex-direction': 'row'}),
+            html.Div([
+                    html.Strong('Visualization Model: '),
+                    dcc.Dropdown(
+                        id='input-results-view',
+                        options=[
+                            {'label': ' '+y+' ', 'value': y.lower().replace(' ', '_')} \
+                            for y in ['Critical Difference', 'Box Plots', 'Average Rankings', 'Raw Results']
+                        ],
+                        value=view,
+                    ),
+            ]),
         ], style={'margin':10}),
         html.Hr(),
-        render_experiments_panels(df),
+        #render_experiments_panels(df),
+        render_experiments_panels(df, view),
         html.Br(),
         html.Span("Last Update: " + time.strftime("%d/%m/%Y, %H:%M:%S"), style={'margin':10}),
         dbc.Button("download results", id="download-results-btn", color="light"),
@@ -230,12 +246,21 @@ def download_results_csv(n_clicks, sel_datasets=None, sel_methods=None, sel_clas
     df, *x = filter_results(sel_datasets, sel_methods, sel_classifiers, RESULTS_FILE)
     return dcc.send_data_frame(df.to_csv, "automatise_experimental_history.csv")
 
-def render_experiments_panels(df):
-    return dcc.Tabs(id="results-tabs", value='tab-1', children=[
-        dcc.Tab(label='Critical Difference', value='tab-1', children=[render_expe_graph(df.copy())]),
-        dcc.Tab(label='Average Ranking', value='tab-2', children=[render_ranks(df.copy())]),
-        dcc.Tab(label='Raw Results', value='tab-3', children=[render_expe_table(df.copy())]),
-    ])
+def render_experiments_panels(df, view):
+    if view == 'critical_difference':
+        return html.Div(id="results-tabs", children=[render_expe_graph(df.copy())], style={'margin':10})
+    elif view == 'box_plots':
+        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy())], style={'margin':10})
+    elif view == 'average_rankings':
+        return html.Div(id="results-tabs", children=[render_ranks(df.copy())], style={'margin':10})
+    else: #elif view == 'raw_results':
+        return html.Div(id="results-tabs", children=[render_expe_table(df.copy())], style={'margin':10})
+    
+#    return dcc.Tabs(id="results-tabs", value='tab-1', children=[
+#        dcc.Tab(label='Critical Difference', value='tab-1', children=[render_expe_graph(df.copy())]),
+#        dcc.Tab(label='Average Ranking', value='tab-2', children=[render_ranks(df.copy())]),
+#        dcc.Tab(label='Raw Results', value='tab-3', children=[render_expe_table(df.copy())]),
+#    ])
     
 def render_expe_graph(df):     
     components = []
@@ -263,7 +288,7 @@ def render_expe_graph(df):
         components.append(alert('Classification Time Graph not possible with these parameters.'))
         
     try:
-        fig = draw_cd_diagram(df, 'name', 'key', 'total_time', title='Total Time', labels=True, ascending=False)
+        fig = draw_cd_diagram(df, 'name', 'key', 'totaltime', title='Total Time', labels=True, ascending=False)
         buf = io.BytesIO()
         fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
         fig.close()
@@ -285,13 +310,66 @@ def render_expe_graph(df):
         html.A("hfawaz/cd-diagram", href='https://github.com/hfawaz/cd-diagram'),
         html.Br(),
         ])
+
+    
+def render_expe_boxplots(df):     
+    components = []
+    
+    try:
+        fig = resultsBoxPlots(df.copy(), 'accuracy', title='Accuracy')
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Accuracy', 'results not possible:', str(e))
+        components.append(alert('Accuracy Box Plots not possible with these parameters.'))
+        
+    try:
+        fig = resultsBoxPlots(df[~df['method'].isin(['MARC', 'POI', 'NPOI', 'WPOI'])].copy(), 'cls_runtime', title='Classification Time')
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Classification Time', 'results not possible:', str(e))
+        components.append(alert('Classification Time Box Plots not possible with these parameters.'))
+        
+    try:
+        fig = resultsBoxPlots(df.copy(), 'runtime', title='Run Time')
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Total Time', 'results not possible:', str(e))
+        components.append(alert('Total Time Box Plots not possible with these parameters.'))
+        
+    try:
+        fig = resultsBoxPlots(df.copy(), 'totaltime', title='Total Time')
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Total Time', 'results not possible:', str(e))
+        components.append(alert('Total Time Box Plots not possible with these parameters.'))
+        
+    return html.Div(components) #+ [
+#        html.Br(),
+#        ])
+
 def render_ranks(df): 
     return html.Div([
         html.H4('Accuracy Ranks:'),
         render_avg_rank(df, rank_col='accuracy', ascending=False),
         html.Hr(), html.Br(),
         html.H4('Total Time Ranks:'),
-        render_avg_rank(df, rank_col='total_time', ascending=True, format_func=format_hour),
+        render_avg_rank(df, rank_col='totaltime', ascending=True, format_func=format_hour),
         html.Hr(), html.Br(),
         html.H4('Classification Time Ranks:'),
         render_avg_rank(df[df['cls_runtime'] > 0], rank_col='cls_runtime', ascending=True, format_func=format_hour),
@@ -305,7 +383,7 @@ def render_avg_rank(df, rank_col='accuracy', ascending=False, format_func=format
     components = [html.Br()]
     
     for dataset in df['dataset'].unique():
-        dfx = df[df['dataset'] == dataset]
+        dfx = pd.DataFrame(df[df['dataset'] == dataset])
         dfx['rank'] = dfx[rank_col].rank(ascending=ascending)
 #         print(1, dfx)
         dfx = dfx.groupby([cls_name, 'classifier']).mean(['rank'])
@@ -354,7 +432,7 @@ def render_expe_table(df):
     dfx['method'] = [METHODS_NAMES[x] if x in METHODS_NAMES.keys() else x for x in dfx['method']]
     dfx['runtime'] = [format_hour(x) for x in dfx['runtime']]
     dfx['cls_runtime'] = [format_hour(x) for x in dfx['cls_runtime']]
-    dfx['total_time'] = [format_hour(x) for x in dfx['total_time']]
+    dfx['totaltime'] = [format_hour(x) for x in dfx['totaltime']]
     
     return html.Div([
         dash_table.DataTable(

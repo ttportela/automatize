@@ -207,7 +207,7 @@ def samplerGenerator(
     new_df = pd.concat( list(map(lambda j: sample_set(df_for_sampling, n, M, 'C'+str(j+1), j), range(C))) )
     
     if len(new_df['tid'].unique()) < N:
-        df_ = sample_trajectory(df_for_sampling, M, N-1)
+        df_ = sample_trajectory(df_for_sampling, M, N)
         df_['label'] = 'C'+str(C)
         new_df = pd.concat([new_df, df_])
     
@@ -438,7 +438,7 @@ def randomGenerator(
     new_df = pd.concat( list(map(lambda j: random_set(n, M, L, 'C'+str(j+1), j, generators), range(C))) )
 
     if len(new_df['tid'].unique()) < N:
-        df_ = random_trajectory(M, L, N-1, generators)
+        df_ = random_trajectory(M, L, N, generators)
         df_['label'] = 'C'+str(C)
         new_df = pd.concat([new_df, df_])
     
@@ -498,7 +498,7 @@ def getMiddleE(X):
 
 def sample_trajectory( df, M, tid ):
     df_ = df.sample(M)
-    df_.insert(0,'tid', tid)
+    df_.insert(0,'tid', tid+1)
     return df_
 
 def sample_set(df_for_sampling, N, M, label, j): 
@@ -519,7 +519,7 @@ def cycleGenerators(L, generators):
 def random_trajectory(M, L, tid, generators):
     g = cycleGenerators(L, generators)
     df_ = pd.concat( list(map(lambda i: pd.Series(g[i].nextn(M), name='a'+str(i+1)+'_'+g[i].name), range(L))), axis=1)
-    df_.insert(0,'tid', tid)
+    df_.insert(0,'tid', tid+1)
     return df_
 
 def random_set(N, M, L, label, j, generators):

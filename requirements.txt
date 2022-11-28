@@ -8,7 +8,10 @@ jsonschema
 matplotlib
 mpld3
 geohash2
+geojson
+shapely
 scikit-learn
+xgboost
 tqdm
 mplleaflet
 argparse

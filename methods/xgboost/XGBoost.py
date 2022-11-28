@@ -22,9 +22,9 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from main import importer
 
-def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42):
+def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, geohash=False, geo_precision=30):
     
-    importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    importer(['S', 'TCM', 'sys', 'json', 'tqdm', 'datetime'], globals())
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import XGBoost as xg
     from methods._lib.datahandler import loadTrajectories
@@ -37,7 +37,9 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
-                                                                          y_one_hot_encodding=False)
+                                                                          y_one_hot_encodding=False,
+                                                                          space_geohash=geohash,
+                                                                          geo_precision=geo_precision)
     assert (len(X) > 2), "[TXGB:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
@@ -55,14 +57,15 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     colsample_bytree = [0.5 , 0.7]
     reg_alpha_l1 = [1.0]#[0.0, 0.01, 1.0]
     reg_lambda_l2 = [100]#[0.0, 1.0, 100]
-    eval_metric = ['merror']#, 'mlogloss'] #merror #(wrong cases)/#(all cases) Multiclass classification error // mlogloss:
+    #eval_metric = ['merror']#, 'mlogloss'] #merror #(wrong cases)/#(all cases) Multiclass classification error // mlogloss:
+    eval_metric = ['merror', 'mlogloss'] #merror #(wrong cases)/#(all cases) Multiclass classification error // mlogloss:
     tree_method = 'auto' #   
     esr = [20]
             
     print("\n[TXGB:] Building XGBoost Model")
-    start_time = time.time()
+    start_time = datetime.now()
 
-    total = len(n_estimators) * len(max_depth) * len(learning_rate) * len(gamma) * len(subsample) *         len(colsample_bytree) * len(reg_alpha_l1) * len(reg_lambda_l2) * len(eval_metric) * len(esr) 
+    total = len(n_estimators) * len(max_depth) * len(learning_rate) * len(gamma) * len(subsample) * len(colsample_bytree) * len(reg_alpha_l1) * len(reg_lambda_l2) * len(eval_metric) * len(esr) 
     print('[TXGB:] Starting model training, {} iterations'.format(total))
     
     if save_results and not os.path.exists(dir_validation):
@@ -123,13 +126,15 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                                            l2=l2,
                                            random_state=42,
                                            tree_method=tree_method,
+                                           eval_metric=loss,
                                            early_stopping_rounds=epch)
 
             xgboost.fit(X_train, 
                         y_train, 
                         X_val,
                         y_val,
-                        loss=loss)#, 
+                        verbose=False)#,
+                        #loss=loss, 
                         #early_stopping_rounds=epch)
 
             validation_report, y_pred = xgboost.predict(X_val, y_val)
@@ -194,13 +199,14 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                                         l2=l2,
                                         random_state=e,
                                         tree_method=tree_method,
+                                        eval_metric=loss,
                                         early_stopping_rounds=epch)
 
             xgboost.fit(X_train, 
                         y_train, 
                         X_val,
-                        y_val,
-                        loss=loss)#, 
+                        y_val)#,
+                        #loss=loss)#, 
                         #early_stopping_rounds=epch)
 
             #evaluate_report.append(xgboost.predict(X_test, y_test))
@@ -214,8 +220,8 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
             
-        end_time = time.time()
-        print('[TXGB:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
+        end_time = (datetime.now()-time).total_seconds() * 1000
+        print('[TXGB:] Processing time: {} milliseconds. Done.'.format(end_time))
     else:
         print('[TXGB:] Model previoulsy built.')
         

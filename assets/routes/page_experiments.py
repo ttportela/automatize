@@ -34,23 +34,26 @@ from automatize.inc.datasets_def import list_datasets
 # ------------------------------------------------------------
 # EXP_PATH='../../workdir/'
     
-all_methods = [
-    'hiper+Log', 
-    
-    'SM+Log',
-    
-    'MM+Log',
-    
-    'MARC',
-    'poi',
-    'npoi',
-    'wpoi',
-    
-    'Movelets',
-    'Dodge',
-    'Xiao',
-    'Zheng',
-]
+all_methods = BASE_METHODS
+#[
+#    'hiper+Log', 
+#    
+#    'SM+Log',
+#    
+#    'MM+Log',
+#    
+#    'MARC',
+#    'poi',
+#    'npoi',
+#    'wpoi',
+#    
+#    'Movelets',
+#    'Dodge',
+#    'Xiao',
+#    'Zheng',
+#    
+#    'TC-TRF',
+#]
 
 all_datasets = list_datasets()
 
@@ -618,7 +621,7 @@ def download(value, basedir, folderpref, isDs, datapath, isTC, TC, TCD, datasets
     f.close()
     
 #     try:
-    return prepare_zip(shdir, params, base, isExe, TO_GEN), 'Files generated to "automatise_scripts.zip"'
+    return prepare_zip(shdir, params, base, isExe, TO_GEN), 'Files generated to "automatize_scripts.zip"'
 #     except BaseException as e:
 #         print(e)
 #         return dash.no_update, 'Sorry, an error ocurred. We are going to revised it.'
@@ -663,4 +666,4 @@ def prepare_zip(shdir, params, base, isExe, TO_GEN):
     close_tmp_file(shdir)
 #     close_tmp_file(zf_tf)
     
-    return dcc.send_file(zf_tf.name, filename="automatise_scripts.zip")
+    return dcc.send_file(zf_tf.name, filename="automatize_scripts.zip")

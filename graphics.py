@@ -28,4 +28,38 @@ def geoHeatMap(df):
     HeatMap(df[['lat', 'lon']].values).add_to(m)
     return m
 # -----------------------------------------------------------------------
+
+# Results Visualizations:
+# -----------------------------------------------------------------------
+def resultsBoxPlots(df, col, title=''):
+    df.loc[df['method'].isin(
+        ['Xiao', 'Dodge', 'Movelets', 'Zheng',  'NPOI_1', 'NPOI_2', 'NPOI_3', 'NPOI_1_2_3', 'MARC']), 'error'] = False
+    
+    #display(df[['accuracy', 'error', 'method']].groupby(['error', 'method']).value_counts())
+    
+    df.drop(df[df['accuracy'] == 0].index, inplace=True)
+    df.drop(df[df['error'] == True].index, inplace=True)
+#    df.drop(df[~df['method'].isin(selm)].index, inplace=True)
+
+#    df['methodi'] = df['method'].apply(lambda x: {selm[i]:i for i in range(len(selm))}[x])
+#    df = df.sort_values(['methodi', 'dataset', 'subset'])
+
+    df['method'] = list(map(lambda m: METHODS_NAMES[m] if m in METHODS_NAMES.keys() else m, df['method']))
+
+    df['key'] = df['dataset']+'-'+df['subset']
+    df['name'] = df['method']+'-'+df['classifier']
+
+    #sns.set(font_scale=2)
+    def boxplot(df, col, xl):    
+        plt.figure(figsize=(10,0.3*len(df['name'].unique())+1)) 
+        p1 = sns.boxplot(data=df[['key', 'name', col]], y="name", x=col, palette="Spectral_r")
+        #plt.xticks(rotation=80)
+        p1.set(xlabel='', ylabel='Method', title=xl)
+        if col == 'accuracy':
+            p1.set(xlim=(-5, 105))
+        plt.tight_layout()
+        #plt.savefig(path+'/results-'+plotname+'-'+col+'.png')
+        return p1.get_figure()
+
+    return boxplot(df, col, xl=title)
 # -----------------------------------------------------------------------

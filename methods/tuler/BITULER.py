@@ -41,9 +41,9 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from main import importer
 
-def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, label_poi='poi'):
+def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, label_poi='poi', geohash=False, geo_precision=30):
     
-    importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    importer(['S', 'TCM', 'sys', 'json', 'tqdm', 'datetime'], globals())
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import Tuler as tul
     from methods._lib.datahandler import loadTrajectories
@@ -57,7 +57,10 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
                                                                           y_one_hot_encodding=False,
-                                                                          data_preparation=2)
+                                                                          data_preparation=2,
+                                                                          features=[label_poi],
+                                                                          space_geohash=geohash,
+                                                                          geo_precision=geo_precision)
     assert (len(X) > 2), "[BITULER:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
@@ -71,7 +74,7 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
 
     num_classes = dic_parameters['num_classes']
     max_lenght = dic_parameters['max_lenght']
-    vocab_size = dic_parameters['vocab_size']['poi']
+    vocab_size = dic_parameters['vocab_size'][label_poi]
     rnn= ['bilstm']
     units = [100, 200, 250, 300]
     stack = [1]
@@ -85,7 +88,7 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     learning_rate = [0.001]
             
     print("\n[BITULER:] Building BITULER Model")
-    start_time = time.time()
+    start_time = datetime.now()
 
     total = len(rnn)*len(units)*len(stack)* len(dropout)* len(embedding_size)* len(batch_size)*len(epochs) * len(patience) *len(monitor) * len(learning_rate)
     print('[BITULER:] Starting model training, {} iterations'.format(total))
@@ -232,8 +235,8 @@ def TrajectoryBITULER(dir_path, res_path, prefix='', save_results=True, n_jobs=-
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
             
-        end_time = time.time()
-        print('[BITULER:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
+        end_time = (datetime.now()-time).total_seconds() * 1000
+        print('[BITULER:] Processing time: {} milliseconds. Done.'.format(end_time))
     else:
         print('[BITULER:] Model previoulsy built.')
         

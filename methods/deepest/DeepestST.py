@@ -44,24 +44,26 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 from main import importer
 
 def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs=-1, random_state=42, 
-                        label_poi = 'poi', y_one_hot_encodding=True):
+                        label_poi = 'poi', y_one_hot_encodding=True, geohash=False, geo_precision=30):
     
-    importer(['S', 'TCM', 'sys', 'json', 'tqdm'], globals())
+    importer(['S', 'TCM', 'sys', 'json', 'tqdm', 'datetime'], globals())
     from methods._lib.pymove.core import utils
     from methods._lib.pymove.models.classification import DeepestST as DST
     from methods._lib.datahandler import loadTrajectories
     from methods._lib.utils import update_report, print_params, concat_params
     
-    dir_validation = os.path.join(res_path, 'DST-'+prefix, 'validation')
-    dir_evaluation = os.path.join(res_path, 'DST-'+prefix)
+    dir_validation = os.path.join(res_path, 'DEEPEST-'+prefix, 'validation')
+    dir_evaluation = os.path.join(res_path, 'DEEPEST-'+prefix)
     
     # Load Data - Tarlis:
     X, y, features, num_classes, space, dic_parameters = loadTrajectories(dir_path, prefix+'_', 
                                                                           split_test_validation=True,
                                                                           features_encoding=True, 
                                                                           y_one_hot_encodding=y_one_hot_encodding,
-                                                                          data_preparation=2)
-    assert (len(X) > 2), "[DST:] ERR: data is not set or < 3"
+                                                                          data_preparation=2,
+                                                                          space_geohash=geohash,
+                                                                          geo_precision=geo_precision)
+    assert (len(X) > 2), "[DEEPEST:] ERR: data is not set or < 3"
     if len(X) > 2:
         X_train = X[0] 
         X_val = X[1]
@@ -98,12 +100,12 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
 
     y_ohe = y_one_hot_encodding
             
-    print("\n[DST:] Building DeepestST Model")
-    start_time = time.time()
+    print("\n[DEEPEST:] Building DeepestST Model")
+    start_time = datetime.now()
 
     total = len(rnn)*len(units)*len(merge_type)*len(dropout_before_rnn)* len(dropout_after_rnn)*        len(embedding_size)* len(batch_size) * len(epochs) * len(patience) * len(monitor) *        len(optimizer) * len(learning_rate) * len(loss) * len(loss_parameters) 
 
-    print('[DST:] Starting model training, {} iterations'.format(total))
+    print('[DEEPEST:] Starting model training, {} iterations'.format(total))
 
     count = 0
 
@@ -131,13 +133,14 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
         df_['ls']= f.split(marksplit)[13]
         df_['ls_p']= f.split(marksplit)[14]
         df_['ohe'] = y_one_hot_encodding
+        df_['feature']= f.split(marksplit)[16].split('.csv')[0]
 
         data.append(df_)
 
     pbar = tqdm(itertools.product(rnn, units, merge_type, dropout_before_rnn, dropout_after_rnn, 
                                   embedding_size, batch_size, epochs, patience, monitor, optimizer, 
                                   learning_rate, loss, loss_parameters), 
-                total=total, desc="[DST:] Model Training")
+                total=total, desc="[DEEPEST:] Model Training")
     for c in pbar:
         nn=c[0]
         un=c[1]
@@ -243,11 +246,11 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     filename = os.path.join(dir_evaluation, 'eval_deepest-'+ \
         concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features)+'.csv')
     
-    print("[DST:] Filename: {}.".format(filename))
+    print("[DEEPEST:] Filename: {}.".format(filename))
 
     if not os.path.exists(filename):
-        print('[DST:] Creating a model to test set')
-        print("[DST:] Parameters: " + print_params(
+        print('[DEEPEST:] Creating a model to test set')
+        print("[DEEPEST:] Parameters: " + print_params(
             'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features',
             nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features) )
         
@@ -304,10 +307,10 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
             evaluate_report = pd.concat(evaluate_report)
             evaluate_report.to_csv(filename, index=False)
             
-        end_time = time.time()
-        print('[DST:] Processing time: {} milliseconds. Done.'.format(end_time - start_time))
+        end_time = (datetime.now()-time).total_seconds() * 1000
+        print('[DEEPEST:] Processing time: {} milliseconds. Done.'.format(end_time))
     else:
-        print('[DST:] Model previoulsy built.')
+        print('[DEEPEST:] Model previoulsy built.')
         
     print('\n--------------------------------------\n')
 

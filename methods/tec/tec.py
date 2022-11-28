@@ -149,8 +149,8 @@ def TEC(data_path, results_path, ensembles, dataset='specific', save_results=Tru
             os.makedirs(os.path.join(results_path, modelfolder))
 #         from sklearn.metrics import classification_report
 #         from Methods import classification_report_csv
-        report = classification_report(y_labels, y_pred)
-        classification_report_csv(report, os.path.join(results_path, modelfolder, "model_approachEnsemble_report.csv"),"Ensemble") 
+        report = classification_report(y_labels, y_pred, output_dict=True)
+        classification_report_dict2csv(report, os.path.join(results_path, modelfolder, "model_approachEnsemble_report.csv"),"Ensemble") 
         pd.DataFrame(ensembles, columns=['classifier', 'accuracy', 'f1_score', 'precision', 'recall', 'accTop5', 'time']).to_csv(os.path.join(results_path, modelfolder, "model_approachEnsemble_history.csv")) 
 
     # ---------------------------------------------------------------------------------

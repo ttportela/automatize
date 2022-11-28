@@ -31,8 +31,8 @@ class TulvaeClassier(object):
                 z_values=100,
                 stack=1):
 
-        print('\n\n######               Create TULVAE model            ########\n')
-        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
+#        print('\n\n######               Create TULVAE model            ########\n')
+#        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
         
         #### variables locals ##
         input_model = []
@@ -84,7 +84,7 @@ class TulvaeClassier(object):
             monitor='val_acc'
             
             
-            print('\n\n########      Compiling TULVAE Model    #########')
+#            print('\n\n########      Compiling TULVAE Model    #########')
             self.model.compile(optimizer=optimizer, loss=loss, metrics=metric)
             
             early_stop = EarlyStopping(monitor='val_acc',
@@ -94,7 +94,7 @@ class TulvaeClassier(object):
                                     mode='auto',
                                     restore_best_weights=True)
             
-            print('... Defining checkpoint')
+#            print('... Defining checkpoint')
             if save_model == True:
                 modelname = datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'_tuvae.h5'
                 ck = ModelCheckpoint(modelname, 
@@ -111,8 +111,7 @@ class TulvaeClassier(object):
 
                 # customizar callback deepest
                 #https://www.tensorflow.org/guide/keras/custom_callback
-            print('... Starting training')
-            print(X_val, y_val)
+#            print('... Starting training')
             self.history = self.model.fit(X_train, 
                                         y_train,
                                         epochs=epochs,
@@ -123,19 +122,19 @@ class TulvaeClassier(object):
                                         use_multiprocessing=True,          
                                         batch_size=batch_size)
     def predict(self, X_test, y_test):
-            print('\n\n#######    Predict on validation dataset    ######')
+#            print('\n\n#######    Predict on validation dataset    ######')
             y_pred = self.model.predict(X_test)
             y_pred = y_pred.argmax(axis=1)
-            print('... generating Classification Report')
+#            print('... generating Classification Report')
             classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
             return classification_report, y_pred
 
     def free(self):
-        print('\n\n#######     Cleaning TULVAE model      #######')
-        print('... Free memory')
+#        print('\n\n#######     Cleaning TULVAE model      #######')
+#        print('... Free memory')
         start_time = time.time()
         K.clear_session()
-        print('... total_time: {}'.format(time.time()-start_time))
+#        print('... total_time: {}'.format(time.time()-start_time))
 
 def sampling_error(args):
     z_mean, z_log_sigma,aux = args

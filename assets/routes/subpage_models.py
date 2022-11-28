@@ -65,6 +65,7 @@ def render_model_filter(movelets=[], model='', from_value=0, to_value=100, attri
                         options=[
                             {'label': 'Sankey Model',    'value': 'sankey'},
                             {'label': 'Markov Model',    'value': 'markov'},
+                            {'label': 'Class Heat Map', 'value': 'attrHeatMap'},
                             {'label': 'Tree Model',  'value': 'tree'},
                             {'label': 'Quality Tree', 'value': 'qtree'},
                         ],
@@ -139,7 +140,8 @@ def render_model(movelets=[], model='', from_value=0, to_value=100, attributes=[
         fig = html.Div(render_tree(ls_movs.copy()))
     elif model == 'qtree':
         fig = html.Div(render_quality_tree(ls_movs))
-        
+    elif model == 'attrHeatMap':
+        fig = html.Div(render_attr_heatmap(ls_movs))        
     else:
         fig = html.H4('...')
     
@@ -194,6 +196,27 @@ def render_quality_tree(ls_movs):
     if len(ls_movs) > 0:
         tree = createTree(ls_movs)    
         return [ html.Div(html.Ul([html.Li(render_element(tree))]), className='tree') ]
+    
+    return [html.Span('No movelets to render a tree')]
+
+
+## ------------------------------------------------------------------------------------------------
+def render_attr_heatmap(ls_movs):
+    if len(ls_movs) > 0:
+        G = moveletsHeatMap(ls_movs)
+        
+        buf = io.BytesIO() # in-memory files
+        G.savefig(buf, format="png") # save to the above file object
+#        G.close()
+        data = base64.b64encode(buf.getbuffer()).decode("utf8") # encode to html elements
+        G = "data:image/png;base64,{}".format(data)
+        
+        fig = html.Img(
+            id='graph-movelets-heatmap',
+            style = {'width':'100%'},
+            src=G
+        )
+        return [ fig ]
     
     return [html.Span('No movelets to render a tree')]
 

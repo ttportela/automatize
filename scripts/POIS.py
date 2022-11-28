@@ -33,6 +33,10 @@ def parse_args():
     
     parse.add_argument('-r', '--seed', type=int, default=1, help='random seed')
     
+    parse.add_argument('--geohash', action='store_true', default=False, 
+                       help='use GeoHash encoding for spatial aspects (not implemented)')   
+    parse.add_argument('-g', '--geo-precision', type=int, default=30, help='Space precision for GeoHash/GridIndex encoding') 
+    
     parse.add_argument('--classify', action='store_true', default=False, help='Do also classification?')
     
     args = parse.parse_args()
@@ -59,6 +63,10 @@ RESULTS_DIR = config["result_folder"]
 
 random_seed   = config["seed"]
 classify      = config["classify"]
+
+# TODO:
+geohash       = config["geohash"]
+geo_precision = config["geo_precision"]
 
 time = datetime.now()
 poifreq(SEQUENCES, DATASET, FEATURES, path_name, RESULTS_DIR, method=METHOD, save_all=True, doclass=classify)

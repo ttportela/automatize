@@ -162,11 +162,31 @@ def classification_report_csv(report, reportfile, classifier):
         row["recall"] = float(row_data[2])
         row["f1_score"] = float(row_data[3])
         row["support"] = float(row_data[4])
-        print(row)
+
         report_data.append(row)
 #     import pandas as pd
     dataframe = pd.DataFrame.from_dict(report_data)
     dataframe.to_csv(reportfile, index = False)
+    return dataframe
+def classification_report_dict2csv(report, reportfile, classifier):    
+    report_data = []  
+    for k, v in report.items():
+        if k in ['accuracy', 'macro avg', 'weighted avg']:
+            continue
+
+        row = {}
+        row["class"] = k
+        row["classifier"] = classifier
+        row["precision"] = float(v['precision'])
+        row["recall"] = float(v['recall'])
+        row["f1_score"] = float(v['f1-score'])
+        row["support"] = float(v['support'])
+
+        report_data.append(row)
+
+    dataframe = pd.DataFrame.from_dict(report_data)
+    dataframe.to_csv(reportfile, index = False)
+    return dataframe
 
 # ------------------------------------------------------------------------------
 class MetricsLogger:

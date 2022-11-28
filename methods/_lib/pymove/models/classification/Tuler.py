@@ -27,7 +27,7 @@ class BiTulerLSTM(object):
                 embedding_size = 250,
                 stack=2):
 
-        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
+#        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
         
         
         input_model= Input(shape=(max_lenght,), name='spatial_poi') 
@@ -61,7 +61,7 @@ class BiTulerLSTM(object):
         monitor='val_acc'
         
         
-        print('\n\n########      Compiling TULER Model    #########')
+#        print('\n\n########      Compiling TULER Model    #########')
         self.model.compile(optimizer=optimizer, loss=loss, metrics=metric)
         
         early_stop = EarlyStopping(monitor='val_acc',
@@ -71,7 +71,7 @@ class BiTulerLSTM(object):
                                    mode='auto',
                                    restore_best_weights=True)
         
-        print('... Defining checkpoint')
+#        print('... Defining checkpoint')
         if save_model == True:
             modelname = datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'_tuler.h5'
             ck = ModelCheckpoint(modelname, 
@@ -88,7 +88,7 @@ class BiTulerLSTM(object):
 
             # customizar callback deepest
             #https://www.tensorflow.org/guide/keras/custom_callback
-        print('... Starting training')
+#        print('... Starting training')
         self.history = self.model.fit(X_train, 
                                     y_train,
                                     epochs=epochs,
@@ -106,19 +106,19 @@ class BiTulerLSTM(object):
         # self.classification_report_fit = metrics.compute_acc_acc5_f1_prec_rec(y_val, y_pred)
 
     def predict(self, X_test, y_test):
-        print('\n\n#######    Predict on validation dataset    ######')
+#        print('\n\n#######    Predict on validation dataset    ######')
         y_pred = self.model.predict(X_test)
         y_pred = y_pred.argmax(axis=1)
-        print('... generating Classification Report')
+#        print('... generating Classification Report')
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
         return classification_report, y_pred
 
     def free(self):
-        print('\n\n#######     Cleaning TULER model      #######')
-        print('... Free memory')
+#        print('\n\n#######     Cleaning TULER model      #######')
+#        print('... Free memory')
         start_time = time.time()
         K.clear_session()
-        print('... total_time: {}'.format(time.time()-start_time))
+#        print('... total_time: {}'.format(time.time()-start_time))
     
 class TulerStackLSTM(object):
 
@@ -131,7 +131,7 @@ class TulerStackLSTM(object):
                 embedding_size = 250,
                 stack=2):
 
-        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
+#        print('... max_lenght: {}\n... vocab_size: {}\n... classes: {}'.format(max_lenght, vocab_size, num_classes))
         
         #### variables locals ##
         input_model = []
@@ -143,7 +143,7 @@ class TulerStackLSTM(object):
         embedding_layer = Embedding(input_dim = vocab_size, output_dim = embedding_size, 
                               name='embedding_poi', input_length=max_lenght)(input_model)
         
-        print('... Creating stack to TULER')
+#        print('... Creating stack to TULER')
         if stack > 1:
             rnn_cell = LSTM(units=rnn_units, return_sequences=True)(embedding_layer)
             for i in range(1, stack-1):
@@ -176,7 +176,7 @@ class TulerStackLSTM(object):
         monitor='val_acc'
         
         
-        print('\n\n########      Compiling TULER Model    #########')
+#        print('\n\n########      Compiling TULER Model    #########')
         self.model.compile(optimizer=optimizer, loss=loss, metrics=metric)
         
         early_stop = EarlyStopping(monitor='val_acc',
@@ -186,7 +186,7 @@ class TulerStackLSTM(object):
                                    mode='auto',
                                    restore_best_weights=True)
         
-        print('... Defining checkpoint')
+#        print('... Defining checkpoint')
         if save_model == True:
             modelname = datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'_tuler.h5'
             ck = ModelCheckpoint(modelname, 
@@ -203,7 +203,7 @@ class TulerStackLSTM(object):
 
             # customizar callback deepest
             #https://www.tensorflow.org/guide/keras/custom_callback
-        print('... Starting training')
+#        print('... Starting training')
         self.history = self.model.fit(X_train, 
                                     y_train,
                                     epochs=epochs,
@@ -221,17 +221,16 @@ class TulerStackLSTM(object):
         # self.classification_report_fit = metrics.compute_acc_acc5_f1_prec_rec(y_val, y_pred)
 
     def predict(self, X_test, y_test):
-        print('\n\n#######    Predict on validation dataset    ######')
+#        print('\n\n#######    Predict on validation dataset    ######')
         y_pred = self.model.predict(X_test)
         y_pred = y_pred.argmax(axis=1)
-        print('... generating Classification Report')
+#        print('... generating Classification Report')
         classification_report = metrics.compute_acc_acc5_f1_prec_rec(y_test, y_pred)
         return classification_report, y_pred
 
     def free(self):
-        print('\n\n#######     Cleaning TULER model      #######')
-        print('... Free memory')
+#        print('\n\n#######     Cleaning TULER model      #######')
+#        print('... Free memory')
         start_time = time.time()
         K.clear_session()
-        print('... total_time: {}'.format(time.time()-start_time))
-    
+#        print('... total_time: {}'.format(time.time()-start_time))

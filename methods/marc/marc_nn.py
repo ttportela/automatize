@@ -39,14 +39,17 @@ from tensorflow import random
 ###############################################################################
 from numpy import argmax
 from sklearn.metrics import classification_report
-from automatize.methods._lib.metrics import classification_report_csv
+#from automatize.methods._lib.metrics import classification_report_csv
+from automatize.methods._lib.metrics import classification_report_dict2csv
 from automatize.methods._lib.metrics import compute_acc_acc5_f1_prec_rec
 from automatize.preprocessing import readDataset
 
 # importer(['S', 'sys', 'datetime', 'encoding', 'MARC'], globals())
 
-def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, MERGE_TYPE, RNN_CELL, 
-         save_results=True, random_seed=1):
+def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE=100, MERGE_TYPE='concatenate', RNN_CELL='lstm', 
+         save_results=True, random_seed=1, geo_precision=8,
+         CLASS_DROPOUT = 0.5, CLASS_HIDDEN_UNITS = 100, CLASS_LRATE = 0.001, CLASS_BATCH_SIZE = 64, CLASS_EPOCHS = 1000,
+         EARLY_STOPPING_PATIENCE = 30, BASELINE_METRIC = 'acc', BASELINE_VALUE = 0.5):
 
     np.random.seed(seed=random_seed)
     random.set_seed(random_seed)
@@ -94,8 +97,8 @@ def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, ME
                                          test_file=TEST_FILE,
                                          tid_col='tid',
                                          label_col='label',
-                                         logger=logger)
-
+                                         logger=logger,
+                                         geo_precision=geo_precision)
 
     ###############################################################################
     #   PREPARING CLASSIFIER DATA
@@ -122,14 +125,14 @@ def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, ME
     # from core.utils.metrics import compute_acc_acc5_f1_prec_rec
 
 
-    CLASS_DROPOUT = 0.5
-    CLASS_HIDDEN_UNITS = 100
-    CLASS_LRATE = 0.001
-    CLASS_BATCH_SIZE = 64
-    CLASS_EPOCHS = 1000
-    EARLY_STOPPING_PATIENCE = 30
-    BASELINE_METRIC = 'acc'
-    BASELINE_VALUE = 0.5
+#    CLASS_DROPOUT = 0.5
+#    CLASS_HIDDEN_UNITS = 100
+#    CLASS_LRATE = 0.001
+#    CLASS_BATCH_SIZE = 64
+#    CLASS_EPOCHS = 1000
+#    EARLY_STOPPING_PATIENCE = 30
+#    BASELINE_METRIC = 'acc'
+#    BASELINE_VALUE = 0.5
 
 
     print('=====================================', 'OURS',
@@ -254,7 +257,6 @@ def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, ME
                        loss='categorical_crossentropy',
                        metrics=['acc', 'top_k_categorical_accuracy'])
 
-    print(type(cls_x_train), type(cls_y_train), type(cls_x_test), type(cls_y_test))
     history = classifier.fit(x=cls_x_train,
                    y=cls_y_train,
                    validation_data=(cls_x_test, cls_y_test),
@@ -273,16 +275,19 @@ def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE, ME
         #classifier.save(os.path.join(dir_path, modelfolder, 'model_approach1.h5'))
         
         y_test_true_dec = le.inverse_transform(argmax( cls_y_test, axis = 1)) # le.inverse_transform(argmax(y_test1, axis = 1))
-        y_test_pred_dec = le.inverse_transform(argmax( classifier.predict(cls_x_test), axis = 1)) # le.inverse_transform(argmax( classifier.predict(X_test) , axis = 1)) 
+        y_test_pred_dec = le.inverse_transform(argmax( classifier.predict(cls_x_test), axis = 1)) # le.inverse_transform(argmax( classifier.predict(X_test) , axis = 1))
         
-        report = classification_report(y_test_true_dec, y_test_pred_dec )
-        classification_report_csv(report, os.path.join(dir_path, 'model_marc_report.csv'),"MARC")            
+        report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True)
+
+        classification_report_dict2csv(report, os.path.join(dir_path, 'model_marc_report.csv'),"MARC")            
         pd.DataFrame(history.history).to_csv(os.path.join(dir_path, "model_marc_history.csv"))
         pd.DataFrame(y_test_true_dec,y_test_pred_dec).to_csv(os.path.join(dir_path, 'model_marc_prediction.csv'), header=['true_label'], index_label='prediction')
     
     time_ext = (datetime.now()-time).total_seconds() * 1000
     print(f"Processing time: {time_ext} milliseconds. Done.")
     print('------------------------------------------------------------------------------------------------')
+    
+#    return classifier, cls_x_test
 
 
 ###############################################################################
@@ -405,25 +410,34 @@ def get_trajectories(train_file, test_file, tid_col='tid',
         vocab_size['lat_lon'] = geo_precision * 5
 
     one_hot_y = OneHotEncoder().fit(df.loc[:, [label_col]])
+    #one_hot_y = OneHotEncoder().fit(df.loc[:, [label_col]].values)
 
-    x = [np.asarray(f, dtype=object) for f in x]
+    x = [np.asarray(f) for f in x]
     y = one_hot_y.transform(pd.DataFrame(y)).toarray()
     if logger:
         logger.log(Logger.INFO, "Loading data from files " + file_str + "... DONE!")
+
+#    x_train = np.asarray([f[idx_train] for f in x])
+#    y_train = y[idx_train]
+#    x_test = np.asarray([f[idx_test] for f in x])
+#    y_test = y[idx_test]
     
-    x_train = np.asarray([f[idx_train] for f in x], dtype=object)
+    x_train = [f[idx_train] for f in x]
     y_train = y[idx_train]
-    x_test = np.asarray([f[idx_test] for f in x], dtype=object)
+    x_test = [f[idx_test] for f in x]
     y_test = y[idx_test]
+    
+    #x_train = np.asarray(x_train)
+    #x_test = np.asarray(x_test)
 
     if logger:
         logger.log(Logger.INFO, 'Trajectories:  ' + str(trajs))
         logger.log(Logger.INFO, 'Labels:        ' + str(len(y[0])))
         logger.log(Logger.INFO, 'Train size:    ' + str(len(x_train[0]) / trajs))
         logger.log(Logger.INFO, 'Test size:     ' + str(len(x_test[0]) / trajs))
-        logger.log(Logger.INFO, 'x_train shape: ' + str(x_train.shape))
+        logger.log(Logger.INFO, 'x_train shape: ' + str(np.shape(x_train)))
         logger.log(Logger.INFO, 'y_train shape: ' + str(y_train.shape))
-        logger.log(Logger.INFO, 'x_test shape:  ' + str(x_test.shape))
+        logger.log(Logger.INFO, 'x_test shape:  ' + str(np.shape(x_test)))
         logger.log(Logger.INFO, 'y_test shape:  ' + str(y_test.shape))
 
     return (keys, vocab_size, num_classes, max_length, le,

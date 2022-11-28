@@ -35,19 +35,53 @@ def readDataset(data_path, folder=None, file='train.csv', class_col = 'label', m
     elif ('.zip' in url and os.path.exists(url)) or ('.csv' in url and os.path.exists(url.replace('.csv', '.zip'))):
         file = file.replace('.csv', '.zip')
         df = zip2df(data_path, file, class_col=class_col)
-    elif '.mat' in url or os.path.exists(url.replace('.csv', '.mat')):
-        importer(['ts_io'], globals())
-        url = url.replace('.csv', '.mat')
-        df = mat2df(url, replace_missing_vals_with=missing)
     elif '.ts' in url or os.path.exists(url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')):
         importer(['ts_io'], globals())
         url = url.replace('train', 'TRAIN').replace('test', 'TEST').replace('.csv', '.ts')
         df = load_from_tsfile_to_dataframe(url, replace_missing_vals_with=missing)
+#    elif '.mat' in url or os.path.exists(url.replace('.csv', '.mat')): #TODO
+#        url = url.replace('.csv', '.mat')
+#        df = mat2df(url, replace_missing_vals_with=missing)
     else:
         df = pd.read_csv(url, na_values=missing) # should not be used
     return df
 
+def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
+    if (set(df.columns) & set(['lat', 'lon'])) and not 'space' in df.columns:
+        df[["lat", "lon"]] = df[["lat", "lon"]].astype(str) 
+        df['space'] = df["lat"] + ' ' + df["lon"]
+        df[["lat", "lon"]] = df[["lat", "lon"]].astype(float)
 
+        if columns_order is not None:
+            columns_order.insert(columns_order.index('lon')-1, 'space')
+            
+    elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
+        if 'lat_lon' in df.columns:
+            df.rename(columns={'lat_lon': 'space'}, inplace=True)
+            if columns_order is not None:
+                columns_order[columns_order.index('lat_lon')] = 'space'
+        
+        ll = df['space'].str.split(" ", n = 1, expand = True) 
+        df["lat"]= ll[0].astype(float)
+        df["lon"]= ll[1].astype(float)
+        
+        if columns_order is not None:
+            columns_order.insert(columns_order.index('space'), 'lat')
+            columns_order.insert(columns_order.index('space')+1, 'lon')
+    
+    # For Columns ordering:
+    if columns_order is None:
+        columns_order = df.columns
+            
+    columns_order = [x for x in columns_order if x not in [tid_col, class_col]]
+    columns_order = columns_order + [tid_col, class_col]
+            
+    columns_order_zip = [x for x in columns_order if x not in ['lat', 'lon']]
+    columns_order_csv = [x for x in columns_order if x not in ['space']]
+    
+    return df, columns_order_zip, columns_order_csv
+
+#-------------------------------------------------------------------------->>
 def readDsDesc(data_path, folder=None, file='train.csv', tid_col='tid', class_col='label', missing='?'):
     df = readDataset(data_path, folder, file, class_col, missing)
     
@@ -314,37 +348,74 @@ def datasetStatistics(data_path, folder, file_prefix='', tid_col = 'tid', class_
     return md
 
 #-------------------------------------------------------------------------->>
-def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix='', \
-                      outformats=['zip', 'csv', 'mat'], verbose=False):
+def splitTIDs(df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', min_elements=1):
+    importer(['S', 'random'], globals())
+    train = list()
+    test = list()
+    
+    df_ = df.groupby(tid_col).first().reset_index()[[tid_col, class_col]]
+    
+    def splitByLabel(label):
+        nonlocal df_, train, test
+        tids = df_.loc[df_[class_col] == label][tid_col].unique()
+        random.seed(random_num)
+        
+        n = int(float(len(tids))*train_size)
+        n = min_elements if n < min_elements else n
+            
+        train_index = random.sample(list(tids), n)
+        test_index  = tids[np.isin(tids, train_index, invert=True)]
+        
+        train = train + list(train_index)
+        test  = test  + list(test_index)
+        
+    list(map(lambda label: splitByLabel(label), tqdm(df_[class_col].unique())))
+    
+    return train, test, df_
+
+def trainAndTestSplit(df, train_size=0.7, random_num=1, tid_col='tid', class_col='label', fileprefix='', \
+                      data_path='.', outformats=['zip', 'csv', 'mat'], verbose=False, organize_columns=True):
 #     from ..main import importer
     importer(['S', 'random'], globals())
+    if verbose:
+        print(str(train_size)+"% train and test split in... " + data_path)
     
-    df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+    if organize_columns:
+        df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+    else:
+        columns_order_zip = list(df.columns)
+        columns_order_csv = list(df.columns)
     
-    train = pd.DataFrame()
-    test = pd.DataFrame()
-    for label in df[class_col].unique():
+    train_index, test_index, _ = splitTIDs(df, train_size, random_num, tid_col, class_col, min_elements=1)
     
-    #def splitByLabel(label):
-    #    global train, test
-                
-        tids = df.loc[df[class_col] == label][tid_col].unique()
-        if verbose:
-            print('Label', label, ', TIDs = ', tids)
-        
-        random.seed(random_num)
-        train_index = random.sample(list(tids), int(len(tids)*train_size))
-        test_index  = tids[np.isin(tids, train_index, invert=True)] #np.delete(test_index, train_index)
-
-        train = pd.concat([train,df.loc[df[tid_col].isin(train_index)]])
-        test  = pd.concat([test, df.loc[df[tid_col].isin(test_index)]])
-
-        if verbose:
-            #print('Label', label, ', TIDs = ', tids)
-            print("Train samples: " + str(train.loc[train[class_col] == label][tid_col].unique()))
-            print("Test samples: " + str(test.loc[test[class_col] == label][tid_col].unique()))
+    train = df.loc[df[tid_col].isin(train_index)]
+    test  = df.loc[df[tid_col].isin(test_index)]
     
-    #list(map(lambda label: splitByLabel(label), tqdm(df[class_col].unique())))
+#    train = pd.DataFrame()
+#    test = pd.DataFrame()
+#    
+#    tqdm(df[class_col].unique())
+#    #for label in df[class_col].unique():
+#    def splitByLabel(label):
+#        nonlocal train, test
+#                
+#        tids = df.loc[df[class_col] == label][tid_col].unique()
+#        if verbose:
+#            pbar.set_description("Processing label {}, {} trajs.".format(str(label), str(len(tids))))
+#        
+#        random.seed(random_num)
+#        train_index = random.sample(list(tids), int(len(tids)*train_size))
+#        test_index  = tids[np.isin(tids, train_index, invert=True)] #np.delete(test_index, train_index)
+#
+#        train = pd.concat([train,df.loc[df[tid_col].isin(train_index)]])
+#        test  = pd.concat([test, df.loc[df[tid_col].isin(test_index)]])
+#
+#        if verbose:
+#            #print('Label', label, ', TIDs = ', tids)
+#            pbar.set_description("Train samples: {}".format(str(train.loc[train[class_col] == label][tid_col].unique())))
+#            pbar.set_description("Test samples: {}".format(str(test.loc[test[class_col] == label][tid_col].unique())))
+#    
+#    list(map(lambda label: splitByLabel(label), pbar))
     
     # WRITE Train / Test Files
     for outType in outformats:
@@ -352,44 +423,16 @@ def trainAndTestSplit(data_path, df, train_size=0.7, random_num=1, tid_col='tid'
                  columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, outformat=outType)
 #     write_trainAndTest(data_path, train, test, tid_col, class_col, fileprefix)
     
+    if verbose:
+        print("Done.")
+        print(" --------------------------------------------------------------------------------")
     return train, test
 
-#-------------------------------------------------------------------------->>
-def organizeFrame(df, columns_order=None, tid_col='tid', class_col='label'):
-    if (set(df.columns) & set(['lat', 'lon'])) and not 'space' in df.columns:
-        df[["lat", "lon"]] = df[["lat", "lon"]].astype(str) 
-        df['space'] = df["lat"] + ' ' + df["lon"]
-
-        if columns_order is not None:
-            columns_order.insert(columns_order.index('lon')-1, 'space')
-            
-    elif ('space' in df.columns or 'lat_lon' in df.columns) and not (set(df.columns) & set(['lat', 'lon'])):
-        if 'lat_lon' in df.columns:
-            df.rename(columns={'lat_lon': 'space'}, inplace=True)
-            if columns_order is not None:
-                columns_order[columns_order.index('lat_lon')] = 'space'
-        
-        ll = df['space'].str.split(" ", n = 1, expand = True) 
-        df["lat"]= ll[0]
-        df["lon"]= ll[1]
-        
-        if columns_order is not None:
-            columns_order.insert(columns_order.index('space'), 'lat')
-            columns_order.insert(columns_order.index('space')+1, 'lon')
+def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spliting Data', ignore_ltk=True):
     
-    # For Columns ordering:
-    if columns_order is None:
-        columns_order = df.columns
-            
-    columns_order = [x for x in columns_order if x not in [tid_col, class_col]]
-    columns_order = columns_order + [tid_col, class_col]
-            
-    columns_order_zip = [x for x in columns_order if x not in ['lat', 'lon']]
-    columns_order_csv = [x for x in columns_order if x not in ['space']]
+    if ignore_ltk: # removes labels with less than k trajectories...
+        df = dropLabelsltk(df, k, tid_col, class_col)
     
-    return df, columns_order_zip, columns_order_csv
-
-def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spliting Data'):
     ktrain = []
     ktest = []
     for x in range(k):
@@ -400,7 +443,7 @@ def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spli
     kfold = KFold(n_splits=k, shuffle=True, random_state=random_num)
 #         for label in df[class_col].unique(): 
     def addData(label):
-        tids = df.loc[df[class_col] == label].tid.unique()
+        tids = df.loc[df[class_col] == label][tid_col].unique()
         x = 0
         for train_idx, test_idx in kfold.split(tids):
             ktrain[x] = pd.concat([ktrain[x], df.loc[df[tid_col].isin(tids[train_idx])]])
@@ -408,8 +451,12 @@ def splitData(df, k, random_num, tid_col='tid', class_col='label', opLabel='Spli
             x += 1
     list(map(lambda label: addData(label), tqdm(df[class_col].unique(), desc=opLabel)))
     
-    print("Done.")
     return ktrain, ktest
+
+def dropLabelsltk(df, k, tid_col='tid', class_col='label'):
+    df_ = df.groupby(by=class_col, as_index=False).agg({tid_col: pd.Series.nunique})
+    index_names = df[df[class_col].isin(df_[df_[tid_col] < k][class_col])].index
+    return df.drop(index_names)
 
 def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
                             columns_order=None, ktrain=None, ktest=None, mat_columns=None, outformats=['zip', 'csv', 'mat'], verbose=False):
@@ -439,16 +486,45 @@ def kfold_trainAndTestSplit(data_path, k, df, random_num=1, tid_col='tid', class
         print("Writing files ... " + str(x+1) +'/'+str(k))
         for outType in outformats:
             writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
-                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, \
+                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, None, \
                      outType, opSuff=str(x+1))
     print("Done.")
     print(" --------------------------------------------------------------------------------")
     
     return ktrain, ktest
 
-def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
-             ktrain=None, ktest=None, organize_columns=True, mat_columns=None, outformats=['zip', 'csv', 'mat']):
-#     from ..main import importer
+def stratify(df, sample_size=0.5, train_size=0.7, random_num=1, tid_col='tid', class_col='label', 
+             organize_columns=True, mat_columns=None, fileprefix='', outformats=['zip', 'csv', 'mat'], data_path='.'):
+    importer(['S', 'train_test_split'], globals())
+    
+    train_index, _, _ = splitTIDs(df, sample_size, random_num, tid_col, class_col, min_elements=2)
+    
+    df = df.loc[df[tid_col].isin(train_index)]
+    
+    train_index, test_index, _ = splitTIDs(df, train_size, random_num, tid_col, class_col, min_elements=1)
+    
+    if organize_columns:
+        df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+    else:
+        columns_order_zip = list(df.columns)
+        columns_order_csv = list(df.columns)
+    
+    train = df.loc[df[tid_col].isin(train_index)]
+    test  = df.loc[df[tid_col].isin(test_index)]
+    
+    path = 'S'+str(int(sample_size*100))
+    if not os.path.exists(os.path.join(data_path, path)):
+            os.makedirs(os.path.join(data_path, path))
+    
+    for outType in outformats:
+        writeFiles(data_path, os.path.join(path, fileprefix), train, test, tid_col, class_col, \
+                 columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, None, outType, opSuff=path)
+    
+    return train, test
+    
+# TODO fix stratify:
+def kfold_stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
+             ktrain=None, ktest=None, organize_columns=True, mat_columns=None, outformats=['zip', 'csv', 'mat'], ignore_ltk=True):
     importer(['S', 'KFold'], globals())
     
     print(str(k)+"-fold stratification of train and test in... " + data_path)
@@ -460,11 +536,10 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
         columns_order_csv = list(df.columns)
         
     if not ktrain:
-        ktrain, ktest = splitData(df, k, random_num, tid_col, class_col)
+        ktrain, ktest = splitData(df, k, random_num, tid_col, class_col, ignore_ltk=ignore_ltk)
     else:
         print("Train and test data provided.")
     
-#     print("Writing files...")
     for x in range(0, limit, inc):
         path = 'S'+str((x+1)*int(100/k))
         
@@ -477,28 +552,50 @@ def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', 
             train_aux = pd.concat([train_aux,  ktrain[y]])
             test_aux  = pd.concat([test_aux,   ktest[y]])
             
-        
-#         print("Writing files ... " + str(x+1) +'/'+str(k), end='')
-        # WRITE ZIP Train / Test Files >> FOR MASTERMovelets:
         for outType in outformats:
             writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
-                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, outType, opSuff=str(x+1))
-#         df2zip(data_path, train_aux, os.path.join(path, fileprefix+'train'), tid_col, class_col, select_cols=columns_order_zip,\
-#               opLabel='Writing TRAIN - ZIP|' + str(x+1))
-#         df2zip(data_path, test_aux, os.path.join(path,  fileprefix+'test'), tid_col, class_col, select_cols=columns_order_zip,\
-#               opLabel='Writing TEST  - ZIP|' + str(x+1))
-
-        # WRITE CSV Train / Test Files >> FOR HIPERMovelets:
-#         writeOut(data_path, os.path.join(path, fileprefix), train_aux, test_aux, \
-#                  tid_col, class_col, columns_order_csv, 'csv', opSuff=str(x+1))
-#         print('Writing TRAIN / TEST - CSV|' + str(x+1))
-#         train_aux[columns_order_csv].to_csv(os.path.join(data_path, path, fileprefix+"train.csv"), index = False)
-#         test_aux[columns_order_csv].to_csv(os.path.join(data_path, path,  fileprefix+"test.csv"), index = False)
-#         print(path + '; ')
+                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, None, outType, opSuff=str(x+1))
     print(" Done.")
     print(" --------------------------------------------------------------------------------")
     
     return ktrain, ktest
+
+#def stratify(data_path, df, k=10, inc=1, limit=10, random_num=1, tid_col='tid', class_col='label', fileprefix='', 
+#             ktrain=None, ktest=None, organize_columns=True, mat_columns=None, outformats=['zip', 'csv', 'mat'], ignore_ltk=True):
+#    importer(['S', 'KFold'], globals())
+#    
+#    print(str(k)+"-fold stratification of train and test in... " + data_path)
+#    
+#    if organize_columns:
+#        df, columns_order_zip, columns_order_csv = organizeFrame(df, None, tid_col, class_col)
+#    else:
+#        columns_order_zip = list(df.columns)
+#        columns_order_csv = list(df.columns)
+#        
+#    if not ktrain:
+#        ktrain, ktest = splitData(df, k, random_num, tid_col, class_col, ignore_ltk=ignore_ltk)
+#    else:
+#        print("Train and test data provided.")
+#    
+#    for x in range(0, limit, inc):
+#        path = 'S'+str((x+1)*int(100/k))
+#        
+#        if not os.path.exists(os.path.join(data_path, path)):
+#            os.makedirs(os.path.join(data_path, path))
+#            
+#        train_aux = ktrain[0]
+#        test_aux  = ktest[0]
+#        for y in range(1, x+1):
+#            train_aux = pd.concat([train_aux,  ktrain[y]])
+#            test_aux  = pd.concat([test_aux,   ktest[y]])
+#            
+#        for outType in outformats:
+#            writeFiles(data_path, os.path.join(path, fileprefix), train_aux, test_aux, tid_col, class_col, \
+#                     columns_order_zip if outType in ['zip', 'mat'] else columns_order_csv, mat_columns, None, outType, opSuff=str(x+1))
+#    print(" Done.")
+#    print(" --------------------------------------------------------------------------------")
+#    
+#    return ktrain, ktest
         
 def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_columns=None, desc_cols=None, outformat='zip', opSuff=''):
     if outformat == 'zip':
@@ -515,7 +612,7 @@ def writeFile(data_path, df, file, tid_col, class_col, columns_order, mat_column
         df2mat(df, data_path, file, cols=columns_order, mat_cols=mat_columns, tid_col=tid_col, class_col=class_col, \
                desc_cols=desc_cols, opLabel='Writing - MAT|' + opSuff)
         
-def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, outformat='zip', opSuff=''):
+def writeFiles(data_path, file, train, test, tid_col, class_col, columns_order, mat_columns=None, desc_cols=None, outformat='zip', opSuff=''):
     # WRITE Train
     writeFile(data_path, train, file+'train', tid_col, class_col, columns_order, mat_columns, desc_cols, 
               outformat, opSuff='TRAIN - '+opSuff)
