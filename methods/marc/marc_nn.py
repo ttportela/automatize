@@ -277,7 +277,7 @@ def marc(METHOD, TRAIN_FILE, TEST_FILE, METRICS_FILE, DATASET, EMBEDDER_SIZE=100
         y_test_true_dec = le.inverse_transform(argmax( cls_y_test, axis = 1)) # le.inverse_transform(argmax(y_test1, axis = 1))
         y_test_pred_dec = le.inverse_transform(argmax( classifier.predict(cls_x_test), axis = 1)) # le.inverse_transform(argmax( classifier.predict(X_test) , axis = 1))
         
-        report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True)
+        report = classification_report(y_test_true_dec, y_test_pred_dec, output_dict=True, zero_division=False)
 
         classification_report_dict2csv(report, os.path.join(dir_path, 'model_marc_report.csv'),"MARC")            
         pd.DataFrame(history.history).to_csv(os.path.join(dir_path, "model_marc_history.csv"))

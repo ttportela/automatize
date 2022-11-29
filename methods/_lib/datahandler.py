@@ -68,7 +68,8 @@ def loadTrajectories(dir_path,
         columns_order = list(filter(lambda x: x in features + [tid_col,class_col], columns_order))
         
     if split_test_validation:
-        df_train, df_val = trainAndTestSplit('', df_train, train_size=0.75, tid_col=tid_col, class_col=class_col, outformats=[])
+        df_train, df_val = trainAndTestSplit(df_train, train_size=0.75, tid_col=tid_col, class_col=class_col, outformats=[])
+        
         df_train = df_train[columns_order]
         df_val  = df_val[columns_order]
         df_test  = df_test[columns_order]

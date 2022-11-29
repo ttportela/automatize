@@ -104,14 +104,16 @@ Feel free to contribute in any form, such as scientific publications referencing
 
 This is a more complete and second version of the previous package [Automatise](https://github.com/ttportela/automatise). 
  
-*Nov. 2022:*
+*Dec. 2022:*
  - New Classifier: **Trajectory Ensemble Classifier (TEC)** - an ensemble classifier for trajectory data based in POIS, MARC and movelets methods;
  - [POI-F](https://doi.org/10.1145/3341105.3374045) extension: **POIS** is an extension to the POI-F method capable of concatenating dimensions and sequences for trajectory classification. Available for the methods `poi`, `npoi`, and `wnpoi`.
- - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest*
+ - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest* ([source](https://github.com/nickssonfreitas/ICAART2021)).
  - Scripts for classification refactored to command line best practices, and implemented random seed parameter to all methods for reproductibility purposes.
  - Trajectory Generator Module: offers two types of generation methods: random or sampling real data. Possible to control the number of: trajectories, points, attributes, and classes.
+ - Updated interface for AutoMATize Results.
+ - New visualization tools: trajectory spatial heatmap, etc. (graphincs.py).
+ - New interface for calling scripts.
+ - New structure for reading result files to allow easy extention.
  
  *TODO*:
- - New visualization tools: 
- - New classification methods: MainTUL*
- - New visualization tools: trajectory spatial heatmap, ... (graphincs.py)
+ - Comments on all public interface funcions and modules
