@@ -60,6 +60,7 @@ def list_datasets(data_path=DATA_PATH):
 #         datasets.append(name)
         
 #     return datasets
+    print(os.path.abspath(data_path))
     datasetsdict = list_datasets_dict(data_path)
     datasets = {}
     
