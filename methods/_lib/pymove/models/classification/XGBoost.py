@@ -22,7 +22,8 @@ class XGBoostClassifier(object):
                 l2=0.0, 
                 random_state=42, 
                 eval_metric='merror',
-                early_stopping_rounds=10):
+                early_stopping_rounds=10,
+                num_classes=2): # Added by Tarlis
         
         start_time = time.time()
 
@@ -49,7 +50,8 @@ class XGBoostClassifier(object):
                                   early_stopping_rounds=early_stopping_rounds,
                                   random_state=random_state,
                                   eval_metric=eval_metric,
-                                  objective='multi:softmax')
+                                  objective='multi:softmax',
+                                  num_class=num_classes) # Added by Tarlis
 #        print('\n--------------------------------------\n')
         end_time = time.time()
 #        print('total Time: {}'.format(end_time - start_time))

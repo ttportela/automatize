@@ -118,7 +118,7 @@ def readAttributes(desc_file):
     return attrs
 
 # --------------------------------------------------------------------------------
-def featuresJSON(df, version=1, deftype='nominal', defcomparator='equals', label_col='label', file=False):
+def featuresJSON(df, version=1, deftype='nominal', defcomparator='equals', tid_col='tid', label_col='label', file=False):
     
     if isinstance(df, list):
         cols = {x: deftype for x in df}
@@ -127,8 +127,8 @@ def featuresJSON(df, version=1, deftype='nominal', defcomparator='equals', label
     else:
         cols = descTypes(df)
     
-    if 'tid' not in cols.keys() or label_col not in cols.keys():
-        aux = {'tid': 'numeric', label_col: 'nominal'}
+    if tid_col not in cols.keys() or label_col not in cols.keys():
+        aux = {tid_col: 'numeric', label_col: 'nominal'}
         cols = {**aux, **cols}
             
     if version == 1:
@@ -136,47 +136,47 @@ def featuresJSON(df, version=1, deftype='nominal', defcomparator='equals', label
 
         order = 1
         for f, deftype in cols.items():
-            s += ('	{\n          "order": '+str(order)+',\n          "type": "'+deftype+'",\n          "text": "'+f+'"\n        }')
+            s += ('    {\n          "order": '+str(order)+',\n          "type": "'+deftype+'",\n          "text": "'+f+'"\n    }')
             if len(cols) == order:
                 s += ('\n')
             else:
                 s += (',\n')
             order += 1
 
-        s += ('      ],\n    "pointFeaturesDesc": [\n      ],\n    "subtrajectoryFeaturesDesc": [\n	  ],\n')
-        s += ('    "trajectoryFeaturesDesc": [\n      ],\n    "pointComparisonDesc": {\n      "pointDistance": "euclidean",\n')
+        s += ('    ],\n    "pointFeaturesDesc": [],\n    "subtrajectoryFeaturesDesc": [],\n')
+        s += ('    "trajectoryFeaturesDesc": [],\n    "pointComparisonDesc": {\n      "pointDistance": "euclidean",\n')
         s += ('      "featureComparisonDesc": [\n')
 
         order = 1
         for f, deftype in cols.items():
-            if f != 'tid' and f != label_col:
-                s += ('			{\n			  "distance": "'+defcomparator+'",\n			  "maxValue": -1,\n			  "text": "'+f+'"\n			}')
-                if len(cols) == order:
+            if f != tid_col and f != label_col:
+                s += ('            {\n              "distance": "'+defcomparator+'",\n              "maxValue": -1,\n              "text": "'+f+'"\n            }')
+                if len(cols)-1 == order:
                     s += ('\n')
                 else:
                     s += (',\n')
             order += 1
 
-        s += ('		]\n    },\n    "subtrajectoryComparisonDesc": {\n      "subtrajectoryDistance": "euclidean",\n')
-        s += ('      "featureComparisonDesc": [\n			{\n			  "distance": "euclidean",\n			  "text": "points"\n')
-        s += ('			}\n		]\n    }\n}')
-    else:        
+        s += ('        ]\n    },\n    "subtrajectoryComparisonDesc": {\n        "subtrajectoryDistance": "euclidean",\n')
+        s += ('        "featureComparisonDesc": [\n            {\n              "distance": "euclidean",\n              "text": "points"\n')
+        s += ('            }\n        ]\n    }\n}')
+    else: # VERSION 2 (*_hp.json)      
         s  = '{\n   "input": {\n          "train": ["train"],\n          "test": ["test"],\n          "format": "CSV",\n'
         s += '          "loader": "interning"\n   },\n'
-        s += '   "idFeature": {\n          "order": '+str(list(cols.keys()).index('tid')+1)+',\n          "type": "numeric",\n          "text": "tid"\n    },\n'
+        s += '   "idFeature": {\n          "order": '+str(list(cols.keys()).index(tid_col)+1)+',\n          "type": "numeric",\n          "text": "'+tid_col+'"\n    },\n'
         s += '   "labelFeature": {\n          "order": '+str(list(cols.keys()).index(label_col)+1)+',\n          "type": "nominal",\n          "text": "label"\n    },\n'
         s += '   "attributes": [\n'
         
         order = 1
         for f, deftype in cols.items():
-            if f != 'tid' and f != label_col:
-                s += '	    {\n	          "order": '+str(order)+',\n	          "type": "'+deftype+'",\n	          "text": "'+str(f)+'",\n	          "comparator": {\n	            "distance": "'+defcomparator+'"\n	          }\n	    }'
-                if len(cols) == order:
+            if f != tid_col and f != label_col:
+                s += '        {\n              "order": '+str(order)+',\n              "type": "'+deftype+'",\n              "text": "'+str(f)+'",\n              "comparator": {\n                "distance": "'+defcomparator+'"\n              }\n        }'
+                if len(cols)-1 == order:
                     s += ('\n')
                 else:
                     s += (',\n')
             order += 1
-        s += '	]\n}'
+        s += '    ]\n}'
         
     if file:
         file = open(file, 'w')

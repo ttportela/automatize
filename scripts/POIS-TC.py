@@ -56,3 +56,7 @@ RESULTS_FILE = os.path.join(path, folder, 'poifreq_results.txt')
 METRICS_FILE = os.path.join(path, folder, METHOD+'_'+PREFIX+'.csv')
 
 model_poifreq(path_name, METHOD=METHOD, METRICS_FILE=METRICS_FILE, RESULTS_FILE=RESULTS_FILE, random_seed=random_seed)
+
+# -----------------------------------------------------------------------------------
+from datetime import datetime
+print(datetime.now().isoformat())

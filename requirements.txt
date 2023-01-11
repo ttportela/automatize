@@ -9,12 +9,10 @@ matplotlib
 mpld3
 geohash2
 geojson
-shapely
 scikit-learn
+shapely
 xgboost
 tqdm
 mplleaflet
 argparse
-mplleaflet
-xgboost
 tensorflow

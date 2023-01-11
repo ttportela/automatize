@@ -10,7 +10,8 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 @author: Tarlis Portela
 '''
 from .main import importer #, display
-importer(['S'], globals())
+importer(['S', 'plt', 'sns'], globals())
+from .inc.script_def import METHODS_NAMES
 # -----------------------------------------------------------------------
 def loadDataset(path, file='specific_train.csv'):
     from automatize.preprocessing import readDataset, organizeFrame
@@ -31,35 +32,73 @@ def geoHeatMap(df):
 
 # Results Visualizations:
 # -----------------------------------------------------------------------
-def resultsBoxPlots(df, col, title=''):
-    df.loc[df['method'].isin(
-        ['Xiao', 'Dodge', 'Movelets', 'Zheng',  'NPOI_1', 'NPOI_2', 'NPOI_3', 'NPOI_1_2_3', 'MARC']), 'error'] = False
+def resultsBoxPlots(df, col, title='', methods_order=None, xaxis_format=False):
+#    df.loc[df['method'].isin(
+#        ['Xiao', 'Dodge', 'Movelets', 'Zheng',  'NPOI_1', 'NPOI_2', 'NPOI_3', 'NPOI_1_2_3', 'MARC']), 'error'] = False
     
     #display(df[['accuracy', 'error', 'method']].groupby(['error', 'method']).value_counts())
     
-    df.drop(df[df['accuracy'] == 0].index, inplace=True)
+#    df.drop(df[df['accuracy'] == 0].index, inplace=True)
+    n = len(df)
     df.drop(df[df['error'] == True].index, inplace=True)
+    print('[WARN Box Plot:] Removed results due to run errors:', n - len(df))
 #    df.drop(df[~df['method'].isin(selm)].index, inplace=True)
 
-#    df['methodi'] = df['method'].apply(lambda x: {selm[i]:i for i in range(len(selm))}[x])
-#    df = df.sort_values(['methodi', 'dataset', 'subset'])
+    if not methods_order:
+        methods_order = list(df['method'].unique())
+
+    df['methodi'] = df['method'].apply(lambda x: {methods_order[i]:i for i in range(len(methods_order))}[x])
+    df = df.sort_values(['methodi', 'dataset', 'subset'])
 
     df['method'] = list(map(lambda m: METHODS_NAMES[m] if m in METHODS_NAMES.keys() else m, df['method']))
+    
+    # ---
+    # COLOR PALETTE:
+    pre = 4
+    mypal = df['method'].unique()
+    mypal_idx = list(set([x[:pre] for x in mypal]))
+    mypal_idx.sort()
+    pale = 'husl' #"Spectral_r"
+    colors = sns.color_palette(pale, len(mypal_idx))
+    mypal_idx = {mypal_idx[i]:colors[i] for i in range(len(mypal_idx))}
+    mypal_idx = {x: mypal_idx[x[:pre]] for x in mypal}
+    from itertools import product
+    clas = df['classifier'].unique()
+    mypal = {k+'-'+x:v for x in clas for k,v in mypal_idx.items()}
+    mypal.update(mypal_idx)
+    # ---
 
     df['key'] = df['dataset']+'-'+df['subset']
-    df['name'] = df['method']+'-'+df['classifier']
+    if len(set(df['classifier'].unique()) - set('-')) > 1:
+        df['name'] = df['method'] + list(map(lambda x: '-'+x if x != '-' else '', df['classifier']))
+    else:
+        df['name'] = df['method']
 
-    #sns.set(font_scale=2)
+    sns.set(font_scale=1.5)
+    sns.set_style("ticks")
+#    sns.set_context("poster")
     def boxplot(df, col, xl):    
         plt.figure(figsize=(10,0.3*len(df['name'].unique())+1)) 
-        p1 = sns.boxplot(data=df[['key', 'name', col]], y="name", x=col, palette="Spectral_r")
+        p1 = sns.boxplot(data=df[['key', 'name', col]], y="name", x=col, palette=mypal)
         #plt.xticks(rotation=80)
-        p1.set(xlabel='', ylabel='Method', title=xl)
-        if col == 'accuracy':
-            p1.set(xlim=(-5, 105))
+        p1.set(xlabel=xl, ylabel='Method', title='')
+        #if col == 'accuracy':
+        #    p1.set(xlim=(-5, 105))
+            
+        if xaxis_format:
+            if xaxis_format[0]:
+                p1.set(xlim = xaxis_format[0])
+            ticks_loc = p1.get_xticks().tolist()
+            xlabels = ['{:,.1f}'.format(x/xaxis_format[1]) + xaxis_format[2] for x in ticks_loc]
+            #p1.set_xticks(ticks_loc)
+            p1.set_xticklabels(xlabels)
+            
+        plt.grid()
         plt.tight_layout()
         #plt.savefig(path+'/results-'+plotname+'-'+col+'.png')
         return p1.get_figure()
 
+    
+    
     return boxplot(df, col, xl=title)
 # -----------------------------------------------------------------------

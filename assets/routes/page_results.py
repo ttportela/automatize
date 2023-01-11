@@ -29,8 +29,9 @@ from dash.dependencies import Output, Input, State
 from assets.app_base import app, gess, sess
 from assets.config import *
 from inc.CDDiagram import draw_cd_diagram 
-from inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES
+from inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES, metricName
 
+from matplotlib import pyplot as plt
 from automatize.graphics import resultsBoxPlots 
 
 from automatize.results import format_hour, format_float
@@ -125,9 +126,15 @@ def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, fi
     df['set'] = df['dataset'] + list(map(lambda ss: ' ('+ss+')' if ss != 'specific' else '', df['subset']))
     
 #     df['accuracy'] = df['accuracy'] * 100
+    def get_sort_methods(df):
+        methods = list(df['method'].unique())
+        aux = list(filter(lambda x: x not in METHODS_NAMES.keys(), methods))
+        aux.sort()
+        methods = list(filter(lambda x: x in methods, METHODS_NAMES.keys())) + aux
+        return methods
     
     datasets    = list(df['set'].unique())
-    methods     = list(df['method'].unique())
+    methods     = get_sort_methods(df)
     classifiers = list(df['classifier'].unique())
     names       = list(df['name'].unique())
     dskeys      = list(df['key'].unique())
@@ -142,9 +149,9 @@ def filter_results(sel_datasets=None, sel_methods=None, sel_classifiers=None, fi
     f1 = df['set'].isin(sel_datasets)
     f2 = df['method'].isin(sel_methods)
     f3 = df['classifier'].isin(sel_classifiers)
-    f4 = df['name'].isin(names)
-    f5 = df['key'].isin(dskeys)
-    df = df[f1 & f2 & f3 & f4 & f5]
+#    f4 = df['name'].isin(names)
+#    f5 = df['key'].isin(dskeys)
+    df = df[f1 & f2 & f3]# & f4 & f5]
                    
     return df, DATA, time, datasets, methods, classifiers, names, dskeys, sel_datasets, sel_methods, sel_classifiers
   
@@ -225,7 +232,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
         ], style={'margin':10}),
         html.Hr(),
         #render_experiments_panels(df),
-        render_experiments_panels(df, view),
+        render_experiments_panels(df, view, sel_methods),
         html.Br(),
         html.Span("Last Update: " + time.strftime("%d/%m/%Y, %H:%M:%S"), style={'margin':10}),
         dbc.Button("download results", id="download-results-btn", color="light"),
@@ -246,11 +253,13 @@ def download_results_csv(n_clicks, sel_datasets=None, sel_methods=None, sel_clas
     df, *x = filter_results(sel_datasets, sel_methods, sel_classifiers, RESULTS_FILE)
     return dcc.send_data_frame(df.to_csv, "automatise_experimental_history.csv")
 
-def render_experiments_panels(df, view):
+def render_experiments_panels(df, view, sel_methods=None):
+    plt.close('all')
+    
     if view == 'critical_difference':
         return html.Div(id="results-tabs", children=[render_expe_graph(df.copy())], style={'margin':10})
     elif view == 'box_plots':
-        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy())], style={'margin':10})
+        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy(), sel_methods)], style={'margin':10})
     elif view == 'average_rankings':
         return html.Div(id="results-tabs", children=[render_ranks(df.copy())], style={'margin':10})
     else: #elif view == 'raw_results':
@@ -265,16 +274,19 @@ def render_experiments_panels(df, view):
 def render_expe_graph(df):     
     components = []
     
-    try:
-        fig = draw_cd_diagram(df, 'name', 'key', 'accuracy', title='Accuracy', labels=True)
-        buf = io.BytesIO()
-        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
-        fig.close()
-        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
-        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
-    except Exception as e:
-        print('Accuracy', 'results not possible:', str(e))
-        components.append(alert('Accuracy Graph not possible with these parameters.'))
+    for col in df.columns:
+        if col.startswith('metric:'):
+            metric = metricName(col)
+            try:
+                fig = draw_cd_diagram(df, 'name', 'key', col, title=metric, labels=True)
+                buf = io.BytesIO()
+                fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+                fig.close()
+                fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+                components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+            except Exception as e:
+                print(metric, 'results not possible:', type(e), str(e), vars(e))
+                components.append(alert(metric + ' Graph not possible with these parameters.'))
         
     try:
         fig = draw_cd_diagram(df[~df['method'].isin(['MARC', 'POI', 'NPOI', 'WPOI'])], 'name', 'key', 'cls_runtime', title='Classification Time', labels=True, ascending=False)
@@ -284,7 +296,7 @@ def render_expe_graph(df):
         fig = base64.b64encode(buf.getbuffer()).decode("utf8")
         components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
     except Exception as e:
-        print('Classification Time', 'results not possible:', str(e))
+        print('Classification Time', 'results not possible:', type(e), str(e), vars(e))
         components.append(alert('Classification Time Graph not possible with these parameters.'))
         
     try:
@@ -295,7 +307,7 @@ def render_expe_graph(df):
         fig = base64.b64encode(buf.getbuffer()).decode("utf8")
         components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
     except Exception as e:
-        print('Total Time', 'results not possible:', str(e))
+        print('Total Time', 'results not possible:', type(e), str(e), vars(e))
         components.append(alert('Total Time Graph not possible with these parameters.'))
         
     return html.Div(components + [
@@ -312,52 +324,86 @@ def render_expe_graph(df):
         ])
 
     
-def render_expe_boxplots(df):     
+def render_expe_boxplots(df, sel_methods=None):     
     components = []
     
-    try:
-        fig = resultsBoxPlots(df.copy(), 'accuracy', title='Accuracy')
-        buf = io.BytesIO()
-        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
-        #fig.close()
-        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
-        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
-    except Exception as e:
-        print('Accuracy', 'results not possible:', str(e))
-        components.append(alert('Accuracy Box Plots not possible with these parameters.'))
+    
+    for col in df.columns:
+        if col.startswith('metric:'):
+            metric = metricName(col)
+            if 'accuracy' in col:
+                fmt = [(-5, 105), 1, '%']
+            else:
+                fmt = [False, 1.0, '']
+            try:
+                fig = resultsBoxPlots(df.copy(), col, title=metric, methods_order=sel_methods, xaxis_format=fmt)
+                buf = io.BytesIO()
+                fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+                #fig.close()
+                fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+                components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+            except Exception as e:
+                print(metric, 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
+                components.append(alert(metric + ' Box Plots not possible with these parameters.'))
+        
+#    try:
+#        fig = resultsBoxPlots(df[~df['method'].isin(['MARC', 'POI', 'NPOI', 'WPOI'])].copy(), 'cls_runtime', title='Classification Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''])
+#        buf = io.BytesIO()
+#        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+#        #fig.close()
+#        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+#        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+#    except Exception as e:
+#        print('Classification Time', 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
+#        components.append(alert('Classification Time Box Plots not possible with these parameters.'))
+#        
+#    try:
+#        fig = resultsBoxPlots(df.copy(), 'runtime', title='Run Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''])
+#        buf = io.BytesIO()
+#        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+#        #fig.close()
+#        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+#        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+#    except Exception as e:
+#        print('Total Time', 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
+#        components.append(alert('Total Time Box Plots not possible with these parameters.'))
         
     try:
-        fig = resultsBoxPlots(df[~df['method'].isin(['MARC', 'POI', 'NPOI', 'WPOI'])].copy(), 'cls_runtime', title='Classification Time')
+        fig = resultsBoxPlots(df.copy(), 'totaltime', title='Total Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''])
         buf = io.BytesIO()
         fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
         #fig.close()
         fig = base64.b64encode(buf.getbuffer()).decode("utf8")
         components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
     except Exception as e:
-        print('Classification Time', 'results not possible:', str(e))
-        components.append(alert('Classification Time Box Plots not possible with these parameters.'))
-        
-    try:
-        fig = resultsBoxPlots(df.copy(), 'runtime', title='Run Time')
-        buf = io.BytesIO()
-        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
-        #fig.close()
-        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
-        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
-    except Exception as e:
-        print('Total Time', 'results not possible:', str(e))
+        print('Total Time', 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
         components.append(alert('Total Time Box Plots not possible with these parameters.'))
         
-    try:
-        fig = resultsBoxPlots(df.copy(), 'totaltime', title='Total Time')
-        buf = io.BytesIO()
-        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
-        #fig.close()
-        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
-        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
-    except Exception as e:
-        print('Total Time', 'results not possible:', str(e))
-        components.append(alert('Total Time Box Plots not possible with these parameters.'))
+    components.append(html.Hr())
+    
+    if 'candidates' in df.columns:
+        try:
+            fig = resultsBoxPlots(df.copy(), 'candidates', title='Number of Candidates', methods_order=sel_methods, xaxis_format=[False, 1000000, 'M'])
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Candidates', 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Candidates Box Plots not possible with these parameters.'))
+
+    if 'movelets' in df.columns: 
+        try:
+            fig = resultsBoxPlots(df.copy(), 'movelets', title='Number of Movelets', methods_order=sel_methods, xaxis_format=[False, 1, ''])
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Movelets', 'Box Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Movelets Box Plots not possible with these parameters.'))
         
     return html.Div(components) #+ [
 #        html.Br(),
@@ -366,7 +412,7 @@ def render_expe_boxplots(df):
 def render_ranks(df): 
     return html.Div([
         html.H4('Accuracy Ranks:'),
-        render_avg_rank(df, rank_col='accuracy', ascending=False),
+        render_avg_rank(df, rank_col='metric:accuracy', ascending=False),
         html.Hr(), html.Br(),
         html.H4('Total Time Ranks:'),
         render_avg_rank(df, rank_col='totaltime', ascending=True, format_func=format_hour),
@@ -376,7 +422,7 @@ def render_ranks(df):
         html.Br(),
     ], style={'margin':10})
 
-def render_avg_rank(df, rank_col='accuracy', ascending=False, format_func=format_float): 
+def render_avg_rank(df, rank_col='metric:accuracy', ascending=False, format_func=format_float): 
     cls_name = 'method'
     ds_key = 'key'
     

@@ -64,7 +64,19 @@ class ResultConfig:
         raise Exception('Implement abstract method totaltime')
         
     def classification(self):
-        return [ ['NN', self.acc()*100, self.clstime()] ]
+        return [ ['-', self.acc()*100, self.clstime()] ]
+    def allMetrics(self, classifier='NN'):
+        return {
+            'metric:accuracy': self.acc(classifier=classifier)*100,
+            'metric:f1_score': self.f1(classifier=classifier),
+            'metric:accuracyTop5': self.accTopK(classifier=classifier)*100,
+        }
+    def acc(self, classifier='NN'):
+         raise Exception('Implement abstract method acc')
+    def f1(self, classifier='NN'):
+         raise Exception('Implement abstract method f1')
+    def accTopK(self, classifier='NN', K=5):
+         raise Exception('Implement abstract method accTopK')
         
     def metrics(self, list_stats, show_warnings=True):
         return get_stats(self, list_stats, show_warnings=show_warnings)
@@ -86,7 +98,7 @@ class ResultConfig:
         return hash((str(self.file), str(self.statsf)))
     
     def __eq__(self, other):
-        return other and self.__hash__() == other.__hash__()
+        return other and self.__hash__() == other.__hash__() #or self.file == other.file or self.statusf == other.statusf)
     
     def __lt__(self, other):
         if not other:
@@ -162,8 +174,12 @@ class ResultConfig:
         if ('on_bad_lines' in signature(pd.read_csv).parameters):
             data = pd.read_csv(file, header = None, delimiter='-=-', engine='python', on_bad_lines='skip')
         else:
-            data = pd.read_csv(file, header = None, delimiter='-=-', engine='python', error_bad_lines=False, warn_bad_lines=False)
+            data = pd.read_csv(file, header = None, delimiter='-=-', engine='python', error_bad_lines=False, warn_bad_lines=False)            
         data.columns = ['content']
+        
+        if self.method.startswith('MMp'): # This is by a bug on the output.
+            data['content'] = data['content'].str.replace(' Selected Points: ','. Selected Points: ')
+            
         return data
     
         
@@ -205,22 +221,37 @@ class MARC(ResultConfig):
 
         return run, random, method, subset, subsubset, prefix, model, path, ijk, statsf
     
-    def acc(self):
+    def readMetric(self, key):
+        val = 0
+        if self.statsf:
+            data = pd.read_csv(self.statsf)
+            val = data[key].iloc[-1]
+        return val
+    
+    def acc(self, classifier='NN'):
         if not hasattr(self, '_acc'):
-            self._acc = 0
-            if self.statsf:
-                data = pd.read_csv(self.statsf)
-                self._acc = data['test_acc'].iloc[-1]
-
+            self._acc = self.readMetric('test_acc')
         return self._acc
+    def f1(self, classifier='NN'):
+        if not hasattr(self, '_f1'):
+            self._f1 = self.readMetric('test_f1_macro')
+        return self._f1
+    def accTopK(self, classifier='NN', K=5):
+        return self.readMetric('test_acc_top'+str(K))
+    def precision(self, classifier='NN'):
+        return self.readMetric('test_prec_macro')
+    def recall(self, classifier='NN'):
+        return self.readMetric('test_rec_macro')
+    def loss(self, classifier='NN'):
+        return self.readMetric('test_loss')
     
     def runtime(self):
         if not hasattr(self, '_time'):
             self._time = get_last_number_of_ms('Processing time: ', self.read_log()) 
         return self._time 
-    def clstime(self):
+    def clstime(self, classifier='NN'):
         return self.runtime()
-    def totaltime(self):
+    def totaltime(self, classifier='NN'):
         return self.runtime()
 
     
@@ -254,24 +285,36 @@ class POIS(ResultConfig):
 
         return run, random, method, subset, subsubset, prefix, model, path, ijk, statsf 
     
-    def acc(self):
+    def acc(self, classifier='NN'):
         if not hasattr(self, '_acc'):
             self._acc = 0
             if self.statsf:
                 data = self.read_log(self.statsf)
                 self._acc = get_first_number("Acc: ", data)
-
         return self._acc
+    def f1(self, classifier='NN'):
+        if not hasattr(self, '_f1'):
+            self._f1 = 0
+            if self.statsf:
+                data = self.read_log(self.statsf)
+                self._f1 = get_first_number("F1_Macro: ", data)
+        return self._f1
+    def accTopK(self, classifier='NN', K=5):
+        val = 0
+        if self.statsf:
+            data = self.read_log(self.statsf)
+            val = get_first_number("Acc_top_"+str(K)+": ", data)
+        return val
     
     def runtime(self):
         if not hasattr(self, '_time'):
             self._time = get_first_number("Processing time: ", self.read_log())
         return self._time 
     
-    def clstime(self):
+    def clstime(self, classifier='NN'):
         return get_first_number("Classification Time: ", self.read_log(self.statsf))
     
-    def totaltime(self, show_warnings=True):
+    def totaltime(self, classifier='NN', show_warnings=True):
         timeRun = self.runtime()
         timeAcc = self.clstime()
         if show_warnings and (timeRun <= 0 or timeAcc <= 0):
@@ -339,12 +382,27 @@ class TEC(ResultConfig):
         if not hasattr(self, '_acc'):
             self._acc = self.readMetric(metric='accuracy')
         return self._acc
+    def f1TEC(self):
+        if not hasattr(self, '_f1'):
+            self._f1 = self.readMetric(metric='f1_score')
+        return self._f1
     
     def acc(self, classifier='TEC'):
         if classifier in ['TEC', 'MLP']:
             return self.accTEC()
         else:
             return self.readMetric(classifier, metric='accuracy')
+    def f1(self, classifier='TEC'):
+        if classifier in ['TEC', 'MLP']:
+            return self.f1TEC()
+        else:
+            return self.readMetric(classifier, metric='f1_score')
+    def accTopK(self, classifier='TEC', K=5):
+        return self.readMetric(classifier, metric='accTop'+str(K))
+    def precision(self, classifier='TEC'):
+        return self.readMetric(classifier, metric='precision')
+    def recall(self, classifier='TEC'):
+        return self.readMetric(classifier, metric='recall')
     
     def runtime(self):
         if not hasattr(self, '_time'):
@@ -357,7 +415,7 @@ class TEC(ResultConfig):
         else:
             return float(self.readMetric(classifier, metric='time'))
         
-    def totaltime(self):
+    def totaltime(self, classifier='TEC'):
         return self.runtime()
     
     def classification(self):
@@ -418,7 +476,14 @@ class MC(ResultConfig):
         txt = open(self.file, 'r').read()
         return txt.find('[Warning] Time contract limit timeout.') > -1 or txt.find('Processing time:') < 0
     
-    def read_approach(self, classifier):
+    def get_file(self, approach_file):
+        res_file = os.path.join(self.path, self.model, approach_file)
+        if os.path.isfile(res_file):
+            data = pd.read_csv(res_file)
+            return data
+        else:
+            return None
+    def file_approach(self, classifier):
         if classifier == 'RF':
             approach_file = 'model_approachRF300_history.csv'
         elif classifier == 'SVC':
@@ -427,13 +492,17 @@ class MC(ResultConfig):
             approach_file = 'model_approach2_history_Step5.csv'
         else:
             approach_file = 'classification_times.csv'
-        
-        res_file = os.path.join(self.path, self.model, approach_file)
-        if os.path.isfile(res_file):
-            data = pd.read_csv(res_file)
-            return data
-        else:
-            return None
+        return approach_file
+    def read_approach(self, classifier):
+        approach_file = self.file_approach(classifier)
+        return self.get_file(approach_file)
+    
+    def readMetricMean(self, classifier, metric):
+        val = 0
+        data = self.get_file(self.file_approach(classifier).replace('history', 'report'))
+        if data is not None:
+            val = data[metric].mean()
+        return val
 
     def accRF(self):
         acc = 0
@@ -441,6 +510,12 @@ class MC(ResultConfig):
         if data is not None:
             acc = data['1'].iloc[-1]
         return acc
+    def accTopKRF(self):
+        val = 0
+        data = self.read_approach('RF')
+        if data is not None:
+            val = data['2'].iloc[-1]
+        return val
 
     def accSVM(self):
         acc = 0
@@ -448,6 +523,12 @@ class MC(ResultConfig):
         if data is not None:
             acc = data.loc[0].iloc[-1]
         return acc
+    def accTopKSVM(self):
+        val = 0
+        data = self.read_approach('SVM')
+        if data is not None:
+            val = data['2'].iloc[-1]
+        return val
 
     def accMLP(self):
         if not hasattr(self, '_acc'):
@@ -456,6 +537,27 @@ class MC(ResultConfig):
             if data is not None:
                 self._acc = data['val_accuracy'].iloc[-1]
         return self._acc
+    def f1MLP(self):
+        if not hasattr(self, '_f1'):
+            self._f1 = 0
+            data = self.read_approach('MLP')
+            if data is not None:
+                self._f1 = data['val_f1'].iloc[-1]
+        return self._f1
+    def accTopK_MLP(self, K=5):
+        val = 0
+        data = self.read_approach('MLP')
+        if data is not None and 'val_top_k_categorical_accuracy' in data.columns:
+            val = data['val_top_k_categorical_accuracy'].iloc[-1]
+        elif data is not None and 'val_top_'+str(K)+'_categorical_accuracy' in data.columns:
+            val = data['val_top_'+str(K)+'_categorical_accuracy'].iloc[-1]
+        return val
+    def lossMLP(self):
+        val = 0
+        data = self.read_approach('MLP')
+        if data is not None and 'val_loss' in data.columns:
+            val = data['val_loss'].iloc[-1]
+        return val
     
     def acc(self, classifier='MLP'):
         if classifier in ['MLP', 'NN']:
@@ -466,6 +568,34 @@ class MC(ResultConfig):
             return self.accSVM()
         else:
             return 0
+    def f1(self, classifier='MLP'):
+        if classifier in ['MLP', 'NN']:
+            return self.f1MLP()
+        elif classifier == 'RF':
+            return self.readMetricMean('RF', 'f1_score')
+        elif classifier == 'SVM':
+            return self.readMetricMean('SVM', 'f1_score')
+        else:
+            return 0
+    def accTopK(self, classifier='MLP', K=5):
+        if classifier in ['MLP', 'NN']:
+            return self.accTopK_MLP(K)
+        elif classifier == 'RF':
+            return self.accTopKRF() if K == 5 else 0 #TODO fix top-k
+        elif classifier == 'SVM':
+            return self.accTopKSVM() if K == 5 else 0 #TODO fix top-k
+        else:
+            return 0
+    def precision(self, classifier='MLP'):
+        if classifier in ['MLP', 'NN']:
+            return self.readMetricMean('MLP', 'precision')
+        else:
+            return self.readMetricMean(classifier, 'precision')
+    def recall(self, classifier='MLP'):
+        if classifier in ['MLP', 'NN']:
+            return self.readMetricMean('MLP', 'recall')
+        else:
+            return self.readMetricMean(classifier, 'recall')
     
     def runtime(self):
         if not hasattr(self, '_time'):
@@ -482,7 +612,7 @@ class MC(ResultConfig):
         timeRun = self.runtime()
         timeAcc = self.clstime(classifier)
         if show_warnings and (timeRun <= 0 or timeAcc <= 0):
-            print('*** Warning ***', 'timeRun:', timeRun, 'timeAcc:', timeAcc, classifier, 'for '+str(self.statsf)+'.')
+            print('*** Warning ***', 'timeRun:', timeRun, 'timeAcc:', timeAcc, classifier, 'for '+str(self.file)+'.')
         return timeRun + timeAcc
     
     def classification(self):
@@ -562,19 +692,30 @@ class TC(ResultConfig): # TODO
             val = data[metric].mean()
         return val
     
-    def acc(self):
+    def acc(self, classifier='NN'):
         if not hasattr(self, '_acc'):
             self._acc = self.readMetric()
-            
         return self._acc
+    def f1(self, classifier='NN'):
+        if not hasattr(self, '_f1'):
+            self._f1 = self.readMetric(metric='f1-macro')
+        return self._f1
+    def accTopK(self, classifier='NN', K=5):
+        return self.readMetric(metric='acc_top_K'+str(5))
+    def balAcc(self, classifier='NN'):
+        return self.readMetric(metric='balanced_accuracy')
+    def precision(self, classifier='NN'):
+        return self.readMetric(metric='precision_macro')
+    def recall(self, classifier='NN'):
+        return self.readMetric(metric='recall_macro')
     
     def runtime(self):
         if not hasattr(self, '_time'):
             self._time = get_last_number_of_ms('Processing time: ', self.read_log()) 
         return self._time 
-    def clstime(self):
+    def clstime(self, classifier='NN'):
         return self.runtime()
-    def totaltime(self):
+    def totaltime(self, classifier='NN'):
         return self.runtime()
 
 # ----------------------------------------------------------------------------------
@@ -636,13 +777,22 @@ def get_stats(config, list_stats, show_warnings=True):
                 stats.append( config.totaltime() )
         
         elif x[1] == 'ACC':
-            acc = 0
+            val = 0
             if config.tipe == ResultConfig.MC or config.tipe == ResultConfig.TEC:
-                acc = config.acc(classifier=x[2])
+                val = config.acc(classifier=x[2])
             elif x[2] in ['NN', 'MLP']:
-                acc = config.acc() 
+                val = config.acc() 
                 
-            stats.append( acc * 100 )
+            stats.append( val * 100 )
+        
+        elif x[1] == 'F1':
+            val = 0
+            if config.tipe == ResultConfig.MC or config.tipe == ResultConfig.TEC:
+                val = config.f1(classifier=x[2])
+            elif x[2] in ['NN', 'MLP']:
+                val = config.f1() 
+                
+            stats.append( val * 100 )
         
         elif x[1] == 'msg':
             e = False

@@ -13,3 +13,4 @@ plotly
 scikit-mobility
 xlsxwriter
 seaborn
+memory-profiler

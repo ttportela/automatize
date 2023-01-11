@@ -94,7 +94,7 @@ def importer(key=['S'], this=None, modules={}):
         mdic.update( {'json': module} )
         
     # 3rd Party:
-    if set(key) & set(['*', 'others', 'TCM', 'glob', 'glob2', 'tf', 'tensorflow', 'gh']):
+    if set(key) & set(['*', 'others', 'TCM', 'collections', 'glob', 'glob2', 're', 'tf', 'tensorflow', 'gh', 'sns', 'plt']):
         if set(key) & set(['*', 'others', 'TCM', 'glob', 'glob2']):
             module = importlib.import_module('glob2')
             mdic.update( {'glob': module} )

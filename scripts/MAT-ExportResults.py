@@ -51,7 +51,7 @@ def getFiles(path):
 
     return filesList
 
-filelist = ['*.txt', 'classification_times.csv', '*_history_Step5.csv', '*_history.csv', '*_results.csv']
+filelist = ['*.txt', 'classification_times.csv', '*_report_Step5.csv', '*_report.csv', '*_history_Step5.csv', '*_history.csv', '*_results.csv', 'eval_*.csv']
 filesList = []
 
 for file in filelist:

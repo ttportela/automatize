@@ -20,7 +20,7 @@ importer(['S'], globals())
 ### Run Before: poifreq(sequences, dataset, features, folder, result_dir, method='npoi')
 ## --------------------------------------------------------------------------------------------
 def model_poifreq(dir_path, METHOD='npoi', METRICS_FILE=None, RESULTS_FILE=None, random_seed=1):
-    importer(['S', 'POIS', 'random'], globals())
+    importer(['S', 'POIS', 'random', 'datetime'], globals())
 
     np.random.seed(random_seed)
     random.seed(random_seed)
@@ -43,6 +43,7 @@ def model_poifreq(dir_path, METHOD='npoi', METRICS_FILE=None, RESULTS_FILE=None,
 #     labels = y_test
 
     print('[POI-S:] Building Neural Network')
+    time = datetime.now()
     
     if not METRICS_FILE:
         METRICS_FILE = os.path.join(os.path.dirname(dir_path), 'POIFREQ-metrics.csv')
@@ -156,6 +157,9 @@ def model_poifreq(dir_path, METHOD='npoi', METRICS_FILE=None, RESULTS_FILE=None,
     print(f"F1_Macro: {np.array(df['test_f1_macro'])[-EARLY_STOPPING_PATIENCE]} ", file=f)
     print(f"Precision_Macro: {np.array(df['test_prec_macro'])[-EARLY_STOPPING_PATIENCE]} ", file=f)
     print(f"Recall_Macro: {np.array(df['test_rec_macro'])[-EARLY_STOPPING_PATIENCE]} ", file=f)
+    
+    time_ext = (datetime.now()-time).total_seconds() * 1000
+    print(f"Processing time: {time_ext} milliseconds. Done.", file=f)
     print('------------------------------------------------------------------------------------------------', file=f)
     f.close()
     

@@ -96,14 +96,14 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     optimizer = ['ada']
     learning_rate = [0.001]
     loss = ['CCE']
-    loss_parameters = [{}]
+    loss_parameters = [{}] # TODO unfix, it´s fixed for now, but if you add parameters, change all configs.
 
     y_ohe = y_one_hot_encodding
             
     print("\n[DEEPEST:] Building DeepestST Model")
     start_time = datetime.now()
 
-    total = len(rnn)*len(units)*len(merge_type)*len(dropout_before_rnn)* len(dropout_after_rnn)*        len(embedding_size)* len(batch_size) * len(epochs) * len(patience) * len(monitor) *        len(optimizer) * len(learning_rate) * len(loss) * len(loss_parameters) 
+    total = len(rnn)*len(units)*len(merge_type)*len(dropout_before_rnn)* len(dropout_after_rnn)*        len(embedding_size)* len(batch_size) * len(epochs) * len(patience) * len(monitor) *        len(optimizer) * len(learning_rate) * len(loss) #* len(loss_parameters) ## By Tarlis
 
     print('[DEEPEST:] Starting model training, {} iterations'.format(total))
 
@@ -131,9 +131,10 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
         df_['opt']= f.split(marksplit)[11]
         df_['lr']= f.split(marksplit)[12]
         df_['ls']= f.split(marksplit)[13]
-        df_['ls_p']= f.split(marksplit)[14]
+#        df_['ls_p']= f.split(marksplit)[14]
         df_['ohe'] = y_one_hot_encodding
-        df_['feature']= f.split(marksplit)[16].split('.csv')[0]
+#        df_['feature']= f.split(marksplit)[16].split('.csv')[0]
+        df_['feature']= f.split(marksplit)[15].split('.csv')[0]
 
         data.append(df_)
 
@@ -155,11 +156,11 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
         opt=c[10] 
         lr=c[11]
         ls=c[12]
-        ls_p=c[13]
+        ls_p=loss_parameters[0] # TODO unfix # c[13]
 
         filename = os.path.join(dir_validation, 'deepest-'+
                                 concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, 
-                                              pat, mon, opt, lr, ls, ls_p, y_ohe, features)+'.csv')
+                                              pat, mon, opt, lr, ls, y_ohe, features)+'.csv')
         count += 1
 
         if os.path.exists(filename):
@@ -167,8 +168,8 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
             getParamData(filename)
         else:
 
-            pbar.set_postfix_str(print_params('nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features',
-                                             nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features))
+            pbar.set_postfix_str(print_params('nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features',
+                                             nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features))
 
 
 
@@ -192,7 +193,8 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
                         min_delta=0,
                         patience=pat,
                         verbose=0,
-                        baseline=0.5,
+#                        baseline=0.5,
+                        baseline=None, # By Tarlis
                         optimizer=opt,
                         learning_rate=lr,
                         mode='auto',
@@ -211,8 +213,8 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
                 validation_report.to_csv(filename, index=False)
 
             data.append( update_report(validation_report, 
-                                       'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features',
-                                       nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features) )
+                                       'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features',
+                                       nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features) )
             
             deepest.free()
 
@@ -239,20 +241,21 @@ def TrajectoryDeepestST(dir_path, res_path, prefix='', save_results=True, n_jobs
     opt = df_result.iloc[model]['opt']
     lr = float(df_result.iloc[0]['lr'])
     ls = df_result.iloc[model]['ls']
-    ls_p = json.loads(df_result.iloc[model]['ls_p'].replace("'", "\""))
+#    ls_p = json.loads(df_result.iloc[model]['ls_p'].replace("'", "\""))
+    ls_p = loss_parameters[0] # TODO unfix
 
     y_ohe = y_one_hot_encodding
 
     filename = os.path.join(dir_evaluation, 'eval_deepest-'+ \
-        concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features)+'.csv')
+        concat_params(nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features)+'.csv')
     
     print("[DEEPEST:] Filename: {}.".format(filename))
 
     if not os.path.exists(filename):
         print('[DEEPEST:] Creating a model to test set')
         print("[DEEPEST:] Parameters: " + print_params(
-            'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features',
-            nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, ls_p, y_ohe, features) )
+            'nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features',
+            nn, un, mt, dp_bf, dp_af, em_s, bs, epoch, pat, mon, opt, lr, ls, y_ohe, features) )
         
         evaluate_report = []
         rounds = 10

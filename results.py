@@ -37,20 +37,35 @@ def STATS(name=['*']):
             ['Movelets',             'sum',   'Total of Movelets'],
         ]
         
-     # ACC & Time All
-    if set(name) & set(['*', '#', 'AT', 'at', 'MLP', 'N', 'S', 's', 'AccTT']):
+     # ACC All
+    if set(name) & set(['*', '#', 'AT', 'at', 'ACC', 'MLP', 'N', 'S', 's', 'AccTT']):
         list_stats = list_stats + [
-            ['ACC (MLP)',            'ACC',     'MLP'],
+            ['ACC (NN)',            'ACC',     'MLP'],
         ]
-    if set(name) & set(['*', 'AT', 'at', 'RF', 'S', 's']): 
+    if set(name) & set(['*', 'AT', 'at', 'ACC', 'RF', 'S', 's']): 
         list_stats = list_stats + [
             ['ACC (RF)',             'ACC',     'RF'],
         ]
-    if set(name) & set(['*', 'AT', 'SVM', 'S']): 
+    if set(name) & set(['*', 'AT', 'ACC', 'SVM', 'S']): 
         list_stats = list_stats + [
             ['ACC (SVM)',            'ACC',     'SVM'],
         ]
+        
+    # F-SCORE
+    if set(name) & set(['*', 'F1']):
+        list_stats = list_stats + [
+            ['F-Score (NN)',          'F1',     'MLP'],
+        ]
+    if set(name) & set(['*', 'F1']):
+        list_stats = list_stats + [
+            ['F-Score (RF)',          'F1',     'RF'],
+        ]
+    if set(name) & set(['*', 'F1']):
+        list_stats = list_stats + [
+            ['F-Score (SVM)',         'F1',     'SVM'],
+        ]
     
+    # TIME
     if set(name) & set(['*', '#', 'AT', 'at', 'N', 'S', 's', 'TIME']):
         list_stats = list_stats + [
             ['Time (Movelets)',      'time',    'Processing time'],
@@ -213,7 +228,9 @@ def check_run(res_path, show_warnings=False):
 def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='model', isformat=True):
     
     importer(['S', 'glob', 'STATS', 'get_stats', 'containErrors', 'np'], globals())
-    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','subsubset','run','random','method', 'classifier','accuracy','runtime','cls_runtime','error','file'])
+    histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','subsubset','run','random','method','classifier', \
+                                    'metric:accuracy', 'metric:f1_score', \
+                                    'runtime','cls_runtime','totaltime','candidates','movelets','error','file'])
 
     filesList = getResultFiles(res_path)
     lr = list(set(map(lambda ijk: ResultConfig.instantiate(ijk), filesList)))
@@ -227,7 +244,9 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
             
             aux = m.metrics(MC)
             
-            return {
+            met_dict = m.allMetrics(classifier=result[0])
+            
+            met_dict.update( {
                 '#': 0,
                 'timestamp': m.metrics(D)[0], #gstati('endDate'),
                 'dataset': config.prefix,
@@ -237,16 +256,17 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
                 'random': config.random,
                 'method': config.method,
                 'classifier': result[0],
-                'accuracy': result[1],
+                #'metric:accuracy': result[1],
                 'runtime': config.runtime(),
                 'cls_runtime': result[2],
-                'totaltime': config.totaltime(),
+                'totaltime': config.totaltime() if result[0] in ['NN', 'MLP'] else config.totaltime(classifier=result[0]),
                 'candidates': aux[0],
                 'movelets': aux[1],
 #                'error': config.containErrors() or config.containWarnings() or config.containTimeout(),
                 'error': config.containErrors() or config.containTimeout(),
                 'file': config.statsf,
-            }
+            } )
+            return met_dict
         
         for classifier in m.classification():
             aux_hist = getrow(m, classifier)
@@ -257,8 +277,11 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
     histres['name']   = histres['method'].map(str) + '-' + histres['subsubset'].map(str) + '-' + histres['classifier'].map(str)
     histres['key'] = histres['dataset'].map(str) + '-' + histres['subset'].map(str) + '-' + histres['run'].map(str)
     
+    histres.sort_values(['dataset', 'subset', 'run', 'method', 'classifier'], inplace=True)
+    
     # Ordering / Renaming:
     histres.reset_index(drop=True, inplace=True)
+    histres['#'] = histres.index
 
     return histres
 

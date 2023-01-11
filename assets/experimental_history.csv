@@ -1,4 +1,4 @@
-,#,timestamp,dataset,subset,subsubset,run,random,method,runtime,classifier,accuracy,cls_runtime,error,file,totaltime,name,key
+,#,timestamp,dataset,subset,subsubset,run,random,method,runtime,classifier,metric:accuracy,cls_runtime,error,file,totaltime,name,key
 0,0,-1.0,Brightkite,specific,specific,1,1,HL,5881000.0,MLP,96.664,963000.0,False,,6844000.0,HL-MLP,Brightkite-specific-1
 1,0,-1.0,Brightkite,specific,specific,1,1,HL,5881000.0,RF,95.711,1000.0,False,,5882000.0,HL-RF,Brightkite-specific-1
 2,0,-1.0,Brightkite,specific,specific,2,1,HL,6061000.0,MLP,96.566,963000.0,False,,7024000.0,HL-MLP,Brightkite-specific-2

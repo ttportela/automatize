@@ -26,65 +26,30 @@ BASE_METHODS = [
     'SM-2+Log',
     
     'hiper', 
-    'hiper-pivots',  
     'hiper+Log', 
+    'hiper-pivots',  
     'hiper-pivots+Log',     
     
-    'TC-TRF',
-    'TC-TXGB',
-    'TC-TULVAE',
-    'TC-BITULER',
-    'TC-DEEPEST',
+    'TRF',
+    'TXGB',
+    'TULVAE',
+    'BITULER',
+    'DEEPEST',
 ]
 
 METHODS_NAMES = {
-
-    'hiper': 'HiPerMovelets', 
-    'hiper+Log': 'HiPerMovelets-Log',
-    'hiper-pivots': 'HiPerPivots', 
-    'hiper-pivots+Log': 'HiPerPivots-Log',
     
-    'H': 'HiPerMovelets τ=90%', 
-    'HL': 'HiPerMovelets τ=90%',
-    'Hp': 'HiPerPivots τ=90%', 
-    'HpL': 'HiPerPivots τ=90%',
+    'Dodge': 'Dodge',
+    'Xiao': 'Xiao',
+    'Zheng': 'Zheng',
+    'Movelets': 'Movelets', 
     
-    'HTR75': 'HiPerMovelets τ=75%', 
-    'HTR75L': 'HiPerMovelets τ=75%',
-    'HpTR75': 'HiPerPivots τ=75%', 
-    'HpTR75L': 'HiPerPivots τ=75%',
+    'TRF': 'RF (Traj.)',
+    'TXGB': 'XGBoost (Traj.)',
+    'TULVAE': 'TULVAE',
+    'BITULER': 'BITULER',
+    'DEEPEST': 'DeepeST',
     
-    'HTR50': 'HiPerMovelets τ=50%', 
-    'HTR50L': 'HiPerMovelets τ=50%',
-    'HpTR50': 'HiPerPivots τ=50%', 
-    'HpTR50L': 'HiPerPivots τ=50%',
-    
-    'SM': 'SUPERMovelets',
-    'SM+Log': 'SUPERMovelets-Log',
-    'SM-2': 'SUPERMovelets-λ',
-    'SM+Log-2': 'SUPERMovelets-Log-λ',
-    'SM-2+Log': 'SUPERMovelets-Log-λ',
-    'SML': 'SUPERMovelets-Log',
-    'SMD2': 'SUPERMovelets-λ',
-    'SMD2L': 'SUPERMovelets-Log-λ',
-    'SMLD2': 'SUPERMovelets-Log-λ',
-    
-    'MM':   'MASTERMovelets',
-    'MM+Log':  'MASTERMovelets-Log',
-    'MMp':  'MASTERPivots',
-    'MMp+Log': 'MASTERPivots-Log',
-    'MML':  'MASTERMovelets-Log',
-    'MMpL': 'MASTERPivots-Log',
-    
-    'U': 'UltraMovelets', 
-    'ultra': 'UltraMovelets', 
-#    'Ur': 'UltraMovelets-R',
-    'R': 'RandomMovelets',
-    'random': 'RandomMovelets',
-    'RL': 'RandomMovelets-Log', 
-    'random+Log': 'RandomMovelets-Log', 
-    
-    'MARC': 'MARC',
     'poi':  'POI-F',
     'npoi': 'NPOI-F',
     'wpoi': 'WPOI-F',
@@ -102,23 +67,69 @@ METHODS_NAMES = {
     'WNPOI_3':  'WNPOI (3)',
     'WNPOI_1_2_3':  'WNPOI (1+2+3)',
     
-    'Movelets': 'Movelets',
-    'Dodge': 'Dodge',
-    'Xiao': 'Xiao',
-    'Zheng': 'Zheng',
+    'MARC': 'MARC',
     
-    'TC-TRF': 'TRF',
-    'TC-TXGB': 'TXGBoost',
-    'TC-TULVAE': 'TULVAE',
-    'TC-BITULER': 'BITULER',
-    'TC-DEEPEST': 'DeepestST',
+    'MM':   'MASTERMovelets',
+    'MM+Log':  'MASTERMovelets-Log',
+    'MMp':  'MASTERPivots',
+    'MMp+Log': 'MASTERPivots-Log',
+    'MML':  'MASTERMovelets-Log',
+    'MMpL': 'MASTERPivots-Log',
+    
+    'SM': 'SUPERMovelets',
+    'SM+Log': 'SUPERMovelets-Log',
+    'SM-2': 'SUPERMovelets-λ',
+    'SM+Log-2': 'SUPERMovelets-Log-λ',
+    'SM-2+Log': 'SUPERMovelets-Log-λ',
+    'SML': 'SUPERMovelets-Log',
+    'SMD2': 'SUPERMovelets-λ',
+    'SMD2L': 'SUPERMovelets-Log-λ',
+    'SMLD2': 'SUPERMovelets-Log-λ',
+
+    'hiper': 'HiPerMovelets', 
+    'hiper+Log': 'HiPerMovelets-Log',
+    'hiper-pivots': 'HiPerPivots', 
+    'hiper-pivots+Log': 'HiPerPivots-Log',
+    
+    'H': 'HiPerMovelets τ=90%', 
+    'HL': 'HiPerMovelets τ=90%',
+    'HTR75': 'HiPerMovelets τ=75%', 
+    'HTR75L': 'HiPerMovelets τ=75%',
+    'HTR50': 'HiPerMovelets τ=50%', 
+    'HTR50L': 'HiPerMovelets τ=50%',
+    
+    'Hp': 'HiPerPivots τ=90%', 
+    'HpL': 'HiPerPivots τ=90%',
+    'HpTR75': 'HiPerPivots τ=75%', 
+    'HpTR75L': 'HiPerPivots τ=75%',
+    'HpTR50': 'HiPerPivots τ=50%', 
+    'HpTR50L': 'HiPerPivots τ=50%',
+    
+    'R': 'RandomMovelets',
+    'random': 'RandomMovelets',
+    'RL': 'RandomMovelets-Log', 
+    'random+Log': 'RandomMovelets-Log',
+    'U': 'UltraMovelets', 
+    'ultra': 'UltraMovelets', 
+#    'Ur': 'UltraMovelets-R',
 }
 
 CLASSIFIERS_NAMES = {
-    'NN': 'Neural Network',
-    'MLP': 'Neural Network',
-    'RF':  'Random Forrest',
-    'SVM': 'Support Vector Machine',
+    '-':   'Self',
+    'NN':  'Neural Network (NN)',
+    'MLP': 'Neural Network (NN)',
+    'RF':  'Random Forrest (RF)',
+    'SVM': 'Support Vector Machine (SVM)',
+}
+
+METRICS_NAMES = {
+    'f_score':       'F-Score',
+    'f1_score':      'F1-Score',
+    'accuracy':      'Accuracy',
+    'accuracyTop5':  'Accuracy Top 5',
+    'precision':     'Precision',
+    'recall':        'Recall',
+    'loss':          'Loss',
 }
 
 DESCRIPTOR_NAMES = {
@@ -231,3 +242,22 @@ def readK(kRange):
         for x in kRange.split(','):
             k += [int(x)] if '-' not in x else list(range( int(x.split('-')[0]), int(x.split('-')[1])+1 ))
     return k
+
+def metricName(code):
+    code = code.replace('metric:', '')
+    
+    if code in METRICS_NAMES.keys():
+        return METRICS_NAMES[code]
+    
+    name = code[0].upper()
+    for c in code[1:]:
+        if c.isupper():
+            name += ' ' + c
+        elif c.isdigit() and not name[-1].isdigit():
+            name += ' ' + c
+        elif c == '_':
+            name += '-'
+        else:
+            name += c
+    
+    return name

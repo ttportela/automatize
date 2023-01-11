@@ -57,7 +57,6 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
     colsample_bytree = [0.5 , 0.7]
     reg_alpha_l1 = [1.0]#[0.0, 0.01, 1.0]
     reg_lambda_l2 = [100]#[0.0, 1.0, 100]
-    #eval_metric = ['merror']#, 'mlogloss'] #merror #(wrong cases)/#(all cases) Multiclass classification error // mlogloss:
     eval_metric = ['merror', 'mlogloss'] #merror #(wrong cases)/#(all cases) Multiclass classification error // mlogloss:
     tree_method = 'auto' #   
     esr = [20]
@@ -127,7 +126,8 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                                            random_state=42,
                                            tree_method=tree_method,
                                            eval_metric=loss,
-                                           early_stopping_rounds=epch)
+                                           early_stopping_rounds=epch,
+                                           num_classes=num_classes)
 
             xgboost.fit(X_train, 
                         y_train, 
@@ -200,7 +200,8 @@ def TrajectoryXGBoost(dir_path, res_path, prefix='', save_results=True, n_jobs=-
                                         random_state=e,
                                         tree_method=tree_method,
                                         eval_metric=loss,
-                                        early_stopping_rounds=epch)
+                                        early_stopping_rounds=epch,
+                                        num_classes=num_classes)
 
             xgboost.fit(X_train, 
                         y_train, 
