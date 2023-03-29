@@ -70,6 +70,8 @@ class ResultConfig:
             'metric:accuracy': self.acc(classifier=classifier)*100,
             'metric:f1_score': self.f1(classifier=classifier),
             'metric:accuracyTop5': self.accTopK(classifier=classifier)*100,
+            'metric:comparedTrajectories': self.countT(),
+            'metric:prunedTrajectories':   0,
         }
     def acc(self, classifier='NN'):
          raise Exception('Implement abstract method acc')
@@ -77,6 +79,8 @@ class ResultConfig:
          raise Exception('Implement abstract method f1')
     def accTopK(self, classifier='NN', K=5):
          raise Exception('Implement abstract method accTopK')
+    def countT(self):
+         return 0
         
     def metrics(self, list_stats, show_warnings=True):
         return get_stats(self, list_stats, show_warnings=show_warnings)
@@ -157,6 +161,10 @@ class ResultConfig:
         if not hasattr(self, 'errors'):
             self.runningStatus()
         return self.errors or self.warns or self.touts
+    def unfinished(self):
+        if not hasattr(self, 'errors'):
+            self.runningStatus()
+        return self.errors or self.touts
     def runningProblemsStr(self):
         if not hasattr(self, 'errors'):
             self.runningStatus()
@@ -503,6 +511,21 @@ class MC(ResultConfig):
         if data is not None:
             val = data[metric].mean()
         return val
+    
+    def allMetrics(self, classifier='NN'):
+        return {
+            'metric:accuracy': self.acc(classifier=classifier)*100,
+            'metric:f1_score': self.f1(classifier=classifier),
+            'metric:accuracyTop5': self.accTopK(classifier=classifier)*100,
+            'metric:comparedTrajectories': self.countT(),
+            'metric:prunedTrajectories':   self.metrics([['Trajs. Pruned',   'sum', 'Trajs. Ignored']])[0],
+        }
+    def countT(self):
+        count = self.metrics([['Trajs. Compared', 'sum', 'Trajs. Looked']])[0]
+        if count > 0:
+            return count
+        else:
+            return self.metrics([['Trajs. Compared', 'count', 'Trajectory']])[0]
 
     def accRF(self):
         acc = 0
@@ -737,6 +760,11 @@ def get_stats(config, list_stats, show_warnings=True):
     
     for x in list_stats:
         ssearch = x[2]+": "
+        
+        # This is an Exception:
+        if config.tipe == ResultConfig.MC and method in ['R', 'RL'] and x[2] == 'Number of Candidates':
+            ssearch = 'Scored Candidates: '
+        
         if x[1] == 'max':
             stats.append( get_max_number_of_file_by_dataframe(ssearch, fdata) )
         
@@ -797,9 +825,11 @@ def get_stats(config, list_stats, show_warnings=True):
         elif x[1] == 'msg':
             e = False
             if x[2] == 'msg':
-                e = config.runningProblems()
+                e = config.runningProblemsStr()
             if x[2] == 'isMsg':
-                e = config.runningProblems() != False
+                e = config.runningProblems()
+            if x[2] == 'unfinished':
+                e = config.unfinished()
             elif x[2] == 'err':
                 e = config.containErrors()
             elif x[2] == 'warn':

@@ -19,7 +19,7 @@ from inc.script_def import getDescName
 DATASET_TYPES = {
     'multiple_trajectories':     'Multiple Aspect Trajectories', 
     'raw_trajectories':          'Raw Trajectories', 
-    'semantic_trajectories':     'Semantic Trajectories', 
+    'sequential':                'Sequential Semantics', 
     'process':                   'Event Logs',
     'multivariate_ts':           'Multivariate Time Series', 
     'univariate_ts':             'Univariate Time Series',
@@ -29,7 +29,7 @@ SUBSET_TYPES = {
    '*.specific':                     'Multiple',
    'multiple_trajectories.specific': 'Multiple Aspect',
    'raw_trajectories.specific':      'Raw',
-   'semantic_trajectories.specific': 'Semantic',
+   'sequential.*':            'Semantic',
    'multivariate_ts.specific':       'Multivariate',
    'univariate_ts.specific':         'Univariate',
 #    'process.specific':               'Event Log',
@@ -43,6 +43,7 @@ SUBSET_TYPES = {
    '*.category': 'Category',
    '*.poi':      'POI',
    '*.5dims':    '5-Dimensions',
+   '*.genes':    'Genetic Sequence',
 }
 
 def list_datasets(data_path=DATA_PATH):

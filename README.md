@@ -19,9 +19,8 @@ The present application offers a tool, called AutoMATize, to support the user in
 - [Tutorial](/tutorial): Tutorial on how to use Automatise as a Python library.
 
 
-### Available Classifiers:
+### Available Classifiers (needs update):
 
-* **TEC**: Trajectory Ensemble Classifier [REFERENCE*]
 * **MLP (Movelet)**: Multilayer-Perceptron (MLP) with movelets features. The models were implemented using the Python language, with the keras, fully-connected hidden layer of 100 units, Dropout Layer with dropout rate of 0.5, learning rate of 10−3 and softmax activation function in the Output Layer. Adam Optimization is used to avoid the categorical cross entropy loss, with 200 of batch size, and a total of 200 epochs per training. [REFERENCE*]
 * **RF (Movelet)**: Random Forest (RF) with movelets features, that consists of an ensemble of 300 decision trees. The models were implemented using the Python language, with the keras. [REFERENCE*]
 * **SVN (Movelet)**: Support Vector Machine (SVM) with movelets features. The models were implemented using the Python language, with the keras, linear kernel and default structure. Other structure details are default settings. [REFERENCE*]
@@ -87,6 +86,8 @@ If you use `automatize` please cite the following paper:
 }
 ```
 
+(For disambiguity, AutoMATtize was previously written with 's', and now the current version with a 'z')
+
 ### Collaborate with us
 
 Any contribution is welcome. This is an active project and if you would like to include your algorithm in `automatize`, feel free to fork the project, open an issue and contact us.
@@ -105,15 +106,15 @@ Feel free to contribute in any form, such as scientific publications referencing
 This is a more complete and second version of the previous package [Automatise](https://github.com/ttportela/automatise). 
  
 *Dec. 2022:*
- - New Classifier: **Trajectory Ensemble Classifier (TEC)** - an ensemble classifier for trajectory data based in POIS, MARC and movelets methods;
  - [POI-F](https://doi.org/10.1145/3341105.3374045) extension: **POIS** is an extension to the POI-F method capable of concatenating dimensions and sequences for trajectory classification. Available for the methods `poi`, `npoi`, and `wnpoi`.
  - New classification methods: *TULVAE, BITULER, DeepestST, XGBoost, Traj. Random Forrest* ([source](https://github.com/nickssonfreitas/ICAART2021)).
  - Scripts for classification refactored to command line best practices, and implemented random seed parameter to all methods for reproductibility purposes.
  - Trajectory Generator Module: offers two types of generation methods: random or sampling real data. Possible to control the number of: trajectories, points, attributes, and classes.
- - Updated interface for AutoMATize Results.
+ - Updated interface for AutoMATize Results and new graphics generation.
  - New visualization tools: trajectory spatial heatmap, etc. (graphincs.py).
  - New interface for calling scripts.
  - New structure for reading result files to allow easy extention.
  
  *TODO*:
  - Comments on all public interface funcions and modules
+ - Incorporate new classifiers

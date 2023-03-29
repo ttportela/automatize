@@ -32,7 +32,7 @@ from inc.CDDiagram import draw_cd_diagram
 from inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES, metricName
 
 from matplotlib import pyplot as plt
-from automatize.graphics import resultsBoxPlots 
+from automatize.graphics import resultsBoxPlots, barPlot, lineRank
 
 from automatize.results import format_hour, format_float
 # ------------------------------------------------------------
@@ -224,7 +224,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
                         id='input-results-view',
                         options=[
                             {'label': ' '+y+' ', 'value': y.lower().replace(' ', '_')} \
-                            for y in ['Critical Difference', 'Box Plots', 'Average Rankings', 'Raw Results']
+                            for y in ['Critical Difference', 'Bar Plots', 'Bar Plots (Mean)', 'Box Plots', 'Swarm Plots', 'Average Rankings', 'Raw Results']
                         ],
                         value=view,
                     ),
@@ -232,7 +232,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
         ], style={'margin':10}),
         html.Hr(),
         #render_experiments_panels(df),
-        render_experiments_panels(df, view, sel_methods),
+        render_experiments_panels(df, view, sel_methods, sel_datasets),
         html.Br(),
         html.Span("Last Update: " + time.strftime("%d/%m/%Y, %H:%M:%S"), style={'margin':10}),
         dbc.Button("download results", id="download-results-btn", color="light"),
@@ -253,13 +253,22 @@ def download_results_csv(n_clicks, sel_datasets=None, sel_methods=None, sel_clas
     df, *x = filter_results(sel_datasets, sel_methods, sel_classifiers, RESULTS_FILE)
     return dcc.send_data_frame(df.to_csv, "automatise_experimental_history.csv")
 
-def render_experiments_panels(df, view, sel_methods=None):
+def render_experiments_panels(df, view, sel_methods=None, sel_datasets=None, sel_classifiers=None):
     plt.close('all')
+    print(view)
     
     if view == 'critical_difference':
         return html.Div(id="results-tabs", children=[render_expe_graph(df.copy())], style={'margin':10})
     elif view == 'box_plots':
-        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy(), sel_methods)], style={'margin':10})
+        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy(), sel_methods, plot_type='box')], style={'margin':10})
+    elif view == 'swarm_plots':
+        return html.Div(id="results-tabs", children=[render_expe_boxplots(df.copy(), sel_methods, plot_type='swarm')], style={'margin':10})
+    elif view == 'bar_plots':
+        return html.Div(id="results-tabs", children=[render_expe_barplot(df.copy(), sel_methods, sel_datasets, aggregate_ds=False)], style={'margin':10})
+    elif view == 'bar_plots_(mean)':
+        return html.Div(id="results-tabs", children=[render_expe_barplot(df.copy(), sel_methods, sel_datasets, aggregate_ds=True)], style={'margin':10})
+    elif view == 'line_rank':
+        return html.Div(id="results-tabs", children=[render_expe_linerank(df.copy(), sel_methods, plot_type='linerank')], style={'margin':10})
     elif view == 'average_rankings':
         return html.Div(id="results-tabs", children=[render_ranks(df.copy())], style={'margin':10})
     else: #elif view == 'raw_results':
@@ -324,19 +333,21 @@ def render_expe_graph(df):
         ])
 
     
-def render_expe_boxplots(df, sel_methods=None):     
+def render_expe_boxplots(df, sel_methods=None, plot_type='box'):     
     components = []
     
     
     for col in df.columns:
         if col.startswith('metric:'):
             metric = metricName(col)
-            if 'accuracy' in col:
+            if col.replace('metric:', '') in ['accuracy', 'accuracyTop5']:
                 fmt = [(-5, 105), 1, '%']
+            elif col.replace('metric:', '') in ['f1_score', 'precision', 'recall', 'loss']:
+                fmt = [(-0.05, 1.05), 1, '']
             else:
                 fmt = [False, 1.0, '']
             try:
-                fig = resultsBoxPlots(df.copy(), col, title=metric, methods_order=sel_methods, xaxis_format=fmt)
+                fig = resultsBoxPlots(df.copy(), col, title=metric, methods_order=sel_methods, xaxis_format=fmt, plot_type=plot_type)
                 buf = io.BytesIO()
                 fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
                 #fig.close()
@@ -369,7 +380,7 @@ def render_expe_boxplots(df, sel_methods=None):
 #        components.append(alert('Total Time Box Plots not possible with these parameters.'))
         
     try:
-        fig = resultsBoxPlots(df.copy(), 'totaltime', title='Total Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''])
+        fig = resultsBoxPlots(df.copy(), 'totaltime', title='Total Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''], plot_type=plot_type)
         buf = io.BytesIO()
         fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
         #fig.close()
@@ -383,7 +394,7 @@ def render_expe_boxplots(df, sel_methods=None):
     
     if 'candidates' in df.columns:
         try:
-            fig = resultsBoxPlots(df.copy(), 'candidates', title='Number of Candidates', methods_order=sel_methods, xaxis_format=[False, 1000000, 'M'])
+            fig = resultsBoxPlots(df.copy(), 'candidates', title='Number of Candidates', methods_order=sel_methods, xaxis_format=[False, 1000000, 'M'], plot_type=plot_type)
             buf = io.BytesIO()
             fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
             #fig.close()
@@ -395,7 +406,7 @@ def render_expe_boxplots(df, sel_methods=None):
 
     if 'movelets' in df.columns: 
         try:
-            fig = resultsBoxPlots(df.copy(), 'movelets', title='Number of Movelets', methods_order=sel_methods, xaxis_format=[False, 1, ''])
+            fig = resultsBoxPlots(df.copy(), 'movelets', title='Number of Movelets', methods_order=sel_methods, xaxis_format=[False, 1000, 'K'], plot_type=plot_type)
             buf = io.BytesIO()
             fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
             #fig.close()
@@ -408,6 +419,190 @@ def render_expe_boxplots(df, sel_methods=None):
     return html.Div(components) #+ [
 #        html.Br(),
 #        ])
+
+
+def render_expe_linerank(df, sel_methods=None, plot_type='linerank'):     
+    components = []
+    
+    for col in df.columns:
+        if col.startswith('metric:'):
+            metric = metricName(col)
+            if col.replace('metric:', '') in ['accuracy', 'accuracyTop5']:
+                fmt = [(-5, 105), 1, '%']
+            elif col.replace('metric:', '') in ['f1_score', 'precision', 'recall', 'loss']:
+                fmt = [(-0.05, 1.05), 1, '']
+            else:
+                fmt = [False, 1.0, '']
+            try:
+                fig = lineRank(df.copy(), col, title=metric, methods_order=sel_methods, xaxis_format=fmt)#, plot_type=plot_type)
+                buf = io.BytesIO()
+                fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+                #fig.close()
+                fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+                components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+            except Exception as e:
+                print(metric, 'Line Rank Plots', 'results not possible: ', type(e), str(e), vars(e))
+                components.append(alert(metric + ' Line Rank Plots not possible with these parameters.'))
+
+    try:
+        fig = lineRank(df.copy(), 'totaltime', title='Total Time', methods_order=sel_methods, xaxis_format=[False, 60000, ''])#, plot_type=plot_type)
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Total Time', 'Line Rank Plots', 'results not possible: ', type(e), str(e), vars(e))
+        components.append(alert('Total Time Line Rank Plots not possible with these parameters.'))
+        
+    components.append(html.Hr())
+    
+    if 'candidates' in df.columns:
+        try:
+            fig = lineRank(df.copy(), 'candidates', title='Number of Candidates', methods_order=sel_methods, xaxis_format=[False, 1000000, 'M'])#, plot_type=plot_type)
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Candidates', 'Line Rank Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Candidates Line Rank Plots not possible with these parameters.'))
+
+    if 'movelets' in df.columns: 
+        try:
+            fig = lineRank(df.copy(), 'movelets', title='Number of Movelets', methods_order=sel_methods, xaxis_format=[False, 1000, 'K'])#, plot_type=plot_type)
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Movelets', 'Line Rank Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Movelets Line Rank Plots not possible with these parameters.'))
+        
+    return html.Div(components)
+
+def render_expe_barplot(df, sel_methods=None, sel_datasets=None, aggregate_ds=True):     
+    components = []
+    
+    label_pos = (-15,0) if aggregate_ds else (0,0)
+    for col in df.columns:
+        if col in ['metric:prunedTrajectories']:
+            continue
+        if col.startswith('metric:'):
+            metric = metricName(col)
+            if col.replace('metric:', '') in ['accuracy', 'accuracyTop5']:
+                #fmt = [(0, 105), 1, '%']
+                fmt = {'ylim': (0, 105), 'scale':1, 'suffix':'%', 'label_pos':(label_pos[0],-15), 'mask':'{:,.1f}'}
+                metric += ' (' + ','.join(set(df['classifier'].unique()) - set('-')) + ')'
+            elif col.replace('metric:', '') in ['f1_score', 'precision', 'recall', 'loss']:
+                #def format_metric(x):
+                #    return '{:,.{}f}'.format(x/1.0, 2)
+                #fmt = [(0, 1.05), 1.0, '', format_metric]
+                fmt = {'ylim': (0, 1.05), 'scale':1.0, 'suffix':'', 'label_pos':(label_pos[0],-15), 'mask':'{:,.2f}'}
+            else:
+                #fmt = [False, 1.0, '']
+                fmt = {'scale':1.0, 'suffix':'', 'label_pos':label_pos}
+            try:
+                fig = barPlot(df.copy(), col, title=metric, methods_order=sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+                buf = io.BytesIO()
+                fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+                #fig.close()
+                fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+                components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+            except Exception as e:
+                print(metric, 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+                components.append(alert(metric + ' Bar Plots not possible with these parameters.'))
+
+    if 'metric:comparedTrajectories' in df.columns and 'metric:prunedTrajectories' in df.columns:
+        dfx = df.copy()
+        dfx['metric:nTrajectories'] = dfx['metric:comparedTrajectories'] + dfx['metric:prunedTrajectories']
+        for ds in dfx['key'].unique():
+            dfx = pd.concat([dfx, pd.DataFrame([
+                {'method': 'Total*', 'name': 'Total-'+ds, 'key':ds, 'metric:prunedTrajectories': dfx[dfx['key'] == ds]['metric:comparedTrajectories'].mean() + dfx[dfx['key'] == ds]['metric:prunedTrajectories'].mean(), 'classifier':'-', 'dataset':dfx[dfx['key'] == ds]['dataset'].unique()[0], 'subset':dfx[dfx['key'] == ds]['subset'].unique()[0]},
+            ])])
+        try:
+            def format_metric(x):
+                return '{:,.{}f}'.format(x,0)
+            fmt = {'scale':1, 'suffix':'', 'format_func':format_metric, 'label_pos':label_pos}
+            fig = barPlot(dfx, 'metric:prunedTrajectories', title='Pruned Trajectories', methods_order=['Total*']+sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Pruned Trajectories', 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Pruned Trajectories Bar Plots not possible with these parameters.'))
+                
+    try:
+        metric = 'Running Time'
+        def format_metric(x):
+            s = format_hour(x)
+            return s[:s.find('m')] if 'h' in s else (s[:s.find('m')+1] if 'm' in s else s) #s[:s.find('m')+1]
+        fmt = {'scale':3600000, 'suffix':'', 'format_func':format_metric, 'label_pos':label_pos}
+        fig = barPlot(df.copy(), 'runtime', title=metric, methods_order=sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Running Time', 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+        components.append(alert('Running Time Bar Plots not possible with these parameters.'))
+
+    try:
+        metric = 'Total Time' + ' (' + ','.join(set(df['classifier'].unique()) - set('-')) + ')'
+        fig = barPlot(df.copy(), 'totaltime', title=metric, methods_order=sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+        buf = io.BytesIO()
+        fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+        #fig.close()
+        fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+        components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+    except Exception as e:
+        print('Total Time', 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+        components.append(alert('Total Time Bar Plots not possible with these parameters.'))
+        
+    components.append(html.Hr())
+    
+    def format_metric(x):
+        val = x/1000
+        return '{:,.{}f}'.format(val, 0 if val > 1 else 1)
+    if 'candidates' in df.columns:
+        try:
+            fmt = {'scale':1000, 'suffix':'k', 'label_pos':label_pos, 'format_func':format_metric}
+            fig = barPlot(df.copy(), 'candidates', title='Number of Candidates', methods_order=sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Candidates', 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Candidates Bar Plots not possible with these parameters.'))
+
+    if 'movelets' in df.columns: 
+        try:
+            fmt = {'scale':1000, 'suffix':'k', 'label_pos':label_pos, 'format_func':format_metric}
+            fig = barPlot(df.copy(), 'movelets', title='Number of Movelets', methods_order=sel_methods, datasets_order=sel_datasets, 
+                              label_format=fmt, mean_aggregation=aggregate_ds)#, plot_type=plot_type)
+            buf = io.BytesIO()
+            fig.savefig(buf, bbox_inches='tight', format = "png") # save to the above file object
+            #fig.close()
+            fig = base64.b64encode(buf.getbuffer()).decode("utf8")
+            components.append(html.Div(html.Img(src="data:image/png;base64,{}".format(fig)), style={'padding':10}))
+        except Exception as e:
+            print('Number of Movelets', 'Bar Plots', 'results not possible: ', type(e), str(e), vars(e))
+            components.append(alert('Number of Movelets Bar Plots not possible with these parameters.'))
+        
+    return html.Div(components)
+
 
 def render_ranks(df): 
     return html.Div([

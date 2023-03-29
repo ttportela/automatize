@@ -73,7 +73,8 @@ blockquote {
 { background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
 .dataset-color-raw_trajectories 
 { background-color: rgba(var(--bs-success-rgb),var(--dataset-bg-opacity))!important; }
-.dataset-color-semantic_trajectories,
+.dataset-color-sequential,
+.dataset-color-genes,
 .dataset-color-process 
 { background-color: rgba(var(--bs-warning-rgb),var(--dataset-bg-opacity))!important; }
 .dataset-color-process-default 

@@ -1,6 +1,6 @@
 [project]
 name = "automatize"
-version = "1.0.b1"
+version = "1.0.b1.0"
 description = "Automatize: A Multiple Aspect Trajectory Data Mining Tool Library"
 authors = [
     {name = "Tarlis Tortelli Portela", email = "tarlis@tarlis.com.br"},

@@ -28,19 +28,16 @@ setuptools.setup(
         'scripts/MAT-CheckRun.py',
         'scripts/MAT-ExportResults.py',
         'scripts/MAT-MergeDatasets.py',
-#         'scripts/MAT-PrintResults.py',
-#         'scripts/MAT-ResultsCheck.py',
+#         'scripts/MAT-PrintResults.py', # Deprecated
+#         'scripts/MAT-ResultsCheck.py', # Deprecated
         'scripts/MAT-ResultsTo.py',
         
-        'methods/movelets/MATC-All.py',
-        'methods/movelets/MATC-MLP.py',
-        'methods/movelets/MATC-RF.py',
-        'methods/movelets/MATC-SVN.py',
-        'methods/movelets/MATC-MLP_RF.py',
-        'methods/marc/MARC.py',
-        'methods/pois/POIS.py',
-        'methods/pois/POIS-Cls.py',
-        'methods/tec/MATC-TEC.py',
+        'scripts/MARC.py',
+        'scripts/POIS.py',
+        'scripts/MAT-MC.py',
+        'scripts/MAT-TC.py',
+        'scripts/POIS-TC.py',
+#        'scripts/MAT-TEC.py', # Under Dev.
     ],
     classifiers=(
         "Programming Language :: Python :: 3",

@@ -9,7 +9,7 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
-VERSION = "1.0.b1"
+VERSION = "1.0.b1.0"
 
 PACKAGE_NAME = 'automatize'
 DATA_PATH = '../datasets'

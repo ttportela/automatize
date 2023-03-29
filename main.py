@@ -447,7 +447,7 @@ def display(df):
             from IPython.display import display as dy
             dy(df)
 
-def pyshel(py, prg_path='.', pyname='python3', use_install=False):
+def pyshel(py, prg_path='.', pyname='python3', use_install=True): # DEFAULT: use_install=True to use as a python package, False to use as a project folder.
     SCRIPTS = {
              'MoveDatasets' : 'MAT-MoveDatasets.py',
             'MergeDatasets' : 'MAT-MergeDatasets.py',
@@ -472,14 +472,6 @@ def pyshel(py, prg_path='.', pyname='python3', use_install=False):
         return SCRIPTS[py] # OFFICIAL for PYPI
     else:
         import os
-        # For Local Import:
-#        if 'MARC' == py:
-#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'marc', SCRIPTS[py])
-#        elif 'POIS' in py:
-#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'pois', SCRIPTS[py])
-#        elif 'MATC-MC_' in py:
-#            return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'methods', 'movelets', SCRIPTS[py])
-#        else:
         return pyname + ' ' + os.path.join(prg_path, PACKAGE_NAME, 'scripts', SCRIPTS[py])
     
 def isConsole():

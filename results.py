@@ -229,7 +229,7 @@ def history(res_path): #, prefix, method, list_stats=STATS(['S']), modelfolder='
     
     importer(['S', 'glob', 'STATS', 'get_stats', 'containErrors', 'np'], globals())
     histres = pd.DataFrame(columns=['#','timestamp','dataset','subset','subsubset','run','random','method','classifier', \
-                                    'metric:accuracy', 'metric:f1_score', \
+                                    #'metric:accuracy', 'metric:f1_score', \
                                     'runtime','cls_runtime','totaltime','candidates','movelets','error','file'])
 
     filesList = getResultFiles(res_path)
@@ -316,7 +316,7 @@ def compileResults(res_path, subsets=['specific'], list_stats=STATS(['S']), isfo
                 run_cols.append(m.run)
                 df[m.run] = m.metrics(list_stats, show_warnings=True if verbose else False)#get_stats([file, statsf], path, method, list_stats, model)
 
-                e = m.runningProblems()
+                e = m.unfinished()
                 if e:
                     partial_result = True
                     if verbose:
@@ -339,7 +339,7 @@ def compileResults(res_path, subsets=['specific'], list_stats=STATS(['S']), isfo
 
                 df[method] = format_stats(df, method, list_stats)
                 
-                if partial_result and not ('MARC' in method or 'POI' in method or 'TEC' in method):
+                if partial_result: # and not ('MARC' in method or 'POI' in method or 'TEC' in method):
                     df[method] = df[method].add('*')
     
             # ---
@@ -374,7 +374,8 @@ def resultsDiff(df, ref_cols=[2], list_stats=STATS(['S']), isformat=True, verbos
             if col != ref:
                 a = df.iloc[:,ref]
                 b = df.iloc[:,col]
-                df[str(ref)+'-'+str(col)] = ((a-b)*100/a) * -1 #((b-a) / b * 100.0)
+                name = str(df.columns[ref])+'-'+str(df.columns[col]) +' ('+ str(ref)+'-'+str(col)+')'
+                df[name] = ((a-b)*100/a) * -1 #((b-a) / b * 100.0)
     
 #     from PACKAGE_NAME.results import format_stats
     if isformat:
@@ -877,7 +878,7 @@ def summaryRuns(df, run_cols, list_stats):
             val = ''
             for rc in run_cols:
                 e = df.at[i, rc]
-                val = val + (e if e else '_') + (',' if rc != run_cols[-1] else '')
+                val = val + (str(e) if e else '_') + (',' if rc != run_cols[-1] else '')
             stats.append(val)
         elif list_stats[i][1] == 'msg': # For booleans
             val = False
