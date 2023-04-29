@@ -1,3 +1,42 @@
+Metadata-Version: 2.1
+Name: automatize
+Version: 1.0b7
+Summary: Automatize: A Multiple Aspect Trajectory Data Mining Tool Library
+Author-email: Tarlis Tortelli Portela <tarlis@tarlis.com.br>
+Maintainer-email: Tarlis Tortelli Portela <tarlis@tarlis.com.br>
+License: GPL Version 3 or superior (see LICENSE file)
+Project-URL: Homepage, https://github.com/ttportela/automatize
+Project-URL: Repository, https://github.com/ttportela/automatize
+Project-URL: Documentation, https://github.com/ttportela/automatize/blob/main/README.md
+Project-URL: Download, https://pypi.org/project/automatize/#files
+Project-URL: Bug Tracker, https://github.com/ttportela/automatize/issues
+Keywords: data-science,machine-learning,data-mining,trajectory,multiple-trajectory,trajectory-classification,movelet,movelet-visualization
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Information Analysis
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Classifier: Operating System :: OS Independent
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Python: <3.10,>=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: all_extras
+Provides-Extra: dev
+Provides-Extra: binder
+Provides-Extra: docs
+Provides-Extra: dl
+License-File: LICENSE
+
 # Automatize: Multiple Aspect Trajectory Data Mining Tool Library
 ---
 

@@ -1,7 +1,7 @@
 # Automatize: Multiple Aspect Trajectory Data Mining Tool Library
 ---
 
-\[[Publication](#)\] \[[citation.bib](citation.bib)\] \[[GitHub](https://github.com/ttportela/automatize)\] \[[PyPi](https://pypi.org/project/automatize/)\]
+\[[Publication](#)\] \[[citation.bib](assets/citation.bib)\] \[[GitHub](https://github.com/ttportela/automatize)\] \[[PyPi](https://pypi.org/project/automatize/)\]
 
 
 Welcome to Automatize Framework for Multiple Aspect Trajectory Analysis. You can use it as a web-platform or a Python library.

@@ -1,0 +1,2 @@
+global-include *
+global-exclude .DS_Store .ipynb_checkpoints/** .git/** __pycache__/** _deprecated/** _underdev/** .gitattributes .gitignore src_marc/* dist/* jarfiles/*
