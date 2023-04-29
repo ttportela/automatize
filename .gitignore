@@ -208,3 +208,5 @@ dist/.DS_Store
 dist/automatize-1.0b8-py3-none-any.whl
 dist/automatize-1.0b8.tar.gz
 src/automatize/.ipynb_checkpoints/README-checkpoint.md
+dist/automatize-1.0b9-py3-none-any.whl
+dist/automatize-1.0b9.tar.gz
