@@ -1,0 +1,25 @@
+# For Buildding a Image in a docker
+# ---------------------------------
+# Build Setup
+python setup.py sdist bdist_wheel
+
+# Upload to PyPi
+python -m twine upload dist/* --skip-existing
+
+# Docker image build:
+sudo docker build -t automatise .
+
+# Run Container:
+sudo docker run -p 8050:8050 web-automatize
+
+# ---------------------------------
+# For updating the PyPi package
+# ---------------------------------
+# Build the package version:
+python3 -m build
+
+# 1st upload to the test PyPi:
+python3 -m twine upload --repository testpypi dist/* 
+
+# Install from the test PyPi:
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps automatize

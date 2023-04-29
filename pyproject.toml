@@ -1,6 +1,6 @@
 [project]
 name = "automatize"
-version = "1.0.b7"
+version = "1.0b8"
 description = "Automatize: A Multiple Aspect Trajectory Data Mining Tool Library"
 authors = [
     {name = "Tarlis Tortelli Portela", email = "tarlis@tarlis.com.br"},
@@ -8,7 +8,7 @@ authors = [
 maintainers = [
     {name = "Tarlis Tortelli Portela", email = "tarlis@tarlis.com.br"},
 ]
-readme = "README.md"
+readme = "src/automatize/README.md"
 keywords = [
     "data-science",
     "machine-learning",
