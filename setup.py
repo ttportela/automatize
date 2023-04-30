@@ -1,0 +1,1 @@
+automatize/setup.py

@@ -1,0 +1,74 @@
+{
+   "readsDesc": [
+	{
+          "order": 1,
+          "type": "space2D",
+          "text": "lat_lon"
+        },
+	{
+          "order": 2,
+          "type": "numeric",
+          "text": "hour"
+        },
+	{
+          "order": 3,
+          "type": "nominal",
+          "text": "poi"
+        },
+	{
+          "order": 4,
+          "type": "nominal",
+          "text": "weather"
+        },
+	{
+          "order": 5,
+          "type": "nominal",
+          "text": "day"
+        }
+      ],
+    "pointFeaturesDesc": [
+      ],
+    "subtrajectoryFeaturesDesc": [
+	  ],
+    "trajectoryFeaturesDesc": [
+      ],
+    "pointComparisonDesc": {
+      "pointDistance": "euclidean",
+      "featureComparisonDesc": [
+			{
+			  "distance": "euclidean",
+			  "maxValue": -1,
+			  "text": "lat_lon"
+			},
+			{
+			  "distance": "difference",
+			  "maxValue": -1,
+			  "text": "hour"
+			},
+			{
+			  "distance": "equals",
+			  "maxValue": -1,
+			  "text": "poi"
+			},
+			{
+			  "distance": "equals",
+			  "maxValue": -1,
+			  "text": "weather"
+			},
+			{
+			  "distance": "equals",
+			  "maxValue": -1,
+			  "text": "day"
+			}
+		]
+    },
+    "subtrajectoryComparisonDesc": {
+      "subtrajectoryDistance": "euclidean",
+      "featureComparisonDesc": [
+			{
+			  "distance": "euclidean",
+			  "text": "points"
+			}
+		]
+    }
+}

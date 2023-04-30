@@ -1,1 +1,1 @@
-src/automatize/README.md
+automatize/README.md

@@ -1,0 +1,60 @@
+{
+   "input": {
+          "train": ["train"],
+          "test": ["test"],
+          "format": "CSV",
+          "loader": "interning"
+   },
+   "idFeature": {
+          "order": 1,
+          "type": "numeric",
+          "text": "tid"
+    },
+   "labelFeature": {
+          "order": 7,
+          "type": "nominal",
+          "text": "label"
+    },
+   "attributes": [
+	    {
+	          "order": 2,
+	          "type": "space2d",
+	          "text": "lat_lon",
+	          "comparator": {
+	            "distance": "euclidean"
+	          }
+	    },
+	    {
+	          "order": 3,
+	          "type": "numeric",
+	          "text": "hour",
+	          "comparator": {
+	            "distance": "difference"
+	          }
+	    },
+	    {
+	          "order": 4,
+	          "type": "nominal",
+	          "text": "poi",
+	          "comparator": {
+	            "distance": "equals"
+	          }
+	    },
+	    {
+	          "order": 5,
+	          "type": "nominal",
+	          "text": "weather",
+	          "comparator": {
+	            "distance": "equals"
+	          }
+	    },
+	    {
+	          "order": 6,
+	          "type": "nominal",
+	          "text": "day",
+	          "comparator": {
+	            "distance": "equals"
+	          }
+	    },
+	]
+}

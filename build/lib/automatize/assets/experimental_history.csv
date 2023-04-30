@@ -1,0 +1,131 @@
+,#,timestamp,dataset,subset,subsubset,run,random,method,runtime,classifier,metric:accuracy,cls_runtime,error,file,totaltime,name,key
+0,0,-1.0,Brightkite,specific,specific,1,1,HL,5881000.0,MLP,96.664,963000.0,False,,6844000.0,HL-MLP,Brightkite-specific-1
+1,0,-1.0,Brightkite,specific,specific,1,1,HL,5881000.0,RF,95.711,1000.0,False,,5882000.0,HL-RF,Brightkite-specific-1
+2,0,-1.0,Brightkite,specific,specific,2,1,HL,6061000.0,MLP,96.566,963000.0,False,,7024000.0,HL-MLP,Brightkite-specific-2
+3,0,-1.0,Brightkite,specific,specific,2,1,HL,6061000.0,RF,96.152,1000.0,False,,6062000.0,HL-RF,Brightkite-specific-2
+4,0,-1.0,Brightkite,specific,specific,3,1,HL,6124000.0,MLP,94.985,962000.0,False,,7086000.0,HL-MLP,Brightkite-specific-3
+5,0,-1.0,Brightkite,specific,specific,3,1,HL,6124000.0,RF,93.945,1000.0,False,,6125000.0,HL-RF,Brightkite-specific-3
+6,0,-1.0,Brightkite,specific,specific,4,1,HL,5882000.0,MLP,95.98,964000.0,False,,6846000.0,HL-MLP,Brightkite-specific-4
+7,0,-1.0,Brightkite,specific,specific,4,1,HL,5882000.0,RF,95.352,1000.0,False,,5883000.0,HL-RF,Brightkite-specific-4
+8,0,-1.0,Brightkite,specific,specific,5,1,HL,6481000.0,MLP,96.658,965000.0,False,,7446000.0,HL-MLP,Brightkite-specific-5
+9,0,-1.0,Brightkite,specific,specific,5,1,HL,6481000.0,RF,96.068,1000.0,False,,6482000.0,HL-RF,Brightkite-specific-5
+10,0,-1.0,Brightkite,specific,specific,1,1,HpL,5821000.0,MLP,96.801,2105000.0,False,,7926000.0,HpL-MLP,Brightkite-specific-1
+11,0,-1.0,Brightkite,specific,specific,1,1,HpL,5821000.0,RF,95.848,2000.0,False,,5823000.0,HpL-RF,Brightkite-specific-1
+12,0,-1.0,Brightkite,specific,specific,2,1,HpL,5285000.0,MLP,96.507,1925000.0,False,,7210000.0,HpL-MLP,Brightkite-specific-2
+13,0,-1.0,Brightkite,specific,specific,2,1,HpL,5285000.0,RF,95.974,2000.0,False,,5287000.0,HpL-RF,Brightkite-specific-2
+14,0,-1.0,Brightkite,specific,specific,3,1,HpL,5340000.0,MLP,95.474,2041000.0,False,,7381000.0,HpL-MLP,Brightkite-specific-3
+15,0,-1.0,Brightkite,specific,specific,3,1,HpL,5340000.0,RF,94.679,2000.0,False,,5342000.0,HpL-RF,Brightkite-specific-3
+16,0,-1.0,Brightkite,specific,specific,4,1,HpL,5221000.0,MLP,96.231,2100000.0,False,,7321000.0,HpL-MLP,Brightkite-specific-4
+17,0,-1.0,Brightkite,specific,specific,4,1,HpL,5221000.0,RF,95.729,2000.0,False,,5223000.0,HpL-RF,Brightkite-specific-4
+18,0,-1.0,Brightkite,specific,specific,5,1,HpL,5705000.0,MLP,96.92,2101000.0,False,,7806000.0,HpL-MLP,Brightkite-specific-5
+19,0,-1.0,Brightkite,specific,specific,5,1,HpL,5705000.0,RF,95.806,2000.0,False,,5707000.0,HpL-RF,Brightkite-specific-5
+20,0,-1.0,Gowalla,specific,specific,1,1,HL,2762000.0,MLP,96.118,425000.0,False,,3187000.0,HL-MLP,Gowalla-specific-1
+21,0,-1.0,Gowalla,specific,specific,1,1,HL,2762000.0,RF,93.704,1000.0,False,,2763000.0,HL-RF,Gowalla-specific-1
+22,0,-1.0,Gowalla,specific,specific,2,1,HL,2345000.0,MLP,94.844,420000.0,False,,2765000.0,HL-MLP,Gowalla-specific-2
+23,0,-1.0,Gowalla,specific,specific,2,1,HL,2345000.0,RF,91.631,1000.0,False,,2346000.0,HL-RF,Gowalla-specific-2
+24,0,-1.0,Gowalla,specific,specific,3,1,HL,2345000.0,MLP,94.529,421000.0,False,,2766000.0,HL-MLP,Gowalla-specific-3
+25,0,-1.0,Gowalla,specific,specific,3,1,HL,2345000.0,RF,91.3,1000.0,False,,2346000.0,HL-RF,Gowalla-specific-3
+26,0,-1.0,Gowalla,specific,specific,4,1,HL,2583000.0,MLP,95.876,423000.0,False,,3006000.0,HL-MLP,Gowalla-specific-4
+27,0,-1.0,Gowalla,specific,specific,4,1,HL,2583000.0,RF,93.44,1000.0,False,,2584000.0,HL-RF,Gowalla-specific-4
+28,0,-1.0,Gowalla,specific,specific,5,1,HL,2524000.0,MLP,94.857,423000.0,False,,2947000.0,HL-MLP,Gowalla-specific-5
+29,0,-1.0,Gowalla,specific,specific,5,1,HL,2524000.0,RF,92.285,1000.0,False,,2525000.0,HL-RF,Gowalla-specific-5
+30,0,-1.0,Gowalla,specific,specific,1,1,HpL,2220000.0,MLP,95.698,662000.0,False,,2882000.0,HpL-MLP,Gowalla-specific-1
+31,0,-1.0,Gowalla,specific,specific,1,1,HpL,2220000.0,RF,94.124,1000.0,False,,2221000.0,HpL-RF,Gowalla-specific-1
+32,0,-1.0,Gowalla,specific,specific,2,1,HpL,1865000.0,MLP,94.928,601000.0,False,,2466000.0,HpL-MLP,Gowalla-specific-2
+33,0,-1.0,Gowalla,specific,specific,2,1,HpL,1865000.0,RF,91.716,1000.0,False,,1866000.0,HpL-RF,Gowalla-specific-2
+34,0,-1.0,Gowalla,specific,specific,3,1,HpL,1863000.0,MLP,94.978,602000.0,False,,2465000.0,HpL-MLP,Gowalla-specific-3
+35,0,-1.0,Gowalla,specific,specific,3,1,HpL,1863000.0,RF,91.57,1000.0,False,,1864000.0,HpL-RF,Gowalla-specific-3
+36,0,-1.0,Gowalla,specific,specific,4,1,HpL,1921000.0,MLP,95.501,604000.0,False,,2525000.0,HpL-MLP,Gowalla-specific-4
+37,0,-1.0,Gowalla,specific,specific,4,1,HpL,1921000.0,RF,93.721,1000.0,False,,1922000.0,HpL-RF,Gowalla-specific-4
+38,0,-1.0,Gowalla,specific,specific,5,1,HpL,1981000.0,MLP,95.252,660000.0,False,,2641000.0,HpL-MLP,Gowalla-specific-5
+39,0,-1.0,Gowalla,specific,specific,5,1,HpL,1981000.0,RF,92.384,1000.0,False,,1982000.0,HpL-RF,Gowalla-specific-5
+40,0,-1.0,Brightkite,specific,specific,1,1,MARC,245000.0,MLP,96.596,0.0,False,,245000.0,MARC-MLP,Brightkite-specific-1
+41,0,-1.0,Brightkite,specific,specific,2,1,MARC,304000.0,MLP,96.27,0.0,False,,304000.0,MARC-MLP,Brightkite-specific-2
+42,0,-1.0,Brightkite,specific,specific,3,1,MARC,242000.0,MLP,95.719,0.0,False,,242000.0,MARC-MLP,Brightkite-specific-3
+43,0,-1.0,Brightkite,specific,specific,4,1,MARC,362000.0,MLP,95.477,0.0,False,,362000.0,MARC-MLP,Brightkite-specific-4
+44,0,-1.0,Brightkite,specific,specific,5,1,MARC,484000.0,MLP,96.199,0.0,False,,484000.0,MARC-MLP,Brightkite-specific-5
+45,0,-1.0,Gowalla,specific,specific,1,1,MARC,302000.0,MLP,96.327,0.0,False,,302000.0,MARC-MLP,Gowalla-specific-1
+46,0,-1.0,Gowalla,specific,specific,2,1,MARC,425000.0,MLP,93.576,0.0,False,,425000.0,MARC-MLP,Gowalla-specific-2
+47,0,-1.0,Gowalla,specific,specific,3,1,MARC,364000.0,MLP,94.619,0.0,False,,364000.0,MARC-MLP,Gowalla-specific-3
+48,0,-1.0,Gowalla,specific,specific,4,1,MARC,661000.0,MLP,95.314,0.0,False,,661000.0,MARC-MLP,Gowalla-specific-4
+49,0,-1.0,Gowalla,specific,specific,5,1,MARC,601000.0,MLP,93.966,0.0,False,,601000.0,MARC-MLP,Gowalla-specific-5
+50,0,-1.0,Gowalla,specific,specific,1,1,MML,30785000.0,MLP,96.118,902000.0,False,,31687000.0,MML-MLP,Gowalla-specific-1
+51,0,-1.0,Gowalla,specific,specific,1,1,MML,30785000.0,RF,93.599,1000.0,False,,30786000.0,MML-RF,Gowalla-specific-1
+52,0,-1.0,Gowalla,specific,specific,2,1,MML,26342000.0,MLP,94.336,785000.0,False,,27127000.0,MML-MLP,Gowalla-specific-2
+53,0,-1.0,Gowalla,specific,specific,2,1,MML,26342000.0,RF,91.801,1000.0,False,,26343000.0,MML-RF,Gowalla-specific-2
+54,0,-1.0,Gowalla,specific,specific,3,1,MML,25441000.0,MLP,94.619,841000.0,False,,26282000.0,MML-MLP,Gowalla-specific-3
+55,0,-1.0,Gowalla,specific,specific,3,1,MML,25441000.0,RF,91.928,1000.0,False,,25442000.0,MML-RF,Gowalla-specific-3
+56,0,-1.0,Gowalla,specific,specific,4,1,MML,27841000.0,MLP,95.127,842000.0,False,,28683000.0,MML-MLP,Gowalla-specific-4
+57,0,-1.0,Gowalla,specific,specific,4,1,MML,27841000.0,RF,94.283,1000.0,False,,27842000.0,MML-RF,Gowalla-specific-4
+58,0,-1.0,Gowalla,specific,specific,5,1,MML,27421000.0,MLP,95.054,901000.0,False,,28322000.0,MML-MLP,Gowalla-specific-5
+59,0,-1.0,Gowalla,specific,specific,5,1,MML,27421000.0,RF,93.472,1000.0,False,,27422000.0,MML-RF,Gowalla-specific-5
+60,0,-1.0,Brightkite,specific,specific,1,1,MML,66061000.0,MLP,97.073,2342000.0,False,,68403000.0,MML-MLP,Brightkite-specific-1
+61,0,-1.0,Brightkite,specific,specific,1,1,MML,66061000.0,RF,96.528,2000.0,False,,66063000.0,MML-RF,Brightkite-specific-1
+62,0,-1.0,Brightkite,specific,specific,2,1,MML,58504000.0,MLP,97.276,2222000.0,False,,60726000.0,MML-MLP,Brightkite-specific-2
+63,0,-1.0,Brightkite,specific,specific,2,1,MML,58504000.0,RF,96.803,2000.0,False,,58506000.0,MML-RF,Brightkite-specific-2
+64,0,-1.0,Brightkite,specific,specific,3,1,MML,60005000.0,MLP,95.78,2224000.0,False,,62229000.0,MML-MLP,Brightkite-specific-3
+65,0,-1.0,Brightkite,specific,specific,3,1,MML,60005000.0,RF,95.107,2000.0,False,,60007000.0,MML-RF,Brightkite-specific-3
+66,0,-1.0,Brightkite,specific,specific,4,1,MML,65943000.0,MLP,96.231,2283000.0,False,,68226000.0,MML-MLP,Brightkite-specific-4
+67,0,-1.0,Brightkite,specific,specific,4,1,MML,65943000.0,RF,95.352,2000.0,False,,65945000.0,MML-RF,Brightkite-specific-4
+68,0,-1.0,Brightkite,specific,specific,5,1,MML,70924000.0,MLP,96.986,2340000.0,False,,73264000.0,MML-MLP,Brightkite-specific-5
+69,0,-1.0,Brightkite,specific,specific,5,1,MML,70924000.0,RF,96.003,2000.0,False,,70926000.0,MML-RF,Brightkite-specific-5
+70,0,1625212389.0,GoTrack,specific,specific,2,1,MML,90680.0,MLP,75.75757503509521,7161.172,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run2/MML-specific/MLP-1/classification_times.csv,97841.172,MML-MLP,GoTrack-specific-2
+71,0,1627640501.0,GoTrack,specific,specific,2,1,HL,403217.0,MLP,78.78788113594055,6772.539,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run2/HLT50-specific/MLP-1/classification_times.csv,409989.539,HL-MLP,GoTrack-specific-2
+72,0,1627642303.0,GoTrack,specific,specific,2,1,HpL,208585.0,MLP,69.69696879386902,7050.017000000001,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run2/HpLT50-specific/MLP-1/classification_times.csv,215635.017,HpL-MLP,GoTrack-specific-2
+73,0,1625212661.0,GoTrack,specific,specific,5,1,MML,76745.0,MLP,93.75,6721.756,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run5/MML-specific/MLP-1/classification_times.csv,83466.756,MML-MLP,GoTrack-specific-5
+74,0,1627641824.0,GoTrack,specific,specific,5,1,HL,402543.0,MLP,93.75,6628.218000000001,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run5/HLT50-specific/MLP-1/classification_times.csv,409171.218,HL-MLP,GoTrack-specific-5
+75,0,1627642977.0,GoTrack,specific,specific,5,1,HpL,210296.0,MLP,93.75,7115.444,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run5/HpLT50-specific/MLP-1/classification_times.csv,217411.444,HpL-MLP,GoTrack-specific-5
+76,0,1625212583.0,GoTrack,specific,specific,4,1,MML,98670.0,MLP,81.25,6844.079,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run4/MML-specific/MLP-1/classification_times.csv,105514.079,MML-MLP,GoTrack-specific-4
+77,0,1627641420.0,GoTrack,specific,specific,4,1,HL,464010.0,MLP,81.25,6677.961,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run4/HLT50-specific/MLP-1/classification_times.csv,470687.961,HL-MLP,GoTrack-specific-4
+78,0,1627642765.0,GoTrack,specific,specific,4,1,HpL,230254.0,MLP,71.875,7077.58,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run4/HpLT50-specific/MLP-1/classification_times.csv,237331.58,HpL-MLP,GoTrack-specific-4
+79,0,1625212482.0,GoTrack,specific,specific,3,1,MML,92217.0,MLP,84.375,6726.4220000000005,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run3/MML-specific/MLP-1/classification_times.csv,98943.422,MML-MLP,GoTrack-specific-3
+80,0,1627640955.0,GoTrack,specific,specific,3,1,HL,452270.0,MLP,78.125,6667.918000000001,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run3/HLT50-specific/MLP-1/classification_times.csv,458937.918,HL-MLP,GoTrack-specific-3
+81,0,1627642533.0,GoTrack,specific,specific,3,1,HpL,227813.0,MLP,81.25,7049.778,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run3/HpLT50-specific/MLP-1/classification_times.csv,234862.778,HpL-MLP,GoTrack-specific-3
+82,0,1625212295.0,GoTrack,specific,specific,1,1,MML,85317.0,MLP,82.35294222831726,6804.972000000001,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run1/MML-specific/MLP-1/classification_times.csv,92121.972,MML-MLP,GoTrack-specific-1
+83,0,1627640097.0,GoTrack,specific,specific,1,1,HL,427407.0,MLP,88.23529481887817,6698.6140000000005,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run1/HLT50-specific/MLP-1/classification_times.csv,434105.614,HL-MLP,GoTrack-specific-1
+84,0,1627642092.0,GoTrack,specific,specific,1,1,HpL,215373.0,MLP,76.47058963775635,6979.008000000001,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run1/HpLT50-specific/MLP-1/classification_times.csv,222352.008,HpL-MLP,GoTrack-specific-1
+85,0,1624873293.0,Animals,specific,specific,2,1,MML,62187.0,MLP,90.47619104385376,6860.709,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run2/MML-specific/MLP-1/classification_times.csv,69047.709,MML-MLP,Animals-specific-2
+86,0,1627635452.0,Animals,specific,specific,2,1,HL,173169.0,MLP,90.47619104385376,6472.014999999999,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run2/HLT50-specific/MLP-1/classification_times.csv,179641.015,HL-MLP,Animals-specific-2
+87,0,1627636280.0,Animals,specific,specific,2,1,HpL,76057.0,MLP,90.47619104385376,6696.475,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run2/HpLT50-specific/MLP-1/classification_times.csv,82753.475,HpL-MLP,Animals-specific-2
+88,0,1624873500.0,Animals,specific,specific,5,1,MML,70073.0,MLP,84.21052694320679,6559.925,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run5/MML-specific/MLP-1/classification_times.csv,76632.925,MML-MLP,Animals-specific-5
+89,0,1627636068.0,Animals,specific,specific,5,1,HL,210148.0,MLP,94.73684430122375,6559.241,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run5/HLT50-specific/MLP-1/classification_times.csv,216707.241,HL-MLP,Animals-specific-5
+90,0,1627636556.0,Animals,specific,specific,5,1,HpL,91077.0,MLP,94.73684430122375,6799.215,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run5/HpLT50-specific/MLP-1/classification_times.csv,97876.215,HpL-MLP,Animals-specific-5
+91,0,1624873429.0,Animals,specific,specific,4,1,MML,66094.0,MLP,85.00000238418579,6520.6140000000005,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run4/MML-specific/MLP-1/classification_times.csv,72614.614,MML-MLP,Animals-specific-4
+92,0,1627635857.0,Animals,specific,specific,4,1,HL,210245.0,MLP,85.00000238418579,6633.62,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run4/HLT50-specific/MLP-1/classification_times.csv,216878.62,HL-MLP,Animals-specific-4
+93,0,1627636463.0,Animals,specific,specific,4,1,HpL,91483.0,MLP,85.00000238418579,6726.532,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run4/HpLT50-specific/MLP-1/classification_times.csv,98209.532,HpL-MLP,Animals-specific-4
+94,0,1624873362.0,Animals,specific,specific,3,1,MML,67369.0,MLP,85.71428656578064,6920.041,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run3/MML-specific/MLP-1/classification_times.csv,74289.041,MML-MLP,Animals-specific-3
+95,0,1627635645.0,Animals,specific,specific,3,1,HL,192025.0,MLP,85.71428656578064,6534.529,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run3/HLT50-specific/MLP-1/classification_times.csv,198559.529,HL-MLP,Animals-specific-3
+96,0,1627636370.0,Animals,specific,specific,3,1,HpL,88058.0,MLP,85.71428656578064,6725.741,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run3/HpLT50-specific/MLP-1/classification_times.csv,94783.741,HpL-MLP,Animals-specific-3
+97,0,1624873230.0,Animals,specific,specific,1,1,MML,60898.0,MLP,90.47619104385376,6859.812,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run1/MML-specific/MLP-1/classification_times.csv,67757.812,MML-MLP,Animals-specific-1
+98,0,1627635278.0,Animals,specific,specific,1,1,HL,175799.0,MLP,90.47619104385376,6480.977,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run1/HLT50-specific/MLP-1/classification_times.csv,182279.977,HL-MLP,Animals-specific-1
+99,0,1627636203.0,Animals,specific,specific,1,1,HpL,83196.0,MLP,85.71428656578064,6802.642,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run1/HpLT50-specific/MLP-1/classification_times.csv,89998.64199999999,HpL-MLP,Animals-specific-1
+100,0,1625377967.0,Vehicles,specific,specific,2,1,MML,29201110.0,MLP,97.40259647369383,34668.756,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run2/MML-specific/MLP-1/classification_times.csv,29235778.756,MML-MLP,Vehicles-specific-2
+101,0,1625729151.0,Vehicles,specific,specific,2,1,HL,9961249.0,MLP,97.40259647369383,11809.447,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run2/HLT50-specific/MLP-1/classification_times.csv,9973058.447,HL-MLP,Vehicles-specific-2
+102,0,1625665955.0,Vehicles,specific,specific,2,1,HpL,3296814.0,MLP,97.40259647369383,12517.53,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run2/HpLT50-specific/MLP-1/classification_times.csv,3309331.53,HpL-MLP,Vehicles-specific-2
+103,0,1625561554.0,Vehicles,specific,specific,5,1,MML,33690679.0,MLP,100.0,34944.987,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run5/MML-specific/MLP-1/classification_times.csv,33725623.987,MML-MLP,Vehicles-specific-5
+104,0,1625760329.0,Vehicles,specific,specific,5,1,HL,10797038.0,MLP,100.0,11454.14,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run5/HLT50-specific/MLP-1/classification_times.csv,10808492.14,HL-MLP,Vehicles-specific-5
+105,0,1625678718.0,Vehicles,specific,specific,5,1,HpL,4463108.0,MLP,100.0,13287.871,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run5/HpLT50-specific/MLP-1/classification_times.csv,4476395.871,HpL-MLP,Vehicles-specific-5
+106,0,1625448365.0,Vehicles,specific,specific,4,1,MML,34374848.0,MLP,97.33333587646484,35225.454999999994,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run4/MML-specific/MLP-1/classification_times.csv,34410073.455,MML-MLP,Vehicles-specific-4
+107,0,1625749525.0,Vehicles,specific,specific,4,1,HL,10309052.0,MLP,95.9999978542328,11133.035,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run4/HLT50-specific/MLP-1/classification_times.csv,10320185.035,HL-MLP,Vehicles-specific-4
+108,0,1625674241.0,Vehicles,specific,specific,4,1,HpL,4428136.0,MLP,97.33333587646484,13379.685,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run4/HpLT50-specific/MLP-1/classification_times.csv,4441515.685,HpL-MLP,Vehicles-specific-4
+109,0,1625413911.0,Vehicles,specific,specific,3,1,MML,35865161.0,MLP,100.0,35828.114,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run3/MML-specific/MLP-1/classification_times.csv,35900989.114,MML-MLP,Vehicles-specific-3
+110,0,1625739209.0,Vehicles,specific,specific,3,1,HL,10050808.0,MLP,98.70129823684692,10868.381,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run3/HLT50-specific/MLP-1/classification_times.csv,10061676.381,HL-MLP,Vehicles-specific-3
+111,0,1625669802.0,Vehicles,specific,specific,3,1,HpL,3837323.0,MLP,98.70129823684692,12601.094,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run3/HpLT50-specific/MLP-1/classification_times.csv,3849924.094,HpL-MLP,Vehicles-specific-3
+112,0,1625348686.0,Vehicles,specific,specific,1,1,MML,33256938.0,MLP,100.0,35800.472,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run1/MML-specific/MLP-1/classification_times.csv,33292738.472,MML-MLP,Vehicles-specific-1
+113,0,1625719179.0,Vehicles,specific,specific,1,1,HL,14501913.0,MLP,100.0,12739.235,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run1/HLT50-specific/MLP-1/classification_times.csv,14514652.235,HL-MLP,Vehicles-specific-1
+114,0,1625662646.0,Vehicles,specific,specific,1,1,HpL,4751751.0,MLP,98.70129823684692,13906.243,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run1/HpLT50-specific/MLP-1/classification_times.csv,4765657.243,HpL-MLP,Vehicles-specific-1
+115,0,-1.0,GoTrack,specific,specific,2,1,MARC,63879.047999999995,MLP,69.6969696969697,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run2/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,63879.047999999995,MARC-MLP,GoTrack-specific-2
+116,0,-1.0,GoTrack,specific,specific,5,1,MARC,77547.757,MLP,81.25,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run5/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,77547.757,MARC-MLP,GoTrack-specific-5
+117,0,-1.0,GoTrack,specific,specific,4,1,MARC,41523.758,MLP,65.625,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run4/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,41523.758,MARC-MLP,GoTrack-specific-4
+118,0,-1.0,GoTrack,specific,specific,3,1,MARC,61029.289,MLP,78.125,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run3/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,61029.289,MARC-MLP,GoTrack-specific-3
+119,0,-1.0,GoTrack,specific,specific,1,1,MARC,69321.451,MLP,79.41176470588235,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/GoTrack/run1/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,69321.451,MARC-MLP,GoTrack-specific-1
+120,0,-1.0,Animals,specific,specific,2,1,MARC,17190.66,MLP,71.42857142857143,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run2/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,17190.66,MARC-MLP,Animals-specific-2
+121,0,-1.0,Animals,specific,specific,5,1,MARC,27130.499,MLP,84.21052631578947,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run5/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,27130.499,MARC-MLP,Animals-specific-5
+122,0,-1.0,Animals,specific,specific,4,1,MARC,24679.984999999997,MLP,85.0,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run4/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,24679.984999999997,MARC-MLP,Animals-specific-4
+123,0,-1.0,Animals,specific,specific,3,1,MARC,24423.787,MLP,80.95238095238095,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run3/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,24423.787,MARC-MLP,Animals-specific-3
+124,0,-1.0,Animals,specific,specific,1,1,MARC,25179.791999999998,MLP,80.95238095238095,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Animals/run1/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,25179.791999999998,MARC-MLP,Animals-specific-1
+125,0,-1.0,Vehicles,specific,specific,2,1,MARC,213935.305,MLP,70.12987012987013,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run2/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,213935.305,MARC-MLP,Vehicles-specific-2
+126,0,-1.0,Vehicles,specific,specific,5,1,MARC,223034.619,MLP,73.33333333333333,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run5/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,223034.619,MARC-MLP,Vehicles-specific-5
+127,0,-1.0,Vehicles,specific,specific,4,1,MARC,230938.739,MLP,74.66666666666667,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run4/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,230938.739,MARC-MLP,Vehicles-specific-4
+128,0,-1.0,Vehicles,specific,specific,3,1,MARC,226084.101,MLP,74.02597402597402,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run3/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,226084.101,MARC-MLP,Vehicles-specific-3
+129,0,-1.0,Vehicles,specific,specific,1,1,MARC,225142.39599999998,MLP,80.51948051948052,0.0,False,/Users/tarlisportela/OneDrive/3 - Projetos/workdir/results/hist/HiPer/Vehicles/run1/MARC-specific/MARC-specific_1/MARC-specific_1_results.txt,225142.39599999998,MARC-MLP,Vehicles-specific-1

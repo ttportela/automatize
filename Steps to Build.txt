@@ -15,6 +15,10 @@ sudo docker run -p 8050:8050 web-automatize
 # ---------------------------------
 # For updating the PyPi package
 # ---------------------------------
+# Upgrade versions:
+python3 -m pip install --upgrade build
+python3 -m pip install --upgrade twine
+
 # Build the package version:
 python3 -m build
 
@@ -23,3 +27,13 @@ python3 -m twine upload --repository testpypi dist/*
 
 # Install from the test PyPi:
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps automatize
+
+# ---------------------------------
+# For making the docs
+# ---------------------------------
+python3 -m pip install -U sphinx
+
+cd docs
+sphinx-quickstart
+
+make html

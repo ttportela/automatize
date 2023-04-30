@@ -1,0 +1,16 @@
+dash
+dash-renderer
+dash-core-components
+dash-html-components
+dash-bootstrap-components
+dash-table
+dash-cytoscape
+anytree
+chart-studio
+colorlover
+networkx
+plotly
+scikit-mobility
+xlsxwriter
+seaborn
+memory-profiler

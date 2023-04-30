@@ -1,0 +1,326 @@
+.navbar .nav-link {
+    color: white !important;
+    margin-left: 1px;
+    color: white !important;
+}
+
+.navbar .nav-link-btn {
+/*     border: 1px solid; */
+    border: 1px solid white;
+    border-radius: 3px;
+}
+
+.navbar .nav-link:hover {
+    color: rgb(13,110,253) !important;
+    background-color: white;
+/*     border: 1px solid white; */
+    border-radius: 3px;
+}
+
+.navbar .navbar-brand img {
+    filter: invert(1);
+    border: 1px solid black;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+blockquote {
+    border-left: 4px lightgrey solid;
+    padding-left: 1rem;
+/*     margin-top: calc(2em/1.9em);
+    margin-bottom: calc(2em/1.9em); */
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 90%;
+}
+
+.markdown table, .markdown th, .markdown td {
+    padding: 6px 13px;
+    border: 1px solid #d0d7de;
+}
+
+.markdown pre {
+    white-space: pre-wrap; 
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+}
+
+.markdown code {
+    background-color: #f6f8fa;
+}
+
+.markdown img[alt=Method-Badge] {
+    float: right;
+}
+
+.movelet-box { 
+    padding: 16px;
+/*     overflow: auto;
+    line-height: 1.45; */
+    background-color: #f6f8fa;
+    border-radius: 6px;
+}
+
+:root {
+    --dataset-bg-opacity: 1;
+}
+
+.dataset-color-multiple_trajectories 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-raw_trajectories 
+{ background-color: rgba(var(--bs-success-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-sequential,
+.dataset-color-genes,
+.dataset-color-process 
+{ background-color: rgba(var(--bs-warning-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-process-default 
+{ background-color: #f7e600!important; opacity: var(--dataset-bg-opacity); }
+.dataset-color-multivariate_ts 
+{ background-color: rgba(var(--bs-info-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-univariate_ts 
+{ background-color: rgba(var(--bs-secondary-rgb),var(--dataset-bg-opacity))!important; }
+
+.dataset-color-raw 
+{ background-color: var(--bs-teal)!important; opacity: var(--dataset-bg-opacity); }
+.dataset-color-specific 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-generic 
+{ background-color: rgba(var(--bs-danger-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-category 
+{ background-color: var(--bs-pink)!important; opacity: var(--dataset-bg-opacity); }
+.dataset-color-poi 
+{ background-color: var(--bs-purple)!important; opacity: var(--dataset-bg-opacity)); }
+.dataset-color-spatial 
+{ background-color: #6bc29a!important; opacity: var(--dataset-bg-opacity); }
+/* .dataset-color-5dims 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; }
+.dataset-color-allfeat 
+{ background-color: rgba(var(--bs-primary-rgb),var(--dataset-bg-opacity))!important; } */
+
+
+.traj-slider {
+    min-width: 100%;
+}
+
+.traj-color1-rangeslider .rc-slider-track,
+.traj-color1-rangeslider .rc-slider-handle {
+  background-color: #1bdddd; /*cyan;*/
+}
+.traj-color1-rangeslider .rc-slider-dot-active,
+.traj-color1-rangeslider .rc-slider-handle,
+.traj-color1-rangeslider .rc-slider-handle:hover ,
+.traj-color1-rangeslider .rc-slider-handle-active:active {
+  border-color: #1bdddd;
+}
+
+.traj-color2-rangeslider .rc-slider-track,
+.traj-color2-rangeslider .rc-slider-handle {
+  background-color: red;
+}
+.traj-color2-rangeslider .rc-slider-dot-active,
+.traj-color2-rangeslider .rc-slider-handle,
+.traj-color2-rangeslider .rc-slider-handle:hover ,
+.traj-color2-rangeslider .rc-slider-handle-active:active {
+  border-color: red;
+}
+
+.traj-color3-rangeslider .rc-slider-track,
+.traj-color3-rangeslider .rc-slider-handle {
+  background-color: purple;
+}
+.traj-color3-rangeslider .rc-slider-dot-active,
+.traj-color3-rangeslider .rc-slider-handle,
+.traj-color3-rangeslider .rc-slider-handle:hover ,
+.traj-color3-rangeslider .rc-slider-handle-active:active {
+  border-color: purple;
+}
+
+.traj-color4-rangeslider .rc-slider-track,
+.traj-color4-rangeslider .rc-slider-handle {
+  background-color: green;
+}
+.traj-color4-rangeslider .rc-slider-dot-active,
+.traj-color4-rangeslider .rc-slider-handle,
+.traj-color4-rangeslider .rc-slider-handle:hover ,
+.traj-color4-rangeslider .rc-slider-handle-active:active {
+  border-color: green;
+}
+
+.traj-color5-rangeslider .rc-slider-track,
+.traj-color5-rangeslider .rc-slider-handle {
+  background-color: #eded43; /*yellow;*/
+}
+.traj-color5-rangeslider .rc-slider-dot-active,
+.traj-color5-rangeslider .rc-slider-handle,
+.traj-color5-rangeslider .rc-slider-handle:hover ,
+.traj-color5-rangeslider .rc-slider-handle-active:active {
+  border-color: #eded43;
+}
+
+.traj-color6-rangeslider .rc-slider-track,
+.traj-color6-rangeslider .rc-slider-handle {
+  background-color: orange;
+}
+.traj-color6-rangeslider .rc-slider-dot-active,
+.traj-color6-rangeslider .rc-slider-handle,
+.traj-color6-rangeslider .rc-slider-handle:hover ,
+.traj-color6-rangeslider .rc-slider-handle-active:active {
+  border-color: orange;
+}
+
+.traj-color7-rangeslider .rc-slider-track,
+.traj-color7-rangeslider .rc-slider-handle {
+  background-color: pink;
+}
+.traj-color7-rangeslider .rc-slider-dot-active,
+.traj-color7-rangeslider .rc-slider-handle,
+.traj-color7-rangeslider .rc-slider-handle:hover ,
+.traj-color7-rangeslider .rc-slider-handle-active:active {
+  border-color: pink;
+}
+
+
+
+.arrow-right {
+  width: 0; 
+  height: 0; 
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  
+  border-left: 7px solid #96dbfa;
+}
+
+.tree {
+    width: max-content;
+    height: max-content;
+}
+
+/* .tree * {margin: 0; padding: 0;} */
+
+.tree ul {
+    padding-top: 20px; position: relative;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+}
+
+.tree li {
+    float: left; text-align: center;
+    list-style-type: none;
+    position: relative;
+    padding: 20px 5px 0 5px;
+    
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+}
+
+/*We will use ::before and ::after to draw the connectors*/
+.tree li::before, .tree li::after{
+    content: '';
+    position: absolute; top: 0; right: 50%;
+    border-top: 1px solid #ccc;
+    width: 50%; height: 20px;
+}
+.tree li::after{
+    right: auto; left: 50%;
+    border-left: 1px solid #ccc;
+}
+
+/*We need to remove left-right connectors from elements without 
+any siblings*/
+.tree li:only-child::after, .tree li:only-child::before {
+    display: none;
+}
+
+/*Remove space from the top of single children*/
+.tree li:only-child{ padding-top: 0;}
+
+/*Remove left connector from first child and 
+right connector from last child*/
+.tree li:first-child::before, .tree li:last-child::after{
+    border: 0 none;
+}
+/*Adding back the vertical connector to the last nodes*/
+.tree li:last-child::before{
+    border-right: 1px solid #ccc;
+    border-radius: 0 5px 0 0;
+    -webkit-border-radius: 0 5px 0 0;
+    -moz-border-radius: 0 5px 0 0;
+}
+.tree li:first-child::after{
+    border-radius: 5px 0 0 0;
+    -webkit-border-radius: 5px 0 0 0;
+    -moz-border-radius: 5px 0 0 0;
+}
+
+/*Time to add downward connectors from parents*/
+.tree ul ul::before{
+    content: '';
+    position: absolute; top: 0; left: 50%;
+    border-left: 1px solid #ccc;
+    width: 0; height: 20px;
+}
+
+.tree li a{
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #666;
+    font-family: arial, verdana, tahoma;
+    font-size: 11px;
+    display: inline-block;
+    
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+}
+
+/*Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+.tree li a:hover, .tree li a:hover+ul li a {
+    background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
+}
+/*Connector styles on hover*/
+.tree li a:hover+ul li::after, 
+.tree li a:hover+ul li::before, 
+.tree li a:hover+ul::before, 
+.tree li a:hover+ul ul::before{
+    border-color:  #94a0b4;
+}
+
+*[id="output-data-upload"][data-dash-is-loading="true"]::before{
+  content: " ";
+  display: inline-block;
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid black;
+  width: 10vh;
+  height: 10vh;
+  position: absolute;
+  right: 10%;
+  bottom: 10%;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  z-index: 10;
+  visibility: visible;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
