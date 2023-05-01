@@ -1,44 +1,3 @@
-Metadata-Version: 2.1
-Name: automatize
-Version: 1.0b5
-Summary: Automatize: A Multiple Aspect Trajectory Data Mining Tool Library
-Home-page: https://github.com/ttportela/automatize
-Author: Tarlis Tortelli Portela
-Author-email: Tarlis Tortelli Portela <tarlis@tarlis.com.br>
-Maintainer-email: Tarlis Tortelli Portela <tarlis@tarlis.com.br>
-License: GPL Version 3 or superior (see LICENSE file)
-Project-URL: Homepage, https://github.com/ttportela/automatize
-Project-URL: Repository, https://github.com/ttportela/automatize
-Project-URL: Documentation, https://github.com/ttportela/automatize/blob/main/README.md
-Project-URL: Download, https://pypi.org/project/automatize/#files
-Project-URL: Bug Tracker, https://github.com/ttportela/automatize/issues
-Keywords: data-science,machine-learning,data-mining,trajectory,multiple-trajectory,trajectory-classification,movelet,movelet-visualization
-Classifier: Intended Audience :: Science/Research
-Classifier: Intended Audience :: Developers
-Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
-Classifier: Programming Language :: Python
-Classifier: Topic :: Software Development
-Classifier: Topic :: Scientific/Engineering
-Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
-Classifier: Topic :: Scientific/Engineering :: Information Analysis
-Classifier: Topic :: Scientific/Engineering :: Visualization
-Classifier: Operating System :: OS Independent
-Classifier: Operating System :: Microsoft :: Windows
-Classifier: Operating System :: POSIX
-Classifier: Operating System :: Unix
-Classifier: Operating System :: MacOS
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: 3.9
-Requires-Python: <3.10,>=3.7
-Description-Content-Type: text/markdown
-Provides-Extra: all_extras
-Provides-Extra: dev
-Provides-Extra: binder
-Provides-Extra: docs
-Provides-Extra: dl
-License-File: LICENSE
-
 # Automatize: Multiple Aspect Trajectory Data Mining Tool Library
 ---
 
@@ -49,6 +8,7 @@ Welcome to Automatize Framework for Multiple Aspect Trajectory Analysis. You can
 
 The present application offers a tool, called AutoMATize, to support the user in the classification task of multiple aspect trajectories, specifically for extracting and visualizing the movelets, the parts of the trajectory that better discriminate a class. The AutoMATize integrates into a unique platform the fragmented approaches available for multiple aspects trajectories and in general for multidimensional sequence classification into a unique web-based and python library system. Offers both movelets visualization and a complete configuration of classification experimental settings.
 
+aaa
 ### Main Modules
 
 - [Datasets](/datasets): Datasets descriptions, statistics and files to download;
@@ -62,16 +22,16 @@ The present application offers a tool, called AutoMATize, to support the user in
 
 ### Available Classifiers (needs update):
 
-* **MLP (Movelet)**: Multilayer-Perceptron (MLP) with movelets features. The models were implemented using the Python language, with the keras, fully-connected hidden layer of 100 units, Dropout Layer with dropout rate of 0.5, learning rate of 10−3 and softmax activation function in the Output Layer. Adam Optimization is used to avoid the categorical cross entropy loss, with 200 of batch size, and a total of 200 epochs per training. \[[REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)\]
-* **RF (Movelet)**: Random Forest (RF) with movelets features, that consists of an ensemble of 300 decision trees. The models were implemented using the Python language, with the keras. \[[REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)\]
-* **SVN (Movelet)**: Support Vector Machine (SVM) with movelets features. The models were implemented using the Python language, with the keras, linear kernel and default structure. Other structure details are default settings. \[[REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)\]
-* **POI-S**: Frequency-based method to extract features of trajectory datasets (TF-IDF approach), the method runs one dimension at a time (or more if concatenated). The models were implemented using the Python language, with the keras. \[[REFERENCE](https://doi.org/10.1145/3341105.3374045)\]
-* **MARC**: Uses word embeddings for trajectory classification. It encapsulates all trajectory dimensions: space, time and semantics, and uses them as input to a neural network classifier, and use the geoHash on the spatial dimension, combined with others. The models were implemented using the Python language, with the keras. \[[REFERENCE](https://doi.org/10.1080/13658816.2019.1707835)\]
-* **TRF**: Random Forest for trajectory data (TRF). Find the optimal set of hyperparameters for each model, applying the grid-search technique: varying number of trees (ne), the maximum number of features to consider at every split (mf), the maximum number of levels in a tree (md), the minimum number of samples required to split a node (mss), the minimum number of samples required at each leaf node (msl), and finally, the method of selecting samples for training each tree (bs). \[[REFERENCE](http://dx.doi.org/10.5220/0010227906640671)\]
-* **XGBost**: Find the optimal set of hyperparameters for each model, applying the grid-search technique:  number of estimators (ne), the maximum depth of a tree (md), the learning rate (lr), the gamma (gm), the fraction of observations to be randomly samples for each tree (ss), the sub sample ratio of columns when constructing each tree (cst), the regularization parameters (l1) and (l2). \[[REFERENCE](http://dx.doi.org/10.5220/0010227906640671)\]
-* **BITULER**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). \[[REFERENCE](http://dx.doi.org/10.5220/0010227906640671)\]
-* **TULVAE**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es), the dropout (dp), and latent variable (z). \[[REFERENCE](http://dx.doi.org/10.5220/0010227906640671)\]
-* **DEEPEST**: DeepeST employs a Recurrent Neural Network (RNN), both LSTM and Bidirectional LSTM (BLSTM). Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). \[[REFERENCE](http://dx.doi.org/10.5220/0010227906640671)\]
+* **MLP (Movelet)**: Multilayer-Perceptron (MLP) with movelets features. The models were implemented using the Python language, with the keras, fully-connected hidden layer of 100 units, Dropout Layer with dropout rate of 0.5, learning rate of 10−3 and softmax activation function in the Output Layer. Adam Optimization is used to avoid the categorical cross entropy loss, with 200 of batch size, and a total of 200 epochs per training. [REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)
+* **RF (Movelet)**: Random Forest (RF) with movelets features, that consists of an ensemble of 300 decision trees. The models were implemented using the Python language, with the keras. [REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)
+* **SVN (Movelet)**: Support Vector Machine (SVM) with movelets features. The models were implemented using the Python language, with the keras, linear kernel and default structure. Other structure details are default settings. [REFERENCE](https://doi.org/10.1007/s10618-020-00676-x)
+* **POI-S**: Frequency-based method to extract features of trajectory datasets (TF-IDF approach), the method runs one dimension at a time (or more if concatenated). The models were implemented using the Python language, with the keras. [REFERENCE](https://doi.org/10.1145/3341105.3374045)
+* **MARC**: Uses word embeddings for trajectory classification. It encapsulates all trajectory dimensions: space, time and semantics, and uses them as input to a neural network classifier, and use the geoHash on the spatial dimension, combined with others. The models were implemented using the Python language, with the keras. [REFERENCE](https://doi.org/10.1080/13658816.2019.1707835)
+* **TRF**: Random Forest for trajectory data (TRF). Find the optimal set of hyperparameters for each model, applying the grid-search technique: varying number of trees (ne), the maximum number of features to consider at every split (mf), the maximum number of levels in a tree (md), the minimum number of samples required to split a node (mss), the minimum number of samples required at each leaf node (msl), and finally, the method of selecting samples for training each tree (bs). [REFERENCE](http://dx.doi.org/10.5220/0010227906640671)
+* **XGBost**: Find the optimal set of hyperparameters for each model, applying the grid-search technique:  number of estimators (ne), the maximum depth of a tree (md), the learning rate (lr), the gamma (gm), the fraction of observations to be randomly samples for each tree (ss), the sub sample ratio of columns when constructing each tree (cst), the regularization parameters (l1) and (l2). [REFERENCE](http://dx.doi.org/10.5220/0010227906640671)
+* **BITULER**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). [REFERENCE](http://dx.doi.org/10.5220/0010227906640671)
+* **TULVAE**: Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es), the dropout (dp), and latent variable (z). [REFERENCE](http://dx.doi.org/10.5220/0010227906640671)
+* **DEEPEST**: DeepeST employs a Recurrent Neural Network (RNN), both LSTM and Bidirectional LSTM (BLSTM). Find the optimal set of hyperparameters for each model, applying the grid-search technique: keeps 64 as the batch size and 0.001 as the learning rate and vary the units (un) of the recurrent layer, the embedding size to each attribute (es) and the dropout (dp). [REFERENCE](http://dx.doi.org/10.5220/0010227906640671)
 
 ### Installation
 

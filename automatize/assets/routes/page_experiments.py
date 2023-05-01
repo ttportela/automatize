@@ -55,19 +55,37 @@ all_methods = BASE_METHODS
 #    'TC-TRF',
 #]
 
-all_datasets = list_datasets()
+if os.environ.get('AUTOMATIZE_DATA_PATH') is not None:
+    data_path = os.environ['AUTOMATIZE_DATA_PATH']
+else:
+    data_path = DATA_PATH
+# ------------------------------------------------------------
+all_datasets = list_datasets(data_path)
+
+# all_executables = {
+#     'hiper':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
+#     'hiper-pivots':    os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
+#     'SM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'SUPERMovelets.jar'),
+#     'MM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
+#     'MMp':             os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
+#     
+#     'Movelets':        os.path.join(PACKAGE_NAME, 'assets', 'method', 'Movelets.jar'),
+#     'Dodge':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Dodge.jar'),
+#     'Xiao':            os.path.join(PACKAGE_NAME, 'assets', 'method', 'Xiao.jar'),
+#     'Zheng':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Zheng.jar'),
+# }
 
 all_executables = {
-    'hiper':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
-    'hiper-pivots':    os.path.join(PACKAGE_NAME, 'assets', 'method', 'HIPERMovelets.jar'), 
-    'SM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'SUPERMovelets.jar'),
-    'MM':              os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
-    'MMp':             os.path.join(PACKAGE_NAME, 'assets', 'method', 'MASTERMovelets.jar'),
+    'hiper':           'HIPERMovelets.jar', 
+    'hiper-pivots':    'HIPERMovelets.jar', 
+    'SM':              'SUPERMovelets.jar',
+    'MM':              'MASTERMovelets.jar',
+    'MMp':             'MASTERMovelets.jar',
     
-    'Movelets':        os.path.join(PACKAGE_NAME, 'assets', 'method', 'Movelets.jar'),
-    'Dodge':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Dodge.jar'),
-    'Xiao':            os.path.join(PACKAGE_NAME, 'assets', 'method', 'Xiao.jar'),
-    'Zheng':           os.path.join(PACKAGE_NAME, 'assets', 'method', 'Zheng.jar'),
+    'Movelets':        'Movelets.jar',
+    'Dodge':           'Dodge.jar',
+    'Xiao':            'Xiao.jar',
+    'Zheng':           'Zheng.jar',
 }
 # ------------------------------------------------------------
 
@@ -307,18 +325,20 @@ def display_methods(idx, method, children, reset):
         )
         TO_GEN.append([method, {'sequences': [1,2,3]}])
     elif 'MM' in method:
+        isLog = True if '+Log' in method else False
+        isPivots = True if 'MMp' in method else False
         item = dbc.AccordionItem(
             [
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=True, id={'type': 'exp-log','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isLog, id={'type': 'exp-log','index': idx})), 
                         dbc.InputGroupText('Use Log (limit the subtrajectory size to the natural log of trajectory size)'),
                     ],
                     className="mb-3",
                 ),
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=False, id={'type': 'exp-pivots','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isPivots, id={'type': 'exp-pivots','index': idx})), 
                         dbc.InputGroupText('Use Pivots'),
                     ],
                     className="mb-3",
@@ -332,18 +352,20 @@ def display_methods(idx, method, children, reset):
         )
         TO_GEN.append([method, {}])
     elif 'SM' in method:
+        isLog = True if '+Log' in method else False
+        isLambda = True if '-2' in method else False
         item = dbc.AccordionItem(
             [
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=True, id={'type': 'exp-log','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isLog, id={'type': 'exp-log','index': idx})), 
                         dbc.InputGroupText('Use Log (limit the subtrajectory size to the natural log of trajectory size)'),
                     ],
                     className="mb-3",
                 ),
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=False, id={'type': 'exp-lambda','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isLambda, id={'type': 'exp-lambda','index': idx})), 
                         dbc.InputGroupText('Use λ (discover a limit number for dimension combination)'),
                     ],
                     className="mb-3",
@@ -357,18 +379,20 @@ def display_methods(idx, method, children, reset):
         )
         TO_GEN.append([method, {}])
     elif 'hiper' in method:
+        isLog = True if '+Log' in method else False
+        isPivots = True if 'pivots' in method else False
         item = dbc.AccordionItem(
             [
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=True, id={'type': 'exp-log','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isLog, id={'type': 'exp-log','index': idx})), 
                         dbc.InputGroupText('Use Log (limit the subtrajectory size to the natural log of trajectory size)'),
                     ],
                     className="mb-3",
                 ),
                 dbc.InputGroup(
                     [
-                        dbc.InputGroupText(dbc.Checkbox(value=False, id={'type': 'exp-pivots','index': idx})), 
+                        dbc.InputGroupText(dbc.Checkbox(value=isPivots, id={'type': 'exp-pivots','index': idx})), 
                         dbc.InputGroupText('Use Pivots (HiPerMovelets-Pivots)'),
                     ],
                     className="mb-3",
@@ -391,10 +415,29 @@ def display_methods(idx, method, children, reset):
             },
         )
         TO_GEN.append([method, {}])
+    elif 'random' in method:
+        isLog = True if '+Log' in method else False
+        item = dbc.AccordionItem(
+            [
+                dbc.InputGroup(
+                    [
+                        dbc.InputGroupText(dbc.Checkbox(value=isLog, id={'type': 'exp-log','index': idx})), 
+                        dbc.InputGroupText('Use Log (limit the subtrajectory size to the natural log of trajectory size)'),
+                    ],
+                    className="mb-3",
+                ),
+            ],
+            title=getTitle(method, idx), # METHODS_NAMES[method]+' (#'+str(idx)+')',
+            id={
+                'type': 'exp-rm',
+                'index': idx
+            },
+        )
+        TO_GEN.append([method, {}])
     else:
         item = dbc.AccordionItem(
             [
-                html.P("Method "+METHODS_NAMES[method]+" has default configuration."),
+                html.I(html.P("Method "+METHODS_NAMES[method]+" has default configuration.")),
             ],
             title=getTitle(method, idx), # METHODS_NAMES[method]+' (#'+str(idx)+')',
             id={
@@ -520,6 +563,27 @@ def update_hiper(id, log, pivots, isTau, tau):
     
     if 'exp-use-tau' in changed_id and not isTau:
         TO_GEN[idx][1]['tau'] = 0.9
+        
+#     print(TO_GEN)
+    return getTitle(TO_GEN[idx][0], idx+1)# METHODS_NAMES[TO_GEN[idx][0]]+' (#'+str(idx+1)+')'
+
+@app.callback(
+    Output({'type': 'exp-rm', 'index': MATCH}, 'title'),
+    State({'type': 'exp-log', 'index': MATCH}, 'id'),
+    Input({'type': 'exp-log', 'index': MATCH}, 'value'),
+)
+def update_rm(id, log):
+    global TO_GEN
+    changed_id = [p['prop_id'] for p in callback_context.triggered][0]
+#     print(changed_id)
+        
+    idx = id['index']-1
+    
+    if 'exp-log' in changed_id:
+        if log:
+            TO_GEN[idx][0] = TO_GEN[idx][0] + '+Log'
+        else:
+            TO_GEN[idx][0] = TO_GEN[idx][0].replace('+Log', '')
         
 #     print(TO_GEN)
     return getTitle(TO_GEN[idx][0], idx+1)# METHODS_NAMES[TO_GEN[idx][0]]+' (#'+str(idx+1)+')'
@@ -652,15 +716,24 @@ def prepare_zip(shdir, params, base, isExe, TO_GEN):
     addFolderToZip(zf, shdir.name, shdir.name)
     
     if isExe:
+        import requests
         for GM in TO_GEN:
             if trimsuffix(GM[0]) in all_executables.keys():
-                ff = all_executables[trimsuffix(GM[0])]
-                ft = ff.replace(os.path.join(PACKAGE_NAME, 'assets', 'method'), 
-                                os.path.join(base, 'programs'))
+                #ff = all_executables[trimsuffix(GM[0])]
+                #ft = ff.replace(os.path.join(PACKAGE_NAME, 'assets', 'method'), 
+                #                os.path.join(base, 'programs'))
+                ff = os.path.join(PACKAGE_NAME, 'assets', 'method', all_executables[trimsuffix(GM[0])])
+                if not os.path.exists(ff):
+                    jar = 'https://github.com/ttportela/automatize/blob/main/jarfiles/' \
+                        + all_executables[trimsuffix(GM[0])] + '?raw=true'
+                    print(ff)
+                    jar = requests.get(jar, allow_redirects=True)
+                    open(ff, 'wb').write(jar.content)
+                ft = os.path.join(base, 'programs', all_executables[trimsuffix(GM[0])])
                 if ft not in zf.namelist():
                     zf.write(ff, ft)
+                    #zf.writestr(ft, data=io.BytesIO(jar.read()))
             
-    
     zf.close()
     
     close_tmp_file(shdir)

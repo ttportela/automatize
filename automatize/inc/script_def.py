@@ -13,28 +13,29 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 BASE_METHODS = [
     'MARC',
     'npoi',
-    'MM',
+#    'MM',
     'MM+Log',
+    'MMp+Log',
     
     'ultra',
 #    'ultra-random',
     'random+Log',
     
-    'SM',
-    'SM-2',
+#    'SM',
+#    'SM-2',
     'SM+Log',
     'SM-2+Log',
     
-    'hiper', 
+#    'hiper', 
     'hiper+Log', 
-    'hiper-pivots',  
+#    'hiper-pivots',  
     'hiper-pivots+Log',     
     
-    'TRF',
-    'TXGB',
-    'TULVAE',
-    'BITULER',
-    'DEEPEST',
+    'TC-TRF',
+    'TC-TXGB',
+    'TC-TULVAE',
+    'TC-BITULER',
+    'TC-DEEPEST',
 ]
 
 METHODS_NAMES = {
@@ -49,6 +50,12 @@ METHODS_NAMES = {
     'TULVAE': 'TULVAE (DeepeST)',
     'BITULER': 'BITULER (DeepeST)',
     'DEEPEST': 'DeepeST',
+    
+    'TC-TRF': 'RF (DeepeST)',
+    'TC-TXGB': 'XGBoost (DeepeST)',
+    'TC-TULVAE': 'TULVAE (DeepeST)',
+    'TC-BITULER': 'BITULER (DeepeST)',
+    'TC-DEEPEST': 'DeepeST',
     
     'poi':  'POI-F',
     'npoi': 'NPOI-F',

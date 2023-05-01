@@ -9,18 +9,22 @@ Copyright (C) 2022, License GPL Version 3 or superior (see LICENSE file)
 
 @author: Tarlis Portela
 '''
+import os
+from pathlib import Path
 import configparser
 config = configparser.ConfigParser()
 config.read('automatize/pyproject.toml')
 
-VERSION = config['project']['version'].replace("'", "")
-PACKAGE_NAME = config['project']['name'].replace("'", "")
+VERSION = '1.0' #config['project']['version'].replace("'", "")
+PACKAGE_NAME = 'automatize' #config['project']['name'].replace("'", "")
 
 DATA_PATH = '../datasets'    
 EXP_PATH  = '../../results'
 README    = PACKAGE_NAME+'/README.md'
 
-PAGES_ROUTE  = PACKAGE_NAME+'/'
+ROOT = str(Path(__file__).parents[2])
+
+PAGES_ROUTE  = os.path.join(ROOT, PACKAGE_NAME)+'/'
 ASSETS_ROUTE = PAGES_ROUTE + 'assets/'
 
 RESULTS_FILE    = ASSETS_ROUTE+'experimental_history.csv'
@@ -42,8 +46,7 @@ def alert(msg, mtype="info"):
 def render_markdown_file(file, div=False):
     from dash import html
     from dash import dcc
-    import os
-    f = open(file, "r")
+    f = open(os.path.join(ROOT, file), "r")
     if div:
         return html.Div(dcc.Markdown(f.read()), style={'margin': '20px'}, className='markdown')
     else:

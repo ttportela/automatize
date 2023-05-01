@@ -15,24 +15,23 @@ config = configparser.ConfigParser()
 config.read('pyproject.toml')
 VERSION = config['project']['version']
 PACKAGE_NAME = config['project']['name']
-DEV_VERSION = "1.0b18"
+DEV_VERSION = "1.0b15"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
     
 setuptools.setup(
     name=PACKAGE_NAME,
-    version=VERSION,
-#    version=DEV_VERSION,
+#    version=VERSION,
+    version=DEV_VERSION,
     author="Tarlis Tortelli Portela",
     author_email="tarlis@tarlis.com.br",
     description="Automatize: Multiple Aspect Trajectory Data Mining Tool Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ttportela/automatize",
-#    packages=setuptools.find_packages(include=[PACKAGE_NAME, PACKAGE_NAME+'.*']),
-    packages=setuptools.find_packages(),
-#    include_package_data=True,
+    packages=setuptools.find_packages(include=[PACKAGE_NAME, PACKAGE_NAME+'.*']),
+    include_package_data=True,
     scripts=[
 #         'scripts/MAT-PrintResults.py', # Deprecated
 #         'scripts/MAT-ResultsCheck.py', # Deprecated

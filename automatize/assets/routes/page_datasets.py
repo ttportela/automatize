@@ -196,7 +196,7 @@ def render_dataset(pathname, data_path=DATA_PATH):
     components.append(html.Hr())
     components.append(html.H6('Download Files:'))
 #     components.append(html.Br())
-    components.append(render_downloads(category, dataset))
+    components.append(render_downloads(category, dataset, data_path))
     components.append(dcc.Download(id="download-ds"))
     components.append(html.Br())
     
@@ -222,25 +222,26 @@ def render_results(dataset):
         line['Best'] = key.replace('_', ' ').title()
         
 #         i = df[key].idxmin() if key != 'accuracy' else df[key].idxmax()
-        line['Result'] = format_hour(df[key][i]) if key != 'accuracy' else df[key][i]
+        line['Result'] = format_hour(df[key][i]) if key != 'metric:accuracy' else df[key][i]
         
         method = df['method'][i]
-        method = METHODS_NAMES[method] if method in METHODS_NAMES.keys() else method
-        line['Method'] = '['+method+'](../method/'+method.split('-')[0]+')'
+        mname = METHODS_NAMES[method] if method in METHODS_NAMES.keys() else method
+        mlink = mname.split('-')[0].split(' ')[0].replace('Pivots', 'Movelets') # TODO: TEMP Fix, look for a better way
+        line['Method'] = '['+mname+'](../../method/'+mlink+')'
         
         method = df['classifier'][i]
         method = CLASSIFIERS_NAMES[method] if method in CLASSIFIERS_NAMES.keys() else method
         line['Classifier'] = method
         records.append(line)
     
-    i = df['accuracy'].idxmax()
-    apline(i, 'accuracy', df['accuracy'][i], df)
+    i = df['metric:accuracy'].idxmax()
+    apline(i, 'metric:accuracy', df['metric:accuracy'][i], df)
     i = df['runtime'].idxmin()
     apline(i, 'runtime', format_hour(df['runtime'][i]), df)
     i = df[df['cls_runtime'] > 0]['cls_runtime'].idxmin()
     apline(i, 'cls_runtime', format_hour(df['cls_runtime'][i]), df)
-    i = df['total_time'].idxmin()
-    apline(i, 'total_time', format_hour(df['total_time'][i]), df)
+    i = df['totaltime'].idxmin()
+    apline(i, 'totaltime', format_hour(df['totaltime'][i]), df)
         
     return dash_table.DataTable(data=records, columns=[
             {"name": ' ', "id":  'Best'},
@@ -297,9 +298,9 @@ def render_related_publications(dataset):
 # #         style={'content: ', '; '},
 #     )
 
-def render_downloads(category, dataset):
-    files = glob.glob(os.path.join(DATA_PATH, category, dataset, '*.*'))
-    descs = list_subsets(dataset, category, os.path.join(DATA_PATH, category, dataset, dataset+'.md'), True)
+def render_downloads(category, dataset, data_path=DATA_PATH):
+    files = glob.glob(os.path.join(data_path, category, dataset, '*.*'))
+    descs = list_subsets(dataset, category, os.path.join(data_path, category, dataset, dataset+'.md'), True)
     
     ls = []
     for f in files:

@@ -3,7 +3,6 @@ LICENSE
 MANIFEST.in
 README.md
 Steps to Build.txt
-Untitled.ipynb
 pyproject.toml
 setup.py
 automatize/README.md
@@ -53,16 +52,20 @@ automatize/assets/examples/Example/data/train.zip
 automatize/assets/examples/css/__init__.py
 automatize/assets/examples/css/colorful.css
 automatize/assets/examples/css/notebook.css
+automatize/assets/method/BITULER.md
+automatize/assets/method/DeepeST.md
 automatize/assets/method/Dodge.md
 automatize/assets/method/HIPERMovelets.md
 automatize/assets/method/MARC.md
+automatize/assets/method/MASTERMovelets.jar
 automatize/assets/method/MASTERMovelets.md
 automatize/assets/method/Movelets.md
 automatize/assets/method/POIF.md
 automatize/assets/method/POIS.md
 automatize/assets/method/SUPERMovelets.md
-automatize/assets/method/TEC.md
+automatize/assets/method/TRF.md
 automatize/assets/method/TULVAE.md
+automatize/assets/method/TXGB.md
 automatize/assets/method/Xiao.md
 automatize/assets/method/Zheng.md
 automatize/assets/method/__init__.py

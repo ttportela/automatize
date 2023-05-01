@@ -28,6 +28,10 @@ python3 -m twine upload --repository testpypi dist/*
 # Install from the test PyPi:
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps automatize
 
+
+# 2nd upload to the PyPi:
+python3 -m twine upload dist/* 
+
 # ---------------------------------
 # For making the docs
 # ---------------------------------

@@ -1,3 +1,4 @@
+#!python
 # -*- coding: utf-8 -*-
 '''
 Multiple Aspect Trajectory Data Mining Tool Library
