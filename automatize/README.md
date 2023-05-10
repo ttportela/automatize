@@ -42,6 +42,46 @@ Install directly from PyPi repository, or, download from github. Intalling with 
 
 To use Automatize as a python library, find examples in this sample Jupyter Notebbok: [Automatize_Sample_Code.ipynb](./assets/examples/Automatize_Sample_Code.ipynb)
 
+To run automatize as a web application, run `MAT.py`. The application will run on http://127.0.0.1:8050/
+
+You can run this application setting a path to the datasets directory, for instance:
+
+```bash
+    MAT.py -d "./data"
+```
+
+This will read the datasets structure for the scripting module. You have to use the same structure as:
+```
+data
+├── multiple_trajectories
+│   ├── Brightkite
+│   │   ├── Brightkite.md [required: dataset description markdown file]
+│   │   ├── Brightkite-stats.md [not required]
+│   │   ├── specific_train.csv [train file, .csv/.mat/.zip]
+│   │   ├── specific_test.csv [test file, .csv/.mat/.zip]
+│   ├── FoursquareNYC
+│   │   ├── FoursquareNYC.md
+│   │   ├── train.csv
+│   │   ├── test.csv
+│   ├── Gowalla
+│   │   ├── Gowalla.md
+│   │   ├── train.csv
+│   │   ├── test.csv
+│   ├── descriptors [descriptor files for movelets methods]
+│   │   ├── Brightkite_specific_hp.json
+│   │   ├── Gowalla_specific_hp.json
+├── raw_trajectories
+│   ├── Geolife
+│   │   ├── Gowalla.md
+│   │   ├── train.csv
+│   │   ├── test.csv
+│   ├── GoTrack
+│   │   ├── Gowalla.md
+│   │   ├── train.csv
+│   │   ├── test.csv
+│   ├── descriptors
+```
+
 #### Available Scripts:
 
 By installing the package the following python scripts will be installed for use in system command line tools:
