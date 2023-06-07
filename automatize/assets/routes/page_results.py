@@ -32,7 +32,7 @@ from automatize.inc.CDDiagram import draw_cd_diagram
 from automatize.inc.script_def import METHODS_NAMES, CLASSIFIERS_NAMES, metricName
 
 from matplotlib import pyplot as plt
-from automatize.graphics import resultsBoxPlots, barPlot, lineRank
+from automatize.graphics import resultsBoxPlots, barPlot, lineRank, resultsTable
 
 from automatize.results import format_hour, format_float
 # ------------------------------------------------------------
@@ -225,7 +225,7 @@ def render_experiments(sel_datasets=None, sel_methods=None, sel_classifiers=None
                         options=[
                             {'label': ' '+y+' ', 'value': y.lower().replace(' ', '_')} \
                             for y in ['Critical Difference', 'Bar Plots', 'Bar Plots (Mean)', 'Box Plots', 'Swarm Plots', 'Average Rankings', 'Raw Results']
-                        ],
+                        ], #TODO  'Pivot Table',
                         value=view,
                     ),
             ]),
@@ -271,6 +271,8 @@ def render_experiments_panels(df, view, sel_methods=None, sel_datasets=None, sel
         return html.Div(id="results-tabs", children=[render_expe_linerank(df.copy(), sel_methods, plot_type='linerank')], style={'margin':10})
     elif view == 'average_rankings':
         return html.Div(id="results-tabs", children=[render_ranks(df.copy())], style={'margin':10})
+    elif view == 'pivot_table':
+        return html.Div(id="results-tabs", children=[render_expe_pivot_table(df.copy(), sel_methods, sel_datasets)], style={'margin':10})
     else: #elif view == 'raw_results':
         return html.Div(id="results-tabs", children=[render_expe_table(df.copy())], style={'margin':10})
     
@@ -419,7 +421,6 @@ def render_expe_boxplots(df, sel_methods=None, plot_type='box'):
     return html.Div(components) #+ [
 #        html.Br(),
 #        ])
-
 
 def render_expe_linerank(df, sel_methods=None, plot_type='linerank'):     
     components = []
@@ -703,6 +704,27 @@ def render_expe_table(df):
     #                 'textOverflow': 'ellipsis',
     #                 'overflow': 'hidden'
     #             }
+            filter_action="native",
+            sort_action="native",
+            sort_mode="multi",
+        )
+    ], style={'margin':10})
+
+def render_expe_pivot_table(df, sel_methods=None, sel_datasets=None):
+    
+    dfx = resultsTable(df, 'metric:accuracy', sel_methods, sel_datasets)
+#    df.drop(['#','timestamp','file','random','set','error','name','key'], axis=1)
+    
+#    dfx['method'] = [METHODS_NAMES[x] if x in METHODS_NAMES.keys() else x for x in dfx['method']]
+#    dfx['runtime'] = [format_hour(x) for x in dfx['runtime']]
+#    dfx['cls_runtime'] = [format_hour(x) for x in dfx['cls_runtime']]
+#    dfx['totaltime'] = [format_hour(x) for x in dfx['totaltime']]
+    
+    return html.Div([
+        dash_table.DataTable(
+            id='table-pivot-results',
+            columns=[{"name": i.replace('_', ' ').title(), "id": i} for i in dfx.columns],
+            data=dfx.to_dict('records'),
             filter_action="native",
             sort_action="native",
             sort_mode="multi",

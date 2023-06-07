@@ -275,3 +275,5 @@ automatize/scripts/.ipynb_checkpoints/POIS-TC-checkpoint.py
 automatize/scripts/_deprecated/.DS_Store
 automatize/.ipynb_checkpoints/preprocessing-checkpoint.py
 automatize/.ipynb_checkpoints/movelets-checkpoint.py
+automatize/methods/_lib/pymove/core/.ipynb_checkpoints/notity-checkpoint.py
+automatize/.ipynb_checkpoints/graphics-checkpoint.py

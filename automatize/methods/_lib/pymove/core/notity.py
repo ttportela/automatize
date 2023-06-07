@@ -11,9 +11,9 @@ from pprint import pprint
 import time
 from datetime import datetime
 
-host = 'Avell'
-my_token = '933860814:AAFxSdEFgcC3sSoQn1P39hv9clvctfl_sPs'
-default_chat_id = -345852348
+host = '[REMOVED]'
+my_token = '[REMOVED]'
+default_chat_id = -1 #[REMOVED]
 
 def getChats(token=my_token):
     result = req.urlopen("https://api.telegram.org/bot{}/getUpdates".format(token)).read()

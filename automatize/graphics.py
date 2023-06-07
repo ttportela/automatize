@@ -357,3 +357,49 @@ def barPlot(df, col, title='', methods_order=None, datasets_order=None, plot_typ
     plt.tight_layout()
     return p1.get_figure()
 # -----------------------------------------------------------------------
+
+def resultsTable(df, col, title='', methods_order=None, datasets_order=None, xaxis_format=False): # TODO
+    n = len(df)
+    df.drop(df[df['error'] == True].index, inplace=True)
+    print('[WARN PivotTable:] Removed results due to run errors:', n - len(df))
+
+    if not methods_order:
+        methods_order = list(df['method'].unique())
+        
+    if not datasets_order:
+        datasets_order = list(df['dataset'].unique())
+        datasets_order.sort()
+
+    df['methodi'] = df['method'].apply(lambda x: {methods_order[i]:i for i in range(len(methods_order))}[x])
+    
+    df['key'] = df['dataset']+'-'+df['subset']
+    df['dsi'] = df['key'].apply(lambda x: {datasets_order[i]:i for i in range(len(datasets_order))}[x])
+    df = df.sort_values(['methodi', 'dsi'])
+    
+#    df = df.sort_values(['methodi', 'dataset', 'subset'])
+
+    df['method'] = list(map(lambda m: METHODS_NAMES[m] if m in METHODS_NAMES.keys() else m, df['method']))
+
+    if len(set(df['classifier'].unique()) - set('-')) > 1:
+        df['name'] = df['method'] + list(map(lambda x: '-'+x if x != '-' else '', df['classifier']))
+    else:
+        df['name'] = df['method']
+        
+    # ---
+    format_config = {'scale':1, 'suffix':'', 'xrotation':25, 'label_pos':(0,0), 'label_rotation':70}
+    format_config.update(label_format)
+    # ---
+    def format_val(x):
+        if 'format_func' in format_config.keys():
+            return format_config['format_func'](x)
+        elif 'mask' in format_config.keys():
+            return format_config['mask'].format(x/format_config['scale'])# + format_config['suffix']
+        else:
+            return '{:,.{}f}'.format(x/format_config['scale'], 0)# + format_config['suffix']
+    def format_axis(x):
+        return format_val(x) + format_config['suffix']
+    
+    xlabels = [format_axis(x) for x in ticks_loc]
+        
+    return pd.pivot_table(df, values='metric:accuracy', index='key', columns=['name'], fill_value='-')
+# -----------------------------------------------------------------------
