@@ -1,6 +1,6 @@
 [project]
 name = 'automatize'
-version = '1.0b6'
+version = '1.0b7'
 description = "Automatize: A Multiple Aspect Trajectory Data Mining Tool Library"
 authors = [
     {name = "Tarlis Tortelli Portela", email = "tarlis@tarlis.com.br"},
@@ -35,10 +35,10 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
  ]
-requires-python = ">=3.7,<3.10"
+requires-python = ">=3.7"
 dependencies = [
     "glob2==0.7",
     "numpy",

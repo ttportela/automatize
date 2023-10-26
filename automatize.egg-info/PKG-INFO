@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: automatize
-Version: 1.0b6
+Version: 1.0b7
 Summary: Automatize: A Multiple Aspect Trajectory Data Mining Tool Library
 Home-page: https://github.com/ttportela/automatize
 Author: Tarlis Tortelli Portela
@@ -28,16 +28,44 @@ Classifier: Operating System :: POSIX
 Classifier: Operating System :: Unix
 Classifier: Operating System :: MacOS
 Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: 3.9
-Requires-Python: <3.10,>=3.7
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.7
 Description-Content-Type: text/markdown
-Provides-Extra: all_extras
-Provides-Extra: dev
-Provides-Extra: binder
-Provides-Extra: docs
-Provides-Extra: dl
 License-File: LICENSE
+Requires-Dist: glob2==0.7
+Requires-Dist: numpy
+Requires-Dist: pandas==1.3.4
+Requires-Dist: scikit-learn
+Requires-Dist: python-dateutil==2.8.2
+Provides-Extra: all-extras
+Requires-Dist: anytree==2.8.0; extra == "all-extras"
+Requires-Dist: chart-studio==1.1.0; extra == "all-extras"
+Requires-Dist: colorlover==0.3.0; extra == "all-extras"
+Requires-Dist: cycler==0.11.0; extra == "all-extras"
+Requires-Dist: graphviz==0.19.1; extra == "all-extras"
+Requires-Dist: jsonschema==4.3.1; extra == "all-extras"
+Requires-Dist: matplotlib==3.5.1; extra == "all-extras"
+Requires-Dist: mpld3==0.5.7; extra == "all-extras"
+Requires-Dist: networkx==2.6.3; extra == "all-extras"
+Requires-Dist: notebook==6.4.6; extra == "all-extras"
+Requires-Dist: plotly==5.4.0; extra == "all-extras"
+Requires-Dist: tensorflow; extra == "all-extras"
+Requires-Dist: pm4py; extra == "all-extras"
+Requires-Dist: geohash; extra == "all-extras"
+Provides-Extra: dev
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: pytest-xdist; extra == "dev"
+Requires-Dist: wheel; extra == "dev"
+Provides-Extra: binder
+Requires-Dist: jupyter; extra == "binder"
+Provides-Extra: docs
+Requires-Dist: jupyter; extra == "docs"
+Requires-Dist: numpydoc; extra == "docs"
+Provides-Extra: dl
+Requires-Dist: tensorflow; extra == "dl"
 
 # Automatize: Multiple Aspect Trajectory Data Mining Tool Library
 ---
