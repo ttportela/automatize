@@ -309,7 +309,7 @@ def movelets_class_dataframe(file_name, name='movelets', count=0):
             df = df.append(aux_df)
             count += 1
         
-    return redefine_dataframe(df)
+    return df.fillna('-')
 
 def movelets_dataframe(path_name, name='movelets'):
     count = 0
@@ -322,7 +322,7 @@ def movelets_dataframe(path_name, name='movelets'):
 #     print(df)
     cols = ['movelet_id', 'tid', 'label', 'size', 'quality']
     cols = cols + [x for x in df.columns if x not in cols]
-    return redefine_dataframe(df[cols])
+    return df.fillna('-')
 
 def movelets2csv(path_name, res_path, name='movelets'):
     count = 0

@@ -395,10 +395,6 @@ def importer(key=['S'], this=None, modules={}):
             mdic.update( {'Node': getattr(module, 'Node')} )
             mdic.update( {'RenderTree': getattr(module, 'RenderTree')} )
             mdic.update( {'DotExporter': getattr(importlib.import_module('anytree.exporter'), 'DotExporter')} )
-            
-        if set(key) & set(['*', 'movelets', 'markov']):
-            module = importlib.import_module('graphviz')
-            mdic.update( {'Digraph': getattr(module, 'Digraph')} )
     
     if set(key) & set(['*', 'io', 'ts_io', 'load_from_tsfile_to_dataframe', 'readDataset', 'organizeFrame']):
         if set(key) & set(['*', 'io', 'readDataset', 'organizeFrame']):
